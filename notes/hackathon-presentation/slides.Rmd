@@ -1,0 +1,117 @@
+---
+title: "iTIME"
+subtitle: ""  
+author: "Biodata Club Hackathon"
+date: "December 11, 2020"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    seal: false
+    nature:
+      titleSlideClass: ["bottom", "left"]
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: "16:9"
+      countIncrementalSlides: true
+---
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+duo_accent(primary_color = "#39c0e0", secondary_color = "#74bc1f")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 10, fig.height = 6, fig.retina = 2,
+  warning = FALSE, message = FALSE
+)
+xaringanExtra::use_xaringan_extra(c("animate_css", "text_poster", "panelset"))
+xaringanExtra::use_tachyons()
+```
+
+class: center middle hide-count hide-logo
+
+<div class="talk-logo"></div>
+
+.talk-meta[
+  .talk-title[# interactive Tumor Immune MicroEnvironment <br> .smaller[]]
+
+  .talk-author[Moffitt Biodata Club]
+  
+]
+
+---
+
+## Slide one header
+
+Text goes here. 
+
+```{css, echo=FALSE}
+.talk-logo {
+  width: 360px;
+  height: 417px;
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  background-image: url('figures/hex.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.talk-meta {
+  #font-family: Overpass;
+  position: absolute;
+  text-align: left;
+  bottom: 10px;
+  left: 25px;
+}
+.talk-author {
+  color: #444;
+  font-weight: bold;
+  font-size: 1.5em;
+  line-height: 1em;
+}
+.hide-count .remark-slide-number {
+  display: none;
+}
+# sizing 
+.w-50 {
+  width: 50%;
+}
+.w-25 {
+  width: 25%;
+}
+.w-75 {
+  width: 75%;
+}
+.w-115 {
+  width: 115%;
+}
+.w-150 {
+  width: 150%;
+}
+.h-center {
+  margin: 0 auto;
+}
+.top-0    { top:    0; }
+.right-0  { right:  0; }
+.bottom-0 { bottom: 0; }
+.left-0   { left:   0; }
+# colors
+.accent-blue { 
+  color: #00bfff ;
+}
+.accent-orange{
+  color: #f9850a ;
+}
+.blank { 
+  color: white ;
+}
+.dramatic p {
+  font-size: 145px;
+  color: #f9850a ;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+```
