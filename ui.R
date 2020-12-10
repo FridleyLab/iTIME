@@ -7,8 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
-library(dashboardthemes)
+
 
 # Define UI for application that draws a histogram
 ui = dashboardPage(

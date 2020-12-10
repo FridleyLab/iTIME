@@ -1,1 +1,7 @@
 library(shiny)
+library(DT)
+library(ggplot2)
+library(tidyverse)
+library(spatstat)
+options(shiny.maxRequestSize = 30*1024^2)
+library(dashboardthemes)

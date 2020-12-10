@@ -9,12 +9,7 @@
 
 # require mappable subject ID between files
 
-library(shiny)
-library(DT)
-library(ggplot2)
-library(tidyverse)
-library(spatstat)
-options(shiny.maxRequestSize = 30*1024^2)
+
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -142,29 +137,29 @@ shinyServer(function(input, output) {
     })
 
 })
-
-summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
-    box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
-        geom_boxplot() +
-        xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-        labs(fill=str_to_title(clinvar)) + theme_classic() +
-        viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
-    
-    violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
-        geom_violin() +
-        xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-        labs(fill=str_to_title(clinvar)) + theme_classic() +
-        viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
-    
-    hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
-        geom_histogram(binwidth=, fill='white') +
-        xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
-        labs(color=str_to_title(clinvar)) + theme_classic() +
-        viridis::scale_color_viridis(option = colorscheme, discrete = TRUE)
-    
-    summ_plots <- list(box_p, violin_p, hist_p)
-    
-    return(summ_plots)
-    
-}
+# 
+# summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
+#     box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+#         geom_boxplot() +
+#         xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+#         labs(fill=str_to_title(clinvar)) + theme_classic() +
+#         viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
+#     
+#     violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+#         geom_violin() +
+#         xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+#         labs(fill=str_to_title(clinvar)) + theme_classic() +
+#         viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
+#     
+#     hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
+#         geom_histogram(binwidth=, fill='white') +
+#         xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
+#         labs(color=str_to_title(clinvar)) + theme_classic() +
+#         viridis::scale_color_viridis(option = colorscheme, discrete = TRUE)
+#     
+#     summ_plots <- list(box_p, violin_p, hist_p)
+#     
+#     return(summ_plots)
+#     
+# }
 
