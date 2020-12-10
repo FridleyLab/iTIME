@@ -8,7 +8,7 @@
 #
 
 library(shiny)
-library(shinydashboard)
+library(dashboardthemes)
 
 # Define UI for application that draws a histogram
 ui = dashboardPage(
@@ -21,6 +21,9 @@ ui = dashboardPage(
         )
     ),
     dashboardBody(
+        shinyDashboardThemes(
+            theme = "blue_gradient"
+        ),
         tabItems(
             tabItem(tabName = 'import',
                     fluidRow(
@@ -61,8 +64,7 @@ ui = dashboardPage(
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
                                                     "Violin Plot" = 2, 
-                                                    "Histogram" = 3)),
-                            selectInput()
+                                                    "Histogram" = 3))
                         ),
                         
                         box(width = 8, 
