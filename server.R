@@ -20,7 +20,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE)
+        df = read.csv(infile$datapath, check.names = FALSE,row.names=1)
         return(df)
     })
     
@@ -30,7 +30,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE)
+        df = read.csv(infile$datapath, check.names = FALSE, row.names=1)
         return(df)
     })
     
