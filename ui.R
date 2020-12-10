@@ -28,13 +28,14 @@ ui = dashboardPage(
                                       multiple = FALSE,
                                       accept = c("csv",
                                                  "HALO summary data file",
-                                                 c(".csv")))
+                                                 c(".csv"))),
+                    uiOutput("choose_marker")
                         ),
                         
                         box(title = "Boxplot",
                             plotOutput("boxplot", height = 250)
                             )
-                    )
+                    ),
                 ),
             tabItem(tabName = 'spatial',
                     box(
