@@ -35,7 +35,7 @@ shinyServer(function(input, output) {
     })
 
     output$boxplot <- renderPlot({
-
+        
         # generate bins based on input$bins from ui.R
         x    <- summary_data()[, input$picked_marker]
         bins <- seq(min(x), max(x), length.out = 25)
@@ -56,3 +56,22 @@ shinyServer(function(input, output) {
     })
 
 })
+
+# output$boxplot <- renderPlot({
+#     
+#     # create list of inputs
+#     summary_data <- summaryTable()
+#     # main_marker <- input$marker # charcter
+#     # clinical_marker <- input$clinical.variable # character value
+#     
+#     
+#     #transform the inputs into tidy compatable pieces
+#     
+#     
+#     
+#     # draw the boxplot
+#     boxplot.1<-ggplot(summary_data, aes(x = summary_data[[main_marker]], y=clinical_data[[clinical_marker]], fill = clinical_data[[clinical_variable]]))+
+#         geom_boxplot()
+#     boxplot.1+geom_jitter(shape=16, position=position_jitter(0.2))
+#     
+# })
