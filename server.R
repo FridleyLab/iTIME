@@ -9,29 +9,32 @@
 
 library(shiny)
 library(DT)
+options(shiny.maxRequestSize = 30*1024^2)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-    
-    summaryTable = reactive({
-        read.csv(input$summaryData)
-    })
     
     output$summaryout = DT::renderDataTable({
         if(is.null(input$summaryData)){
             return()
         }
         
-        temp = read.csv(input$summaryData)
+        temp = read.csv(input$summaryData$datapath)
+        #print(colnames(temp))
+        #DT::datatable(as.data.frame(temp), options = list(scrollX = TRUE))
         
-        DT::datatable(temp)
+        assign('summary_data', temp, envir=.GlobalEnv)
+        assign('spatial_column_names', colnames(temp), envir=.GlobalEnv)
     })
 
     output$boxplot <- renderPlot({
+        if(is.null(input$summaryData)){
+            return()
+        }
 
         # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        x    <- summary_data[, 3]
+        bins <- seq(min(x), max(x), length.out = 25)
 
         # draw the histogram with the specified number of bins
         hist(x, breaks = bins, col = 'darkgray', border = 'white')

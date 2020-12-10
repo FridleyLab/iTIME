@@ -22,15 +22,19 @@ ui = dashboardPage(
     dashboardBody(
         tabItems(
             tabItem(tabName = 'summary',
-                    box(
-                        fileInput("summaryData", "Choose a Summary File",
-                                  multiple = FALSE,
-                                  accept = c("csv",
-                                             "HALO summary data file",
-                                             c(".csv")))
-                    ),
-                    
-                    plotOutput("boxplot", height = 250)
+                    fluidRow(
+                        box(
+                            fileInput("summaryData", "Choose a Summary File",
+                                      multiple = FALSE,
+                                      accept = c("csv",
+                                                 "HALO summary data file",
+                                                 c(".csv")))
+                        ),
+                        
+                        box(title = "Boxplot",
+                            plotOutput("boxplot", height = 250)
+                            )
+                    )
                 ),
             tabItem(tabName = 'spatial',
                     box(
