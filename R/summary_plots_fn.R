@@ -35,33 +35,33 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
 }
 
 
-# Load tidyverse for data frame manipulation.
-library('tidyverse')
-
-# Load data from .Rdata file.
-load("data/example_data.RData")
-
-# Clean column names for the image summary data and the clinical data.
-summary_clean <- janitor::clean_names(summary)
-clinical_clean <- janitor::clean_names(clinical)
-
-#Join the image summary data and the clinical data by the filename of the image ("Image tag").
-datatable <- left_join(clinical_clean, summary_clean, by="image_tag")
-
-# Show columns available for selection.
-cat("CLINICAL VARIABLES:\n")
-names(clinical_clean)
-cat("\n")
-cat("CELL TYPES:\n")
-names(summary_clean)
-
-# Specify user-selected clinical column.
-# Specify user-selected cell type column.
-clinvar <- 'age'
-cellvar <- 'cd3_opal_570_positive_cells'
-
-# Select color scheme
-colorscheme <- 'viridis'
-
-# Get plots
-plots <- summary_plots_fn(datatable, clinvar, cellvar, colorscheme)
+# # Load tidyverse for data frame manipulation.
+# library('tidyverse')
+# 
+# # Load data from .Rdata file.
+# load("data/example_data.RData")
+# 
+# # Clean column names for the image summary data and the clinical data.
+# summary_clean <- janitor::clean_names(summary)
+# clinical_clean <- janitor::clean_names(clinical)
+# 
+# #Join the image summary data and the clinical data by the filename of the image ("Image tag").
+# datatable <- left_join(clinical_clean, summary_clean, by="image_tag")
+# 
+# # Show columns available for selection.
+# cat("CLINICAL VARIABLES:\n")
+# names(clinical_clean)
+# cat("\n")
+# cat("CELL TYPES:\n")
+# names(summary_clean)
+# 
+# # Specify user-selected clinical column.
+# # Specify user-selected cell type column.
+# clinvar <- 'age'
+# cellvar <- 'cd3_opal_570_positive_cells'
+# 
+# # Select color scheme
+# colorscheme <- 'viridis'
+# 
+# # Get plots
+# plots <- summary_plots_fn(datatable, clinvar, cellvar, colorscheme)
