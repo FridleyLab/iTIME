@@ -1,21 +1,22 @@
+# @datatable a data frame with clinical and summary data merged by "Image tag"
 # @clinvar the name of the column for the clinical variable.
 # @cellvar the name of the column for the cell type (marker)
 # @return summ_plots a list with three ggplot objecta containing a boxplot, a violin plot, and a histogram with the clinical variable as a factor.
-summary_plots_fn <- function(clinvar, cellvar){
-  box_p <- ggplot(summary_clinical, aes(x=get(clinical_var), y=get(celltype_var), fill=get(clinical_var))) + 
+summary_plots_fn <- function(datatable, clinvar, cellvar){
+  box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
     geom_boxplot() +
-    xlab(str_to_title(clinical_var)) + ylab(gsub("_", " ", str_to_title(celltype_var))) +
-    labs(fill=str_to_title(clinical_var))
+    xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+    labs(fill=str_to_title(clinvar))
   
-  violin_p <- ggplot(summary_clinical, aes(x=get(clinical_var), y=get(celltype_var), fill=get(clinical_var))) + 
+  violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
     geom_violin() +
-    xlab(str_to_title(clinical_var)) + ylab(gsub("_", " ", str_to_title(celltype_var))) +
-    labs(fill=str_to_title(clinical_var))
+    xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+    labs(fill=str_to_title(clinvar))
   
-  hist_p <- ggplot(summary_clinical, aes(x=get(celltype_var), color=get(clinical_var))) + 
+  hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
     geom_histogram(binwidth=100, fill='white') +
-    xlab(str_to_title(gsub("_", " ", celltype_var))) + ylab("Count") +
-    labs(color=str_to_title(clinical_var))
+    xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
+    labs(color=str_to_title(clinvar))
   
   summ_plots <- list(box_p, violin_p, hist_p)
   
