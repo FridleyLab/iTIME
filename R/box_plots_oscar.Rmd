@@ -44,6 +44,7 @@ clinical_var <- 'race'
 celltype_var <- 'cd3_opal_570_positive_cells'
 ```
 
+Generate boxplot.
 ```{r}
 box_p <- ggplot(summary_clinical, aes(x=get(clinical_var), y=get(celltype_var), fill=get(clinical_var))) + 
   geom_boxplot() +
