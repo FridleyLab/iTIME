@@ -93,32 +93,22 @@ for(i in 1:length(spatial)){K_ANALYSIS(i)}
 
 ##Playground##
 
-if(sum(spatial[[3]]$marks=="CD3+/FOXP3+")>1) {
   K_CD3_FOX <- Kest(ppp, spatial[[3]]$marks=='CD3+/FOXP3+',correction=c("isotropic","translate"))
   
-  KTumorfile <- str_c(getwd(),"/", "_KGraphs","/","_Tumor", "/", filenamelist[i], "_Tumor_KGraph.png")
-  png(file=KTumorfile)
-  
+  plot(K_CD3_FOX,.~r)
   plot(K_CD3_FOX,(sqrt(./pi))~r)
   plot(K_CD3_FOX,(sqrt(./pi)-r)~r)
   plot(K_CD3_FOX,./(pi*r^2) ~ r)
-  dev.off()
-  
-  attach(KTumor)
-  
-  AUCtheo <- sum(diff(r)*(head(theo/(pi*(r^2)),-1)),na.rm=TRUE)
-  AUCiso <- sum(diff(r)*(head(iso/(pi*(r^2)),-1)),na.rm=TRUE)
-  AUCdiffTumor<- AUCiso-AUCtheo
-  summarydf[[i,2]] <<- AUCiso-AUCtheo
-  KTumor <- as.data.frame(KTumor)
-  summarydf[[i,3]] <<- KTumor[103,3]/(pi*(25^2))
-  summarydf[[i,4]] <<- KTumor[306,3]/(pi*(75^2))
-  
-  detach(KTumor)
-}
 
-}
+  #add confidence band
+  
+  attach(K_CD3_FOX)
+  AUCtheo <- sum(diff(r)*(head(sqrt(theo/(pi-r)),-1)),na.rm=TRUE)
+  AUCiso <- sum(diff(r)*(head(sqrt(iso/(pi-r)),-1)),na.rm=TRUE)
+  AUCdiff<- AUCiso-AUCtheo
 
+#PLOTLY 
+  
 spatial[[3]]$x <- (spatial[[3]]$XMin + spatial[[3]]$XMax) / 2
 spatial[[3]]$y <- (spatial[[3]]$YMin + spatial[[3]]$YMax) / 2
 spatial[[3]]$marks <- spatial[[3]]$Classifier.Label
@@ -135,14 +125,41 @@ w <- convexhull.xy(data.frame(spatial[[3]]$x,spatial[[3]]$y))
 
 ppp <- ppp(spatial[[3]]$x, spatial[[3]]$y, window = w, marks = spatial[[3]]$marks)
 
-nn <- nndist(ppp)
-plot(ppp %mark% nndist(ppp),markscale=1)
-
 nn1 <- nndist(ppp,by=marks(ppp))
 
-minnn <- minnndist(ppp,by=marks(ppp))
+nn1<-round(nn1,1)
 
-m <- nnwhich(ppp,by=marks(ppp))
+plot_df <- cbind(spatial[[3]],nn1)
 
-b <- ppp[m]
-arrows(ppp$x, ppp$y, b$x, b$y, angle=15, length=0.15, col="red")
+ax <- list(
+  title = "",
+  zeroline = FALSE,
+  showline = FALSE,
+  showticklabels = FALSE,
+  showgrid = FALSE
+)
+
+Plotly <- plot_ly(data = plot_df, x = ~plot_df$x, y = ~plot_df$y, 
+                  type="scatter",
+                  mode="markers",
+                  color = ~plot_df$marks, 
+                  colors="Paired",
+                  marker=list(size=3),
+                  text= ~plot_df$marks,
+                  hovertemplate = ~paste(
+                    "<b>%{text} Cell </b><br>",
+                    "NN Distances:",
+                    "<br>    Tumor:", plot_df$Tumor,
+                    "<br>    Stroma:",plot_df$Stroma,
+                    "<br>    CD3+FOXP3+:",plot_df$`CD3+/FOXP3+`,
+                    "<br>    CD3+CD8+:",plot_df$`CD3+/CD8+`,
+                    "<br>    CD3+FOXP3+:",plot_df$`CD3+/CD8+/FOXP3+`,
+                    "<br>    CD3+PD1+:",plot_df$`CD3+/PD1+`,
+                    "<br>    CD3+PDL1+:",plot_df$`CD3+/PDL1+`,
+                    "<br>    CD3+CD8+PD1:",plot_df$`CD3+/CD8+/PD1`,
+                    "<br>    CD3+CD8+PDL1:",plot_df$`CD3+/CD8+/PDL1`
+                    )
+)
+
+Plotly <- Plotly %>% layout(xaxis = ax, yaxis = ax)
+Plotly
