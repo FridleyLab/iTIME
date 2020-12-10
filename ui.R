@@ -27,8 +27,10 @@ ui = dashboardPage(
                                   multiple = FALSE,
                                   accept = c("csv",
                                              "HALO summary data file",
-                                             c(".csv")))
+                                             c(".csv"))),
+                        width = 12
                     ),
+                    box(plotOutput("boxplot", height = 250))
                 ),
             tabItem(tabName = 'spatial',
                     box(
@@ -36,10 +38,8 @@ ui = dashboardPage(
                                   multiple = FALSE,
                                   accept = c("csv",
                                              "HALO Spatial data file",
-                                             c(".csv")))
-                    ),
-                    
-                    box(
+                                             c(".csv"))),
+                        
                         fileInput("clinicalData", "Choose a Clinical Data File",
                                   multiple = FALSE,
                                   accept = c("csv",
