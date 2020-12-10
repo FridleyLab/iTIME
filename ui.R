@@ -28,7 +28,7 @@ ui = dashboardPage(
                                   accept = c("csv",
                                              "HALO summary data file",
                                              c(".csv")))
-                    )
+                    ),
                 ),
             tabItem(tabName = 'spatial',
                     box(
