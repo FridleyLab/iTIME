@@ -8,26 +8,45 @@
 #
 
 library(shiny)
+library(shinydashboard)
 
 # Define UI for application that draws a histogram
-shinyUI(fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
+ui = dashboardPage(
+    dashboardHeader(title = "iTIME"),
+    dashboardSidebar(
+        sidebarMenu(
+            menuItem("Summary Page", tabName = 'summary', icon = icon('dashboard')),
+            menuItem("Spatial Page", tabName = 'spatial', icon = icon('th'))
+        )
+    ),
+    dashboardBody(
+        tabItems(
+            tabItem(tabName = 'summary',
+                    box(
+                        fileInput("summaryData", "Choose a Summary File",
+                                  multiple = FALSE,
+                                  accept = c("csv",
+                                             "HALO summary data file",
+                                             c(".csv")))
+                    )
+                ),
+            tabItem(tabName = 'spatial',
+                    box(
+                        fileInput("spatialData", "Choose a Spatial Data File",
+                                  multiple = FALSE,
+                                  accept = c("csv",
+                                             "HALO Spatial data file",
+                                             c(".csv")))
+                    ),
+                    
+                    box(
+                        fileInput("clinicalData", "Choose a Clinical Data File",
+                                  multiple = FALSE,
+                                  accept = c("csv",
+                                             "Patient clinical data file",
+                                             c(".csv")))
+                    )
+                )
         )
     )
-))
+)
