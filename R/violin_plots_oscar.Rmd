@@ -1,0 +1,54 @@
+---
+title: "summary_plots_iTime"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load `r tidyverse` for data frame manipulation.
+```{r, message=F}
+library('tidyverse')
+```
+
+Load data from .Rdata file.
+```{r}
+load("../data/example_data.RData")
+```
+
+Clean column names for the image summary data and the clinical data.
+```{r}
+summary_clean <- janitor::clean_names(summary)
+clinical_clean <- janitor::clean_names(clinical)
+```
+
+Join the image summary data and the clinical data by the filename of the image ("Image tag").
+```{r}
+summary_clinical <- left_join(clinical_clean, summary_clean, by="image_tag")
+```
+
+Show columns available for selection.
+```{r}
+cat("CLINICAL VARIABLES:\n")
+names(clinical_clean)
+cat("\n")
+cat("CELL TYPES:\n")
+names(summary_clean)
+```
+
+Specify user-selected clinical column.
+Specify user-selected cell type column.
+```{r}
+clinical_var <- 'race'
+celltype_var <- 'cd3_opal_570_positive_cells'
+```
+
+```{r}
+violin_p <- ggplot(summary_clinical, aes(x=get(clinical_var), y=get(celltype_var), fill=get(clinical_var))) + 
+  geom_violin() +
+  xlab(str_to_title(clinical_var)) + ylab(gsub("_", " ", str_to_title(celltype_var))) +
+  labs(fill=str_to_title(clinical_var))
+
+violin_p
+```
