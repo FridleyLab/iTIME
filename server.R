@@ -20,7 +20,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath)
+        df = read.csv(infile$datapath,check.names = FALSE)
         return(df)
     })
     
@@ -38,10 +38,9 @@ shinyServer(function(input, output) {
         
         # generate bins based on input$bins from ui.R
         x    <- summary_data()[, input$picked_marker]
-        bins <- seq(min(x), max(x), length.out = 25)
 
         # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+        boxplot(x, col = 'darkgray', na.rm=TRUE)
 
     })
     
@@ -49,9 +48,19 @@ shinyServer(function(input, output) {
         
         summary_column_names = colnames(summary_data())
         
+        # Keep only acceptable column names used for potential plotting
+        whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
+                         cols,perl=TRUE,ignore.case = TRUE)
+        
+        acceptable_column_names = summary_column_names[whichcols]
+        
+        # Remove markers that are not present from being plotted
+        acceptable_column_names = acceptable_column_names[sapply(spatial[,newcols],var)>0]
+        
+        
         selectInput("picked_marker", "Choose marker",
-                    choices = summary_column_names,
-                    selected = summary_column_names[1])
+                    choices = acceptable_column_names,
+                    selected = acceptable_column_names[1])
         
     })
 
