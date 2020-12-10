@@ -15,13 +15,14 @@ ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
         sidebarMenu(
-            menuItem("Summary Page", tabName = 'summary', icon = icon('dashboard')),
-            menuItem("Spatial Page", tabName = 'spatial', icon = icon('th'))
+            menuItem("Importing Data", tabName = 'import', icon = icon('table')),
+            menuItem("Summary Page", tabName = 'summary', icon = icon('drafting-compass')),
+            menuItem("Spatial Page", tabName = 'spatial', icon = icon('braille'))
         )
     ),
     dashboardBody(
         tabItems(
-            tabItem(tabName = 'summary',
+            tabItem(tabName = 'import',
                     fluidRow(
                         box(
                             fileInput("summaryData", "Choose a Summary File",
@@ -29,7 +30,33 @@ ui = dashboardPage(
                                       accept = c("csv",
                                                  "HALO summary data file",
                                                  c(".csv"))),
-                    uiOutput("choose_marker")
+                            uiOutput("choose_summary_merge")
+                        ),
+                        
+                        box(
+                            fileInput("clinicalData", "Choose a Clinical Data File",
+                                      multiple = FALSE,
+                                      accept = c("csv",
+                                                 "HALO summary data file",
+                                                 c(".csv"))),
+                            uiOutput("choose_clinical_merge")
+                        ),
+                        
+                        box(
+                            fileInput("spatialData", "Choose a Spatial Data File",
+                                      multiple = FALSE,
+                                      accept = c("csv",
+                                                 "HALO summary data file",
+                                                 c(".csv"))),
+                            uiOutput("choose_spatial_merge")
+                        )
+                    ),
+            ),
+            
+            tabItem(tabName = 'summary',
+                    fluidRow(
+                        box(
+                            uiOutput("choose_marker")
                         ),
                         
                         box(title = "Boxplot",
