@@ -1,6 +1,7 @@
 Type1 = 'CD3..FOXP3.'
 Type2 = 'CD3..CD8.'
 
+cell_type_nn = function(Type1 = Type1,Type2 = Type2){
 #Filtered to only the CD3..FOXP3. and CD3..CD8., then making another column 
 #indicating what cell's type
 data = spatial[[2]] %>% filter(.[[Type1]] == 1 | .[[Type2]] == 1) %>%
@@ -19,4 +20,7 @@ nn_type = data$Final_Type[nn_idx] #Finds thw type of the nearest neoghbor
 #Final summary of nearest neighbor
 final_nn_data = data.frame(Cell_Type = data$Final_Type, nn_type = nn_type,
                            nn_dist = nn_dist)
+return(final_nn_data)
+}
 
+print(cell_type_nn(Type1,Type2))
