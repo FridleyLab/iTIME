@@ -8,9 +8,24 @@
 #
 
 library(shiny)
+library(DT)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+    
+    summaryTable = reactive({
+        read.csv(input$summaryData)
+    })
+    
+    output$summaryout = DT::renderDataTable({
+        if(is.null(input$summaryData)){
+            return()
+        }
+        
+        temp = read.csv(input$summaryData)
+        
+        DT::datatable(temp)
+    })
 
     output$boxplot <- renderPlot({
 

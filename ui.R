@@ -27,10 +27,10 @@ ui = dashboardPage(
                                   multiple = FALSE,
                                   accept = c("csv",
                                              "HALO summary data file",
-                                             c(".csv"))),
-                        width = 12
+                                             c(".csv")))
                     ),
-                    box(plotOutput("boxplot", height = 250))
+                    
+                    plotOutput("boxplot", height = 250)
                 ),
             tabItem(tabName = 'spatial',
                     box(
