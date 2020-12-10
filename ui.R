@@ -56,7 +56,8 @@ ui = dashboardPage(
             tabItem(tabName = 'summary',
                     fluidRow(
                         box(
-                            uiOutput("choose_marker")
+                            uiOutput("choose_marker"),
+                            uiOutput("choose_clinical")
                         ),
                         
                         box(title = "Boxplot",

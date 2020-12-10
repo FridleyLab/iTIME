@@ -7,6 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
+# require mappable subject ID between files
+
 library(shiny)
 library(DT)
 options(shiny.maxRequestSize = 30*1024^2)
@@ -20,7 +22,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE,row.names=1)
+        df = read.csv(infile$datapath, check.names = FALSE)
         return(df)
     })
     
@@ -30,7 +32,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE, row.names=1)
+        df = read.csv(infile$datapath, check.names = FALSE)
         return(df)
     })
     
@@ -40,7 +42,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE)
+        df = read.csv(infile$datapath)
         return(df)
     })
     
@@ -99,7 +101,17 @@ shinyServer(function(input, output) {
         
         spatial_spatial_names = colnames(summary_data_merged())
         
-        selectInput("picked_marker", "Choose merge merge",
+        selectInput("picked_marker", "Choose Marker to Plot",
+                    choices = spatial_spatial_names,
+                    selected = spatial_spatial_names[1])
+        
+    })
+    
+    output$choose_clinical = renderUI({
+        
+        spatial_spatial_names = colnames(summary_data_merged())
+        
+        selectInput("picked_marker", "Choose Marker to Plot",
                     choices = spatial_spatial_names,
                     selected = spatial_spatial_names[1])
         
