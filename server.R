@@ -11,6 +11,9 @@
 
 library(shiny)
 library(DT)
+library(ggplot2)
+library(tidyverse)
+library(spatstat)
 options(shiny.maxRequestSize = 30*1024^2)
 
 # Define server logic required to draw a histogram
@@ -58,12 +61,23 @@ shinyServer(function(input, output) {
 
     output$boxplot <- renderPlot({
         
+        if(is.null(clinical_data()) | is.null(summary_data())){
+            return()
+        }
+        
         # generate bins based on input$bins from ui.R
-        x    <- summary_data_merged()[, input$picked_marker]
-        bins <- seq(min(x), max(x), length.out = 25)
+        cellvar =  input$picked_clinical
+        clinvar <- input$picked_marker
+        
+        data_table = summary_data_merged()
 
         # draw the histogram with the specified number of bins
-        boxplot(x, breaks = bins, col = 'darkgray', na.rm=TRUE)
+        #summary_plots = summary_plots_fn(summary_data_table, y, x)
+        #summary_plots[[1]]
+        
+        plots = summary_plots_fn(data_table, clinvar, cellvar)
+        
+        plots[[as.integer(input$summaryPlotType)]]
 
     })
     
@@ -101,7 +115,7 @@ shinyServer(function(input, output) {
         
         spatial_spatial_names = colnames(summary_data_merged())
         
-        selectInput("picked_marker", "Choose Marker to Plot",
+        selectInput("picked_marker", "Choose Clinical Variable to Plot",
                     choices = spatial_spatial_names,
                     selected = spatial_spatial_names[1])
         
@@ -111,7 +125,7 @@ shinyServer(function(input, output) {
         
         spatial_spatial_names = colnames(summary_data_merged())
         
-        selectInput("picked_marker", "Choose Marker to Plot",
+        selectInput("picked_clinical", "Choose Cell Marker to Plot",
                     choices = spatial_spatial_names,
                     selected = spatial_spatial_names[1])
         
@@ -127,6 +141,28 @@ shinyServer(function(input, output) {
     })
 
 })
+
+summary_plots_fn <- function(datatable, clinvar, cellvar){
+    box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+        geom_boxplot() +
+        xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+        labs(fill=str_to_title(clinvar))
+    
+    violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+        geom_violin() +
+        xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+        labs(fill=str_to_title(clinvar))
+    
+    hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
+        geom_histogram(binwidth=100, fill='white') +
+        xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
+        labs(color=str_to_title(clinvar))
+    
+    summ_plots <- list(box_p, violin_p, hist_p)
+    
+    return(summ_plots)
+    
+}
 
 # output$boxplot <- renderPlot({
 #     
