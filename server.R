@@ -20,7 +20,27 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = read.csv(infile$datapath)
+        df = read.csv(infile$datapath, check.names = FALSE)
+        return(df)
+    })
+    
+    clinical_data = reactive({
+        infile = input$clinicalData
+        if(is.null(infile)){
+            return()
+        }
+        
+        df = read.csv(infile$datapath, check.names = FALSE)
+        return(df)
+    })
+    
+    spatial_data = reactive({
+        infile = input$spatialData
+        if(is.null(infile)){
+            return()
+        }
+        
+        df = read.csv(infile$datapath, check.names = FALSE)
         return(df)
     })
     
@@ -37,22 +57,61 @@ shinyServer(function(input, output) {
     output$boxplot <- renderPlot({
         
         # generate bins based on input$bins from ui.R
-        x    <- summary_data()[, input$picked_marker]
+        x    <- summary_data_merged()[, input$picked_marker]
         bins <- seq(min(x), max(x), length.out = 25)
 
         # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+        boxplot(x, breaks = bins, col = 'darkgray', na.rm=TRUE)
 
+    })
+    
+    output$choose_summary_merge = renderUI({
+        
+        summary_column_names = colnames(summary_data())
+        
+        selectInput("summary_merge", "Choose merge merge",
+                    choices = summary_column_names,
+                    selected = summary_column_names[1])
+        
+    })
+    
+    output$choose_clinical_merge = renderUI({
+        
+        clinical_column_names = colnames(clinical_data())
+        
+        selectInput("clinical_merge", "Choose merge merge",
+                    choices = clinical_column_names,
+                    selected = clinical_column_names[1])
+        
+    })
+    
+    output$choose_spatial_merge = renderUI({
+        
+        spatial_spatial_names = colnames(spatial_data())
+        
+        selectInput("spatial_merge", "Choose merge merge",
+                    choices = spatial_spatial_names,
+                    selected = spatial_spatial_names[1])
+        
     })
     
     output$choose_marker = renderUI({
         
-        summary_column_names = colnames(summary_data())
+        spatial_spatial_names = colnames(summary_data_merged())
         
-        selectInput("picked_marker", "Choose marker",
-                    choices = summary_column_names,
-                    selected = summary_column_names[1])
+        selectInput("picked_marker", "Choose merge merge",
+                    choices = spatial_spatial_names,
+                    selected = spatial_spatial_names[1])
         
+    })
+    
+    summary_data_merged = reactive({
+        if(is.null(clinical_data()) | is.null(summary_data())){
+            return()
+        }
+        
+        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+        return(df)
     })
 
 })
