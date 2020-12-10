@@ -66,8 +66,9 @@ shinyServer(function(input, output) {
         }
         
         # generate bins based on input$bins from ui.R
-        cellvar =  input$picked_clinical
+        cellvar <-  input$picked_clinical
         clinvar <- input$picked_marker
+        colorscheme <- input$summaryPlotColors
         
         data_table = summary_data_merged()
 
@@ -75,7 +76,7 @@ shinyServer(function(input, output) {
         #summary_plots = summary_plots_fn(summary_data_table, y, x)
         #summary_plots[[1]]
         
-        plots = summary_plots_fn(data_table, clinvar, cellvar)
+        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
         
         plots[[as.integer(input$summaryPlotType)]]
 
@@ -142,21 +143,24 @@ shinyServer(function(input, output) {
 
 })
 
-summary_plots_fn <- function(datatable, clinvar, cellvar){
+summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
     box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
         geom_boxplot() +
         xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-        labs(fill=str_to_title(clinvar))
+        labs(fill=str_to_title(clinvar)) + theme_classic() +
+        viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
     
     violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
         geom_violin() +
         xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-        labs(fill=str_to_title(clinvar))
+        labs(fill=str_to_title(clinvar)) + theme_classic() +
+        viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
     
     hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
-        geom_histogram(binwidth=100, fill='white') +
+        geom_histogram(binwidth=, fill='white') +
         xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
-        labs(color=str_to_title(clinvar))
+        labs(color=str_to_title(clinvar)) + theme_classic() +
+        viridis::scale_color_viridis(option = colorscheme, discrete = TRUE)
     
     summ_plots <- list(box_p, violin_p, hist_p)
     
@@ -164,21 +168,3 @@ summary_plots_fn <- function(datatable, clinvar, cellvar){
     
 }
 
-# output$boxplot <- renderPlot({
-#     
-#     # create list of inputs
-#     summary_data <- summaryTable()
-#     # main_marker <- input$marker # charcter
-#     # clinical_marker <- input$clinical.variable # character value
-#     
-#     
-#     #transform the inputs into tidy compatable pieces
-#     
-#     
-#     
-#     # draw the boxplot
-#     boxplot.1<-ggplot(summary_data, aes(x = summary_data[[main_marker]], y=clinical_data[[clinical_marker]], fill = clinical_data[[clinical_variable]]))+
-#         geom_boxplot()
-#     boxplot.1+geom_jitter(shape=16, position=position_jitter(0.2))
-#     
-# })

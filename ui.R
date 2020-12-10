@@ -64,7 +64,13 @@ ui = dashboardPage(
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
                                                     "Violin Plot" = 2, 
-                                                    "Histogram" = 3))
+                                                    "Histogram" = 3)),
+                            selectInput("summaryPlotColors", "Select Color Scheme",
+                                        choices = c("Magma" = "magma", 
+                                                    "Viridis" = "viridis", 
+                                                    "Plasma" = "plasma", 
+                                                    "Inferno" = "inferno"),
+                                        selected = "viridis")
                         ),
                         
                         box(width = 8, 
