@@ -26,7 +26,6 @@ scatter_plotly = function(data = data, markers = markers, new_names = new_names)
       )))
     }
     text = paste(text,collapse = '')
-    text = substr(text,1,nchar(text)-1)
     text = gsub("\\\\", '', text)
     text = paste('NN Distances:',text)
     data$text[i] = text
