@@ -207,13 +207,14 @@ ui = dashboardPage(
                 )
             ,
             tabItem(tabName = 'spatial',
-                    box(title = "Spatial Image Selections"
-                        ,width=4
+                    box(title = "Spatial Plot Selections"
+                        ,width=4,
+                        uiOutput("choosePlotlyMarkers")
                     ),
                     
                     box(width = 8
-                        ,title = "Spatial Image Plot"
-                        ,plotOutput("spatial_plotly")
+                        ,title = "Spatial Plot"
+                        ,plotlyOutput("spatial_plotly")
                     ),
                     
                     box(title = "Ripley's K Selections"

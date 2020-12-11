@@ -76,8 +76,26 @@ shinyServer(function(input, output) {
 
     })
     
-    output$spatial_plotly = renderPlot({
+    output$spatial_plotly = renderPlotly({
+        validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
         
+        markers = input$plotly_selection
+        new_names = markers
+        scatter_plotly(data = spatial_data(), markers = markers, new_names = new_names)
+    })
+    
+    output$choosePlotlyMarkers = renderUI({
+        ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
+        
+        whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
+                         ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
+        tmp = ripleys_spatial_names[whichcols]
+        acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
+        
+        checkboxGroupInput("plotly_selection", "Choose Markers for Spatial Plot",
+                    choices = acceptable_ripleys_names
+                    ,selected = acceptable_ripleys_names
+                    )
     })
     
     output$summaryTable = renderTable({
