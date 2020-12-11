@@ -1,6 +1,7 @@
 library(shiny)
 library(DT)
 library(ggplot2)
+library(ggpubr)
 library(tidyverse)
 library(dplyr)
 library(spatstat)

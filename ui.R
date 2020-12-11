@@ -179,7 +179,7 @@ ui = dashboardPage(
             
             tabItem(tabName = 'summary',
                     fluidRow(
-                        box(width = 4,
+                        box(width = 3,
                             uiOutput("choose_clinical"),
                             uiOutput("choose_marker"),
                             selectInput("summaryPlotType", "Select Plot Type",
@@ -195,8 +195,11 @@ ui = dashboardPage(
                                                     "Inferno" = "inferno"),
                                         selected = "viridis")
                         ),
+                        box(width = 9, 
+                            title="Summary Table",
+                            tableOutput("summaryTable")),
                         
-                        box(width = 8, 
+                        box(width = 9, 
                             title = "Boxplot",
                             plotOutput("boxplot", height = 250)
                             )

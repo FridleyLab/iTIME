@@ -76,6 +76,36 @@ shinyServer(function(input, output) {
 
     })
     
+    output$summaryTable = renderTable({
+        #temp = data.frame("Number of Subjects" = length(unique(summary_data()$subID)),
+        #                  "test2" = length(summary_data()[,2]))
+        data_table = summary_data_merged()
+        cellvar <-  input$picked_marker
+        sub_id = input$summary_merge
+        
+        temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
+                          "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
+                          "Median" = median(data_table[,cellvar], na.rm = TRUE),
+                          "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
+                          "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
+                          "Max" = max(data_table[,cellvar], na.rm=TRUE),
+                          "SD" = sd(data_table[,cellvar], na.rm=TRUE)
+                          ,"N Subs" = length(unique(data_table[,sub_id]))
+                          ,"N Samples" = length(data_table[,sub_id])
+                          )
+        #clinvar <- input$picked_clinical
+        #colorscheme <- input$summaryPlotColors
+        
+        
+        #summary.stats = data_table %>%
+        #    group_by(clinvar)
+        
+        #summary_table = ggsummarytable()
+        print(colnames(data_table))
+        print(sub_id)
+        return(temp)
+    })
+    
     output$choose_summary_merge = renderUI({
         
         summary_column_names = colnames(summary_data())
