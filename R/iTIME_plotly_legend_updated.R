@@ -1,4 +1,4 @@
-
+#
 scatter_plotly = function(data = data, markers = markers, new_names = new_names){
   data$x <- (data$XMin + data$XMax) / 2
   data$y <- (data$YMin + data$YMax) / 2
