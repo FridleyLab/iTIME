@@ -99,6 +99,8 @@ for(i in 1:length(spatial)){K_ANALYSIS(i)}
   plot(K_CD3_FOX,(sqrt(./pi))~r)
   plot(K_CD3_FOX,(sqrt(./pi)-r)~r)
   plot(K_CD3_FOX,./(pi*r^2) ~ r)
+  
+  #K/(pi*r^2)
 
   #add confidence band
   
@@ -108,7 +110,19 @@ for(i in 1:length(spatial)){K_ANALYSIS(i)}
   AUCdiff<- AUCiso-AUCtheo
 
 #PLOTLY 
+  # function_example <- function(data, marker, new_name){
+  #   data$marks[data[[marker]]==1] <- new_name 
+  #   return(data)
+  # }
   
+  data = spatial[[6]]
+  raw_markers= c('Tumor', 'Stroma', 'CD3+/FOXP3')
+  new_marker = c('Tumor', 'Stroma', 'Treg')
+  tumorstroma = 
+PLOTLY <- function(data,raw_marker,new_marker,tumorstroma){
+  
+}
+
 spatial[[3]]$x <- (spatial[[3]]$XMin + spatial[[3]]$XMax) / 2
 spatial[[3]]$y <- (spatial[[3]]$YMin + spatial[[3]]$YMax) / 2
 spatial[[3]]$marks <- spatial[[3]]$Classifier.Label
