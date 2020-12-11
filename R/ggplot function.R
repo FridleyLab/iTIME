@@ -1,6 +1,6 @@
 #christelle
 
-Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
+Ripley <- function(data, cell_type, estimator, sampleInfo, alpha=0.05, sims = 100)
 {
   location2 <- data %>% mutate(Xloc = (XMin + XMax)/2, Yloc = (YMin + YMax)/2)
   loc <- location2 %>% select(c(Xloc, Yloc, cell_type)) %>% filter(.[[cell_type]] == 1)
@@ -32,7 +32,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
   }
   ggplot() + geom_line(aes(x=r, y=value, color = type),est2) +
     geom_ribbon(data = EL, aes(x=r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA) +
-    theme_bw() + ggtitle(paste(n, "points", sep=""))
+    theme_bw() + ggtitle(paste(n, " points; ", paste0(paste(names(sampleInfo), sampleInfo, sep=":")[-length(sampleInfo)], collapse = "; "), sep=""))
 }
 
 #Ripley(data = df, cell_type = "CD3..CD8.")

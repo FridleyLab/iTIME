@@ -73,11 +73,16 @@ shinyServer(function(input, output) {
     })
     
     output$ripleysPlot = renderPlot({
-        if(is.null(spatial_data())){
+        if(is.null(spatial_data()) | is.null(clinical_data())){
             return()
         }
         
-        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator)
+        sampleInfo = Filter(function(x) !any(is.na(x)), clinical_data()[which(clinical$image_tag ==
+                                               tail(strsplit(spatial_data()[1,1],
+                                                             "\\\\|[^[:print:]]")[[1]], n=1)),])
+        sampleInfo = sampleInfo[,-which(names(sampleInfo) %in% input$clinical_merge)]
+        
+        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator, sampleInfo)
     })
     
     output$choose_summary_merge = renderUI({
