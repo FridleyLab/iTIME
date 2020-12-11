@@ -49,8 +49,8 @@ ui = dashboardPage(
                                       multiple = FALSE,
                                       accept = c("csv",
                                                  "HALO summary data file",
-                                                 c(".csv"))),
-                            uiOutput("choose_spatial_merge")
+                                                 c(".csv")))
+                            #,uiOutput("choose_spatial_merge")
                         )
                     ),
             ),
@@ -58,8 +58,8 @@ ui = dashboardPage(
             tabItem(tabName = 'summary',
                     fluidRow(
                         box(width = 4,
-                            uiOutput("choose_marker"),
                             uiOutput("choose_clinical"),
+                            uiOutput("choose_marker"),
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
                                                     "Violin Plot" = 2, 
@@ -77,20 +77,24 @@ ui = dashboardPage(
                             plotOutput("boxplot", height = 250)
                             )
                     ),
-                ),
+                )
+            ,
             tabItem(tabName = 'spatial',
-                    box(
-                        fileInput("spatialData", "Choose a Spatial Data File",
-                                  multiple = FALSE,
-                                  accept = c("csv",
-                                             "HALO Spatial data file",
-                                             c(".csv"))),
-                        
-                        fileInput("clinicalData", "Choose a Clinical Data File",
-                                  multiple = FALSE,
-                                  accept = c("csv",
-                                             "Patient clinical data file",
-                                             c(".csv")))
+                    box(title = "Spatial Image Selections"
+                        ,width=4
+                    ),
+                    
+                    box(title = "Spatial Image Plot"
+                        #,plotOutput()
+                    ),
+                    
+                    box(title = "Ripley's K Selections"
+                        ,width=4
+                        ,uiOutput("choose_ripley")
+                    ),
+                    
+                    box(title = "Ripley's K Plot"
+                        ,plotOutput("ripleysPlot", height = 250)
                     )
                 )
         )

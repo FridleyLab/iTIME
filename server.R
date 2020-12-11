@@ -55,21 +55,16 @@ shinyServer(function(input, output) {
     })
 
     output$boxplot <- renderPlot({
-        
         if(is.null(clinical_data()) | is.null(summary_data())){
             return()
         }
         
         # generate bins based on input$bins from ui.R
-        cellvar <-  input$picked_clinical
-        clinvar <- input$picked_marker
+        cellvar <-  input$picked_marker
+        clinvar <- input$picked_clinical
         colorscheme <- input$summaryPlotColors
         
         data_table = summary_data_merged()
-
-        # draw the histogram with the specified number of bins
-        #summary_plots = summary_plots_fn(summary_data_table, y, x)
-        #summary_plots[[1]]
         
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
         
@@ -77,11 +72,19 @@ shinyServer(function(input, output) {
 
     })
     
+    output$ripleysPlot = renderPlot({
+        if(is.null(spatial_data())){
+            return()
+        }
+        
+        Ripley(spatial_data(), input$ripleys_selection)
+    })
+    
     output$choose_summary_merge = renderUI({
         
         summary_column_names = colnames(summary_data())
         
-        selectInput("summary_merge", "Choose merge merge",
+        selectInput("summary_merge", "Choose Summary Merge Variable",
                     choices = summary_column_names,
                     selected = summary_column_names[1])
         
@@ -91,7 +94,7 @@ shinyServer(function(input, output) {
         
         clinical_column_names = colnames(clinical_data())
         
-        selectInput("clinical_merge", "Choose merge merge",
+        selectInput("clinical_merge", "Choose Clinical Merge Variable",
                     choices = clinical_column_names,
                     selected = clinical_column_names[1])
         
@@ -99,31 +102,46 @@ shinyServer(function(input, output) {
     
     output$choose_spatial_merge = renderUI({
         
-        spatial_spatial_names = colnames(spatial_data())
+        spatial_column_names = colnames(spatial_data())
         
-        selectInput("spatial_merge", "Choose merge merge",
-                    choices = spatial_spatial_names,
-                    selected = spatial_spatial_names[1])
+        selectInput("spatial_merge", "Choose Spatial Merge Variable",
+                    choices = spatial_column_names,
+                    selected = spatial_column_names[1])
         
     })
     
     output$choose_marker = renderUI({
         
-        spatial_spatial_names = colnames(summary_data_merged())
+        summary_marker_names = colnames(summary_data())
         
-        selectInput("picked_marker", "Choose Clinical Variable to Plot",
-                    choices = spatial_spatial_names,
-                    selected = spatial_spatial_names[1])
+        selectInput("picked_marker", "Choose Cell Marker to Plot",
+                    choices = summary_marker_names,
+                    selected = summary_marker_names[1])
         
     })
     
     output$choose_clinical = renderUI({
         
-        spatial_spatial_names = colnames(summary_data_merged())
+        summary_clinical_names = colnames(clinical_data())
         
-        selectInput("picked_clinical", "Choose Cell Marker to Plot",
-                    choices = spatial_spatial_names,
-                    selected = spatial_spatial_names[1])
+        selectInput("picked_clinical", "Choose Clinical Variable to Plot",
+                    choices = summary_clinical_names,
+                    selected = summary_clinical_names[1])
+        
+    })
+    
+    output$choose_ripley = renderUI({
+        
+        ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
+        
+        whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
+                         ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
+        tmp = ripleys_spatial_names[whichcols]
+        acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
+        
+        selectInput("ripleys_selection", "Choose Marker for Ripleys",
+                    choices = acceptable_ripleys_names,
+                    selected = acceptable_ripleys_names[1])
         
     })
     
@@ -137,29 +155,3 @@ shinyServer(function(input, output) {
     })
 
 })
-# 
-# summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
-#     box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
-#         geom_boxplot() +
-#         xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-#         labs(fill=str_to_title(clinvar)) + theme_classic() +
-#         viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
-#     
-#     violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
-#         geom_violin() +
-#         xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-#         labs(fill=str_to_title(clinvar)) + theme_classic() +
-#         viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
-#     
-#     hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
-#         geom_histogram(binwidth=, fill='white') +
-#         xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
-#         labs(color=str_to_title(clinvar)) + theme_classic() +
-#         viridis::scale_color_viridis(option = colorscheme, discrete = TRUE)
-#     
-#     summ_plots <- list(box_p, violin_p, hist_p)
-#     
-#     return(summ_plots)
-#     
-# }
-

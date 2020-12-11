@@ -1,7 +1,4 @@
-location <- do.call(rbind.data.frame, spatial)
-
-df <- location %>% 
-  filter(image.tag == "Coghill_P2_Anal-Invasive-TMA1_[1,C].tif")
+#christelle
 
 Ripley <- function(data, cell_type)
 {
@@ -17,4 +14,4 @@ Ripley <- function(data, cell_type)
     theme_bw()
 }
 
-Ripley(data = df, cell_type = "CD3..CD8.")
+#Ripley(data = df, cell_type = "CD3..CD8.")
