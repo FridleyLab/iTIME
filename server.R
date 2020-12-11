@@ -77,7 +77,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        Ripley(spatial_data(), input$ripleys_selection)
+        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator)
     })
     
     output$choose_summary_merge = renderUI({

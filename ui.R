@@ -91,9 +91,14 @@ ui = dashboardPage(
                     box(title = "Ripley's K Selections"
                         ,width=4
                         ,uiOutput("choose_ripley")
+                        ,selectInput("ripleysEstimator", "Select an Estimator",
+                                     choices = c("Ripley's K" = "K",
+                                                 "Besag's L" = "L",
+                                                 "Ripley's T" = "T"),
+                                     selected = "K")
                     ),
                     
-                    box(title = "Ripley's K Plot"
+                    box(title = "Ripley's Plot"
                         ,plotOutput("ripleysPlot", height = 250)
                     )
                 )
