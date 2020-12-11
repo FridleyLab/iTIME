@@ -208,12 +208,13 @@ ui = dashboardPage(
                         
                         box(width = 4, 
                             uiOutput("choose_heatmap_clinical"),
-                            uiOutput("choose_heatmap_marker"),
+                            uiOutput("choose_heatmap_marker")
                         ),
                         
                         box(width = 8, 
                             title = "Heatmap",
-                            plotOutput("heatmap", height = 250)
+                            plotOutput("heatmap", height = 250),
+                            height = 500
                         )
                     ),
                 )
@@ -234,8 +235,8 @@ ui = dashboardPage(
                         ,uiOutput("choose_ripley")
                         ,selectInput("ripleysEstimator", "Select an Estimator",
                                      choices = c("Ripley's K" = "K",
-                                                 "Ripley's T" = "L",
-                                                 "Nick's M" = "M"),
+                                                 "Besag's L" = "L",
+                                                 "Marcon's M" = "M"),
                                      selected = "K")
                     ),
                     

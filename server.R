@@ -70,6 +70,7 @@ shinyServer(function(input, output) {
         colorscheme <- input$summaryPlotColors
         
         data_table = summary_data_merged()
+        #assign("summary_table", data_table, envir = .GlobalEnv)
         
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
         
@@ -77,14 +78,13 @@ shinyServer(function(input, output) {
 
     })
     
-    # output$heatmap = renderPlot({
-    #     
-    #     assign(summary_data_merged(), "summary_test", envir=.GlobalEnv)
-    #     
-    #     heat_map(summary_data_merged(),
-    #              markers = input$heatmap_selection, 
-    #              clin_vars = input$picked_clinical_factor)
-    # })
+    output$heatmap = renderPlot({
+        heatmap_data = summary_data_merged()
+        
+        heat_map(summary_clinical_merge = heatmap_data,
+                 markers = input$heatmap_selection,
+                 clin_vars = input$picked_clinical_factor)
+    }, height = 400)
     
     output$choose_heatmap_marker = renderUI({
         heatmap_names = colnames(summary_data())
@@ -125,8 +125,8 @@ shinyServer(function(input, output) {
         acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
         
         checkboxGroupInput("plotly_selection", "Choose Markers for Spatial Plot",
-                    choices = acceptable_ripleys_names
-                    ,selected = acceptable_ripleys_names
+                    choices = rev(acceptable_ripleys_names)
+                    ,selected = acceptable_ripleys_names[grep("^(?=.*Opal)",acceptable_ripleys_names, perl=TRUE)]
                     )
     })
     
