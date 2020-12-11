@@ -137,7 +137,7 @@ shinyServer(function(input, output) {
         
         selectInput("ripleys_selection", "Choose Marker for Ripleys",
                     choices = acceptable_ripleys_names,
-                    selected = acceptable_ripleys_names[2])
+                    selected = acceptable_ripleys_names[1])
         
     })
     
