@@ -213,7 +213,7 @@ ui = dashboardPage(
                     
                     box(width = 8
                         ,title = "Spatial Image Plot"
-                        #,plotOutput()
+                        ,plotOutput("spatial_plotly")
                     ),
                     
                     box(title = "Ripley's K Selections"
