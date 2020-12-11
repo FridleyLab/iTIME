@@ -22,10 +22,10 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
     labs(color=str_to_title(clinvar)) + theme_classic() +
     viridis::scale_color_viridis(option = colorscheme, discrete = TRUE)
   
-  scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar))) +
+  scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
     geom_point() +
     xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-    labs(fill=str_to_title(clinvar)) + theme_classic() +
+    labs(color=str_to_title(clinvar)) + theme_classic() +
     viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
   
   summ_plots <- list(box_p, violin_p, hist_p, scatter_p)
