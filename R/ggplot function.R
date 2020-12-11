@@ -14,7 +14,7 @@ Ripley <- function(data, cell_type)
   p <- ggplot(K2,
               aes(x= r, y= `Ripley's K`, color = type))
   p + geom_line() +
-    theme_bw() +
+    theme_bw(base_size = 20) + # Add base_size
     scale_color_discrete(name = "Estimate", ############### NEW
                           labels = c("Observed \nIsotropic", "Theoretical \nCSR", "Observed \nTranslate"))
 }
