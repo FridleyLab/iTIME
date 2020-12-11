@@ -76,6 +76,10 @@ shinyServer(function(input, output) {
 
     })
     
+    output$spatial_plotly = renderPlot({
+        
+    })
+    
     output$summaryTable = renderTable({
         #temp = data.frame("Number of Subjects" = length(unique(summary_data()$subID)),
         #                  "test2" = length(summary_data()[,2]))
