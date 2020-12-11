@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 #jordan did it
-custom_blue <- shinyDashboardThemeDIY(
+custom_blue <- {shinyDashboardThemeDIY(
     ### general
     appFontFamily = "Arial"
     ,appFontColor = "rgb(0,0,0)"
@@ -130,7 +130,7 @@ custom_blue <- shinyDashboardThemeDIY(
     ,tableBorderColor = "rgb(240,240,240)"
     ,tableBorderTopSize = 1
     ,tableBorderRowSize = 1
-)
+)}
 
 
 # Define UI for application that draws a histogram
@@ -185,7 +185,9 @@ ui = dashboardPage(
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
                                                     "Violin Plot" = 2, 
-                                                    "Histogram" = 3)),
+                                                    "Histogram" = 3,
+                                                    "Scatter Plot" = 4),
+                                        selected = 1),
                             selectInput("summaryPlotColors", "Select Color Scheme",
                                         choices = c("Magma" = "magma", 
                                                     "Viridis" = "viridis", 

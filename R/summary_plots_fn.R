@@ -7,33 +7,33 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
   box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
     geom_boxplot() +
     xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-    labs(fill=str_to_title(clinvar)) + theme_classic() +
+    labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
     viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
   
   violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
     geom_violin() +
     xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-    labs(fill=str_to_title(clinvar)) + theme_classic() +
+    labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
     viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
   
   hist_p <- ggplot(datatable, aes(x=get(cellvar), fill=get(clinvar))) + 
     geom_histogram(binwidth=100, position='stack') +
     xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
-    labs(fill=str_to_title(clinvar)) + theme_classic() +
+    labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
     viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
   
   if(is.character(datatable[[clinvar]])){
     scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
       geom_point() +
       xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-      labs(color=str_to_title(clinvar)) + theme_classic() +
+      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) +
       viridis::scale_color_viridis(option = colorscheme, discrete=TRUE)
   }
   else{
     scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
       geom_point() +
       xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-      labs(color=str_to_title(clinvar)) + theme_classic() +
+      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) +
       viridis::scale_color_viridis(option = colorscheme, discrete=FALSE)    
   }
   
