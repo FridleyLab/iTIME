@@ -25,6 +25,7 @@ shinyServer(function(input, output) {
         }
         
         df = read.csv(infile$datapath, check.names = FALSE)
+        colnames(df) <- gsub("\\%", 'Percent', colnames(df))
         return(df)
     })
     
@@ -76,6 +77,37 @@ shinyServer(function(input, output) {
 
     })
     
+    # output$heatmap = renderPlot({
+    #     
+    #     assign(summary_data_merged(), "summary_test", envir=.GlobalEnv)
+    #     
+    #     heat_map(summary_data_merged(),
+    #              markers = input$heatmap_selection, 
+    #              clin_vars = input$picked_clinical_factor)
+    # })
+    
+    output$choose_heatmap_marker = renderUI({
+        heatmap_names = colnames(summary_data())
+        
+        heatmap_names2 = heatmap_names[grep("^(?=Percent.*)",
+                              heatmap_names,perl=TRUE,ignore.case = TRUE)]
+        
+        checkboxGroupInput("heatmap_selection", "Choose Cell Marker for Heatmap",
+                           choices = heatmap_names2
+                           ,selected = heatmap_names2
+        )
+    })
+    
+    output$choose_heatmap_clinical = renderUI({
+        
+        clinical_heatmap_names = colnames(clinical_data())
+        
+        selectInput("picked_clinical_factor", "Choose Annotation for Heatmap",
+                    choices = clinical_heatmap_names,
+                    selected = clinical_heatmap_names[1])
+        
+    })
+    
     output$spatial_plotly = renderPlotly({
         validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
         
@@ -123,8 +155,8 @@ shinyServer(function(input, output) {
         #    group_by(clinvar)
         
         #summary_table = ggsummarytable()
-        print(colnames(data_table))
-        print(sub_id)
+        #rint(colnames(data_table))
+        #print(sub_id)
         return(temp)
     })
     
@@ -230,6 +262,7 @@ shinyServer(function(input, output) {
         }
         
         df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+        print(colnames(df))
         return(df)
     })
 

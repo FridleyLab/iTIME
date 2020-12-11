@@ -179,6 +179,9 @@ ui = dashboardPage(
             
             tabItem(tabName = 'summary',
                     fluidRow(
+                        box(width = 12, 
+                            title="Summary Table",
+                            tableOutput("summaryTable")),
                         box(width = 3,
                             uiOutput("choose_clinical"),
                             uiOutput("choose_marker"),
@@ -195,14 +198,23 @@ ui = dashboardPage(
                                                     "Inferno" = "inferno"),
                                         selected = "viridis")
                         ),
-                        box(width = 9, 
-                            title="Summary Table",
-                            tableOutput("summaryTable")),
                         
                         box(width = 9, 
                             title = "Boxplot",
                             plotOutput("boxplot", height = 250)
-                            )
+                        )
+                        ),
+                    fluidRow(
+                        
+                        box(width = 4, 
+                            uiOutput("choose_heatmap_clinical"),
+                            uiOutput("choose_heatmap_marker"),
+                        ),
+                        
+                        box(width = 8, 
+                            title = "Heatmap",
+                            plotOutput("heatmap", height = 250)
+                        )
                     ),
                 )
             ,
