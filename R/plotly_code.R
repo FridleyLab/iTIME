@@ -12,10 +12,7 @@ library(stringr)
 
 load("~/iTIME/data/example_data.RData")
 
-data = spatial[[3]]
-markers = c("CD3..FOXP3." , "CD3..CD8.", "CD3..CD8..FOXP3.", 
-  "CD3..PD1.", "CD3..CD8..PD1.", "CD3..CD8..PDL1.")
-new_names = markers
+
 ########################
 scatter_plotly = function(data = data, markers = markers, new_names = new_names){
 data$x <- (data$XMin + data$XMax) / 2
@@ -64,6 +61,7 @@ plot = plot_ly(data = data, x = ~x, y = ~y,
         mode="markers",
         color = ~marks,
         symbol = ~Classifier.Label,
+        symbols = c('3', '200'),
         marker=list(size=3),
         hovertemplate = ~text
         ) %>%
@@ -72,4 +70,4 @@ plot = plot_ly(data = data, x = ~x, y = ~y,
 return(plot)
 }
 
-scatter_plotly(spatial[[1]], markers, new_names)
+scatter_plotly(spatial[[8]], markers, new_names)
