@@ -84,7 +84,8 @@ ui = dashboardPage(
                         ,width=4
                     ),
                     
-                    box(title = "Spatial Image Plot"
+                    box(width = 8
+                        ,title = "Spatial Image Plot"
                         #,plotOutput()
                     ),
                     
@@ -93,12 +94,13 @@ ui = dashboardPage(
                         ,uiOutput("choose_ripley")
                         ,selectInput("ripleysEstimator", "Select an Estimator",
                                      choices = c("Ripley's K" = "K",
-                                                 "Besag's L" = "L",
-                                                 "Ripley's T" = "T"),
+                                                 "Ripley's T" = "L",
+                                                 "Nick's M" = "M"),
                                      selected = "K")
                     ),
                     
-                    box(title = "Ripley's Plot"
+                    box(width = 8
+                        ,title = "Ripley's Plot"
                         ,plotOutput("ripleysPlot", height = 250)
                     )
                 )

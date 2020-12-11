@@ -1,3 +1,7 @@
+# iteractive Tumor Immune MicroEnvironment
+# 
+# HALO output
+
 #
 # This is the server logic of a Shiny web application. You can run the
 # application by clicking 'Run App' above.
@@ -72,33 +76,6 @@ shinyServer(function(input, output) {
 
     })
     
-    output$ripleysPlot = renderPlot({
-        if(is.null(spatial_data()) | is.null(clinical_data())){
-            return()
-        }
-        
-        progress = shiny::Progress$new()
-        on.exit(progress$close())
-        progress$set(message="Estimating Confidence Interval", 
-                     detail = "This will take some time...")
-        
-        progress$inc(1/5, message=paste("Assigning Clinical Data"))
-        clinical_sample_data = clinical_data()
-        
-        progress$inc(1/5, message=paste("Selecting Sample Data"))
-        sampleInfo = Filter(function(x) !any(is.na(x)),
-                            clinical_sample_data[which(clinical_sample_data$image_tag ==
-                                                           tail(strsplit(spatial_data()[1,1],
-                                                                         "\\\\|[^[:print:]]")[[1]], n=1)),])
-        progress$inc(1/5, message=paste("Removing Clinical Merge ID"))
-        sampleInfo = sampleInfo[,-which(names(sampleInfo) %in% input$clinical_merge)]
-        
-        progress$inc(1/5, message=paste("Running Ripley's Estimator"))
-        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator, sampleInfo)
-        
-        #progress$inc(1/5, message=paste("Finished Estimating"))
-    })
-    
     output$choose_summary_merge = renderUI({
         
         summary_column_names = colnames(summary_data())
@@ -160,8 +137,39 @@ shinyServer(function(input, output) {
         
         selectInput("ripleys_selection", "Choose Marker for Ripleys",
                     choices = acceptable_ripleys_names,
-                    selected = acceptable_ripleys_names[1])
+                    selected = acceptable_ripleys_names[2])
         
+    })
+    
+    output$ripleysPlot = renderPlot({
+        validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."))
+        
+        if(is.null(spatial_data()) | is.null(clinical_data())){
+            return()
+        }
+        
+        progress = shiny::Progress$new()
+        on.exit(progress$close())
+        progress$set(message="Estimating Confidence Interval", 
+                     detail = "This will take some time...")
+        
+        progress$inc(1/5, message=paste("Assigning Clinical Data"))
+        clinical_sample_data = clinical_data()
+        
+        progress$inc(1/5, message=paste("Selecting Sample Data"))
+        sampleInfo = Filter(function(x) !any(is.na(x)),
+                            clinical_sample_data[which(clinical_sample_data$image_tag ==
+                                                           tail(strsplit(spatial_data()[1,1],
+                                                                         "\\\\|[^[:print:]]")[[1]], n=1)),])
+        progress$inc(1/5, message=paste("Removing Clinical Merge ID"))
+        #sampleInfo = sampleInfo[,-which(names(sampleInfo) %in% input$clinical_merge)]
+        
+        progress$inc(1/5, message=paste("Running Ripley's Estimator"))
+        
+        colorscheme <- input$summaryPlotColors
+        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator, sampleInfo, colorscheme)
+        
+        #progress$inc(1/5, message=paste("Finished Estimating"))
     })
     
     summary_data_merged = reactive({
