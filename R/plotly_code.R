@@ -10,6 +10,8 @@ library(pheatmap)
 library(RColorBrewer)
 library(stringr)
 
+
+library(viridis)
 load("~/iTIME/data/example_data.RData")
 
 
@@ -47,6 +49,10 @@ text = paste('NN Distances:',text)
 data$text[i] = text
 }
 
+data$marks = factor(data$marks, 
+                    levels = c('Negative', 
+                               levels(data$marks)[levels(data$marks)!='Negative']))
+
 ax <- list(
   title = "",
   zeroline = FALSE,
@@ -56,18 +62,35 @@ ax <- list(
 )
 
 
-plot = plot_ly(data = data, x = ~x, y = ~y, 
-        type="scatter",
-        mode="markers",
-        color = ~marks,
-        symbol = ~Classifier.Label,
-        symbols = c('3', '200'),
-        marker=list(size=3),
-        hovertemplate = ~text
-        ) %>%
+
+pal<-c(Negative = 'grey',#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080',
+         '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', 'grey80', '#000000',
+         brewer.pal(n = length(levels(data$marks)), name = 'Set3')[c(4,5,10)],"darkgreen",brewer.pal(n = 10, name = 'Paired')[10])
+
+pal = viridis_pal(option = "D")(6)
+
+plot = plot_ly() %>%
+  add_trace(data = data[data$marks == 'Negative',], x = ~x, y = ~y, 
+            type="scatter",
+            mode="markers",
+            symbol = ~Classifier.Label,
+            symbols = c('3', 'o'),
+            marker=list(size=3,
+                        color = 'lightgrey'),
+            hovertemplate = ~text) %>%
+  add_trace(data = data[data$marks != 'Negative',], x = ~x, y = ~y, 
+            type="scatter",
+            mode="markers",
+            color = ~marks,
+            colors = pal,
+            marker=list(size=3,
+                        symbol = '200'),
+            hovertemplate = ~text) %>%
   layout(xaxis = ax, yaxis = ax)
 
 return(plot)
 }
 
+markers = colnames(spatial[[1]])[11:17]
+new_names = new_names
 scatter_plotly(spatial[[8]], markers, new_names)
