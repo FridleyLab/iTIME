@@ -17,7 +17,7 @@ markers = c("CD3..FOXP3." , "CD3..CD8.", "CD3..CD8..FOXP3.",
   "CD3..PD1.", "CD3..CD8..PD1.", "CD3..CD8..PDL1.")
 new_names = markers
 ########################
-
+scatter_plotly = function(data = data, markers = markers, new_names = new_names){
 data$x <- (data$XMin + data$XMax) / 2
 data$y <- (data$YMin + data$YMax) / 2
 num_cells = c()
@@ -50,18 +50,32 @@ text = paste('NN Distances:',text)
 data$text[i] = text
 }
 
-plot_ly(data = data, x = ~x, y = ~y, 
+ax <- list(
+  title = "",
+  zeroline = FALSE,
+  showline = FALSE,
+  showticklabels = FALSE,
+  showgrid = FALSE
+)
+
+
+plot = plot_ly(data = data, x = ~x, y = ~y, 
         type="scatter",
         mode="markers",
         color = ~marks,
+        symbol = ~Classifier.Label,
         marker=list(size=3),
-        #text= ~data$marks,
         hovertemplate = ~text
-        )
+        ) %>%
+  layout(xaxis = ax, yaxis = ax)
 
+return(plot)
+}
 
-
-
+ggplot(data=data, aes(x=x, y=y, shape=Classifier.Label, color=marks)) + geom_point() + 
+  theme_bw() + theme(axis.ticks = element_blank(), axis.text = element_blank(),
+                     axis.title = element_blank())
+ggplotly()
 
 ##########################
 
