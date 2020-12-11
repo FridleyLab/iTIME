@@ -32,7 +32,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
   }
   ggplot() + geom_line(aes(x=r, y=value, color = type),est2) +
     geom_ribbon(data = EL, aes(x=r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA) +
-    theme_bw()
+    theme_bw() + ggtitle(paste(n, "points", sep=""))
 }
 
 #Ripley(data = df, cell_type = "CD3..CD8.")
