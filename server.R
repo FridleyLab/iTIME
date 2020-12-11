@@ -104,7 +104,7 @@ shinyServer(function(input, output) {
         
         selectInput("picked_clinical_factor", "Choose Annotation for Heatmap",
                     choices = clinical_heatmap_names,
-                    selected = clinical_heatmap_names[1])
+                    selected = clinical_heatmap_names[3])
         
     })
     
@@ -196,7 +196,7 @@ shinyServer(function(input, output) {
         
         selectInput("picked_marker", "Choose Cell Marker to Plot",
                     choices = summary_marker_names,
-                    selected = summary_marker_names[1])
+                    selected = summary_marker_names[3])
         
     })
     
@@ -206,7 +206,7 @@ shinyServer(function(input, output) {
         
         selectInput("picked_clinical", "Choose Clinical Variable to Plot",
                     choices = summary_clinical_names,
-                    selected = summary_clinical_names[1])
+                    selected = summary_clinical_names[3])
         
     })
     
