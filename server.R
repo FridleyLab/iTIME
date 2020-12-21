@@ -49,6 +49,16 @@ shinyServer(function(input, output) {
         return(df)
     })
     
+    summary_data_merged = reactive({
+        if(is.null(clinical_data()) | is.null(summary_data())){
+            return()
+        }
+        
+        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+        print(colnames(df))
+        return(df)
+    })
+    
     output$summaryout = DT::renderDataTable({
         
         DT::datatable(summary_data(), options = list(scrollX = TRUE))
@@ -79,7 +89,8 @@ shinyServer(function(input, output) {
         
         heat_map(summary_clinical_merge = heatmap_data,
                  markers = input$heatmap_selection,
-                 clin_vars = input$picked_clinical_factor)
+                 clin_vars = input$picked_clinical_factor,
+                 colorscheme = input$summaryPlotColors)
     }, height = 400)
     
     output$choose_heatmap_marker = renderUI({
@@ -246,14 +257,14 @@ shinyServer(function(input, output) {
         #progress$inc(1/5, message=paste("Finished Estimating"))
     })
     
-    summary_data_merged = reactive({
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
-        
-        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
-        print(colnames(df))
-        return(df)
-    })
+    # summary_data_merged = reactive({
+    #     if(is.null(clinical_data()) | is.null(summary_data())){
+    #         return()
+    #     }
+    #     
+    #     df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+    #     print(colnames(df))
+    #     return(df)
+    # })
 
 })

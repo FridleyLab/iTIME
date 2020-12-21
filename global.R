@@ -9,13 +9,14 @@ library(shinydashboard)
 options(shiny.maxRequestSize = 30*1024^2)
 library(dashboardthemes)
 library(plotly)
-library(pheatmap)
+# library(pheatmap)
 #library(RColorBrewer)
 #library(vioplot)
 library(ggfortify)
 library(janitor)
 library(ComplexHeatmap)
 library(shinyWidgets)
+library(colourvalues)
 
 custom_blue <- {shinyDashboardThemeDIY(
   ### general
