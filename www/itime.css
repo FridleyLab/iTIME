@@ -1,0 +1,25 @@
+.moffitt-logo {
+  background: url("moffitt-logo.png");
+  background-size: contain;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  bottom: 25px;
+  left: 65px;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+  transition: z-index 0s, left 0.25s ease-in-out, filter 0.25s ease-in-out, opacity 1s ease-in-out;
+  z-index: 1000;
+  opacity: 1;
+}
+
+.sidebar-collapse .moffitt-logo {
+  transition: z-index 0s 0.5s, left 0.25s ease-in-out, filter 0.25s ease-in-out;
+  z-index: 0;
+  left: 2%;
+  bottom: 25px;
+}
+
+.sidebar-collapse .moffitt-logo:hover {
+  filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
+}
+
