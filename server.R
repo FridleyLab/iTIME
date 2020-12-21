@@ -51,12 +51,8 @@ shinyServer(function(input, output) {
     
     output$summaryout = DT::renderDataTable({
         
-        #temp = summary_data()
-        #print(colnames(temp))
         DT::datatable(summary_data(), options = list(scrollX = TRUE))
         
-        #assign('summary_data', temp, envir=.GlobalEnv)
-        #assign('spatial_column_names', colnames(temp), envir=.GlobalEnv)
     })
 
     output$boxplot <- renderPlot({
@@ -92,9 +88,11 @@ shinyServer(function(input, output) {
         heatmap_names2 = heatmap_names[grep("^(?=Percent.*)",
                               heatmap_names,perl=TRUE,ignore.case = TRUE)]
         
-        checkboxGroupInput("heatmap_selection", "Choose Cell Marker for Heatmap",
-                           choices = heatmap_names2
-                           ,selected = heatmap_names2
+        awesomeCheckboxGroup("heatmap_selection",
+                           "Choose Cell Marker for Heatmap",
+                           choices = heatmap_names2,
+                           selected = heatmap_names2,
+                           status = "info"
         )
     })
     
@@ -124,15 +122,17 @@ shinyServer(function(input, output) {
         tmp = ripleys_spatial_names[whichcols]
         acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
         
-        checkboxGroupInput("plotly_selection", "Choose Markers for Spatial Plot",
-                    choices = rev(acceptable_ripleys_names)
-                    ,selected = acceptable_ripleys_names[grep("^(?=.*Opal)",acceptable_ripleys_names, perl=TRUE)]
+        awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
+                    choices = rev(acceptable_ripleys_names),
+                    selected = acceptable_ripleys_names[grep("^(?=.*Opal)",
+                                                             acceptable_ripleys_names, 
+                                                             perl=TRUE)],
+                    status = "info"
                     )
     })
     
     output$summaryTable = renderTable({
-        #temp = data.frame("Number of Subjects" = length(unique(summary_data()$subID)),
-        #                  "test2" = length(summary_data()[,2]))
+
         data_table = summary_data_merged()
         cellvar <-  input$picked_marker
         sub_id = input$summary_merge
@@ -143,20 +143,10 @@ shinyServer(function(input, output) {
                           "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
                           "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
                           "Max" = max(data_table[,cellvar], na.rm=TRUE),
-                          "SD" = sd(data_table[,cellvar], na.rm=TRUE)
-                          ,"N Subs" = length(unique(data_table[,sub_id]))
-                          ,"N Samples" = length(data_table[,sub_id])
+                          "SD" = sd(data_table[,cellvar], na.rm=TRUE),
+                          "N Subs" = length(unique(data_table[,sub_id])),
+                          "N Samples" = length(data_table[,sub_id])
                           )
-        #clinvar <- input$picked_clinical
-        #colorscheme <- input$summaryPlotColors
-        
-        
-        #summary.stats = data_table %>%
-        #    group_by(clinvar)
-        
-        #summary_table = ggsummarytable()
-        #rint(colnames(data_table))
-        #print(sub_id)
         return(temp)
     })
     
