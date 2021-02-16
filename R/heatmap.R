@@ -1,5 +1,4 @@
 
-
 heat_map <- function(summary_clinical_merge, markers = markers,
                     clin_vars = clin_vars, colorscheme){
 
