@@ -122,7 +122,11 @@ shinyServer(function(input, output) {
         
         markers = input$plotly_selection
         new_names = markers
-        scatter_plotly(data = spatial_data(), markers = markers, new_names = new_names)
+        colorscheme = input$summaryPlotColors
+        colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
+        
+        scatter_plotly(data = spatial_data(), markers = markers, 
+                       new_names = new_names, colorscheme = colorscheme)
     })
     
     output$choosePlotlyMarkers = renderUI({
