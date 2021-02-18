@@ -32,7 +32,7 @@ shinyServer(function(input, output) {
             
             df = read.csv(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("./example_data/summary_example.csv", check.names = FALSE)
+            df = read.csv("./data/summary.csv", check.names = FALSE)
         }
         
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
@@ -48,7 +48,7 @@ shinyServer(function(input, output) {
             }
             df = read.csv(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("./example_data/clinical_example.csv", check.names = FALSE)
+            df = read.csv("./data/clinical.csv", check.names = FALSE)
         }
         
         return(df)
@@ -62,7 +62,7 @@ shinyServer(function(input, output) {
             }
             df = read.csv(infile$datapath)
         } else {
-            df = read.csv("./example_data/spatial_example.csv")
+            df = read.csv("./data/spatial2.csv")
         }
         
         return(df)
@@ -144,8 +144,8 @@ shinyServer(function(input, output) {
         colorscheme = input$summaryPlotColors
         colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
         
-        scatter_plotly(data = spatial_data(), markers = markers, 
-                       new_names = new_names, colorscheme = colorscheme)
+        scatter_plotly_old(data = spatial_data(), markers = markers, 
+                           new_names = new_names, colorscheme = colorscheme)
     })
     
     output$choosePlotlyMarkers = renderUI({
@@ -155,6 +155,7 @@ shinyServer(function(input, output) {
                          ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
         tmp = ripleys_spatial_names[whichcols]
         acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
+        print(acceptable_ripleys_names)
         
         awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
                     choices = rev(acceptable_ripleys_names),
