@@ -6,131 +6,6 @@
 #
 #    http://shiny.rstudio.com/
 #
-#jordan did it
-custom_blue <- {shinyDashboardThemeDIY(
-    ### general
-    appFontFamily = "Arial"
-    ,appFontColor = "rgb(0,0,0)"
-    ,primaryFontColor = "rgb(0,0,0)"
-    ,infoFontColor = "rgb(0,0,0)"
-    ,successFontColor = "rgb(0,0,0)"
-    ,warningFontColor = "rgb(0,0,0)"
-    ,dangerFontColor = "rgb(0,0,0)"
-    ,bodyBackColor = "rgb(248,248,248)"
-    
-    ### header
-    ,logoBackColor = "rgb(23,103,124)"
-    
-    ,headerButtonBackColor = "rgb(238,238,238)"
-    ,headerButtonIconColor = "rgb(75,75,75)"
-    ,headerButtonBackColorHover = "rgb(210,210,210)"
-    ,headerButtonIconColorHover = "rgb(0,0,0)"
-    
-    ,headerBackColor = "rgb(238,238,238)"
-    ,headerBoxShadowColor = "#aaaaaa"
-    ,headerBoxShadowSize = "2px 2px 2px"
-    
-    ### sidebar
-    ,sidebarBackColor = cssGradientThreeColors(
-        direction = "down"
-        ,colorStart = "rgb(20,97,117)"
-        ,colorMiddle = "rgb(56,161,187)"
-        ,colorEnd = "rgb(3,22,56)"
-        ,colorStartPos = 0
-        ,colorMiddlePos = 50
-        ,colorEndPos = 100
-    )
-    ,sidebarPadding = 0
-    
-    ,sidebarMenuBackColor = "transparent"
-    ,sidebarMenuPadding = 0
-    ,sidebarMenuBorderRadius = 0
-    
-    ,sidebarShadowRadius = "3px 5px 5px"
-    ,sidebarShadowColor = "#aaaaaa"
-    
-    ,sidebarUserTextColor = "rgb(255,255,255)"
-    
-    ,sidebarSearchBackColor = "rgb(55,72,80)"
-    ,sidebarSearchIconColor = "rgb(153,153,153)"
-    ,sidebarSearchBorderColor = "rgb(55,72,80)"
-    
-    ,sidebarTabTextColor = "rgb(255,255,255)"
-    ,sidebarTabTextSize = 13
-    ,sidebarTabBorderStyle = "none none solid none"
-    ,sidebarTabBorderColor = "rgb(35,106,135)"
-    ,sidebarTabBorderWidth = 1
-    
-    ,sidebarTabBackColorSelected = cssGradientThreeColors(
-        direction = "right"
-        ,colorStart = "rgba(44,222,235,1)"
-        ,colorMiddle = "rgba(44,222,235,1)"
-        ,colorEnd = "rgba(0,255,213,1)"
-        ,colorStartPos = 0
-        ,colorMiddlePos = 30
-        ,colorEndPos = 100
-    )
-    ,sidebarTabTextColorSelected = "rgb(0,0,0)"
-    ,sidebarTabRadiusSelected = "0px 20px 20px 0px"
-    
-    ,sidebarTabBackColorHover = cssGradientThreeColors(
-        direction = "right"
-        ,colorStart = "rgba(44,222,235,1)"
-        ,colorMiddle = "rgba(44,222,235,1)"
-        ,colorEnd = "rgba(0,255,213,1)"
-        ,colorStartPos = 0
-        ,colorMiddlePos = 30
-        ,colorEndPos = 100
-    )
-    ,sidebarTabTextColorHover = "rgb(50,50,50)"
-    ,sidebarTabBorderStyleHover = "none none solid none"
-    ,sidebarTabBorderColorHover = "rgb(75,126,151)"
-    ,sidebarTabBorderWidthHover = 1
-    ,sidebarTabRadiusHover = "0px 20px 20px 0px"
-    
-    ### boxes
-    ,boxBackColor = "rgb(255,255,255)"
-    ,boxBorderRadius = 5
-    ,boxShadowSize = "0px 1px 1px"
-    ,boxShadowColor = "rgba(0,0,0,.1)"
-    ,boxTitleSize = 16
-    ,boxDefaultColor = "rgb(210,214,220)"
-    ,boxPrimaryColor = "rgba(44,222,235,1)"
-    ,boxInfoColor = "rgb(210,214,220)"
-    ,boxSuccessColor = "rgba(44,222,235,1)"
-    ,boxWarningColor = "rgb(244,156,104)"
-    ,boxDangerColor = "rgb(255,88,55)"
-    
-    ,tabBoxTabColor = "rgb(255,255,255)"
-    ,tabBoxTabTextSize = 14
-    ,tabBoxTabTextColor = "rgb(0,0,0)"
-    ,tabBoxTabTextColorSelected = "rgb(0,0,0)"
-    ,tabBoxBackColor = "rgb(255,255,255)"
-    ,tabBoxHighlightColor = "rgba(44,222,235,1)"
-    ,tabBoxBorderRadius = 5
-    
-    ### inputs
-    ,buttonBackColor = "rgb(245,245,245)"
-    ,buttonTextColor = "rgb(0,0,0)"
-    ,buttonBorderColor = "rgb(200,200,200)"
-    ,buttonBorderRadius = 5
-    
-    ,buttonBackColorHover = "rgb(235,235,235)"
-    ,buttonTextColorHover = "rgb(100,100,100)"
-    ,buttonBorderColorHover = "rgb(200,200,200)"
-    
-    ,textboxBackColor = "rgb(255,255,255)"
-    ,textboxBorderColor = "rgb(200,200,200)"
-    ,textboxBorderRadius = 5
-    ,textboxBackColorSelect = "rgb(245,245,245)"
-    ,textboxBorderColorSelect = "rgb(200,200,200)"
-    
-    ### tables
-    ,tableBackColor = "rgb(255,255,255)"
-    ,tableBorderColor = "rgb(240,240,240)"
-    ,tableBorderTopSize = 1
-    ,tableBorderRowSize = 1
-)}
 
 
 # Define UI for application that draws a histogram
@@ -139,8 +14,22 @@ ui = dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             menuItem("Importing Data", tabName = 'import', icon = icon('table')),
-            menuItem("Summary Page", tabName = 'summary', icon = icon('drafting-compass')),
-            menuItem("Spatial Page", tabName = 'spatial', icon = icon('braille'))
+            menuItem("Summary", tabName = 'summary', icon = icon('drafting-compass')),
+            menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
+            menuItem("Help", tabName = 'help', icon = icon('glasses')),
+            tags$br(),
+            fluidRow(column(12, align="center",
+                            tags$br(),
+                            tags$img(src = "moffitt-logo.png",
+                                     position = "absolute",
+                                     bottom = "25px",
+                                     width = "100px", 
+                                     height = "100px")))
+            # tags$a(
+            #     href = "https://lab.moffitt.org/fridley/", 
+            #     target = "_blank", 
+            #     tags$div(class = "moffitt-logo")
+            # )
         )
     ),
     dashboardBody(
@@ -182,7 +71,7 @@ ui = dashboardPage(
                         box(width = 12, 
                             title="Summary Table",
                             tableOutput("summaryTable")),
-                        box(width = 3,
+                        box(width = 4,
                             uiOutput("choose_clinical"),
                             uiOutput("choose_marker"),
                             selectInput("summaryPlotType", "Select Plot Type",
@@ -199,7 +88,7 @@ ui = dashboardPage(
                                         selected = "viridis")
                         ),
                         
-                        box(width = 9, 
+                        box(width = 8, 
                             title = "Boxplot",
                             plotOutput("boxplot", height = 250)
                         )
@@ -208,7 +97,8 @@ ui = dashboardPage(
                         
                         box(width = 4, 
                             uiOutput("choose_heatmap_clinical"),
-                            uiOutput("choose_heatmap_marker")
+                            uiOutput("choose_heatmap_marker"),
+                            tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
                         ),
                         
                         box(width = 8, 
@@ -244,7 +134,61 @@ ui = dashboardPage(
                         ,title = "Ripley's Plot"
                         ,plotOutput("ripleysPlot", height = 250)
                     )
-                )
+                ),
+            tabItem(tabName = 'help',
+                    box(title = "Development Team", 
+                        width = 4,
+                        p("- Jordan Creed"),
+                        p("- Chris Wilson"),
+                        p("- Oscar Ospina"),
+                        p("- Alex Soupir"),
+                        p("- Gregory Kimmel"),
+                        p("- Joseph Markowitz"),
+                        p("- Christelle Colin Leitzinger"),
+                        p("- Nick Chakiryan"),
+                        p("- Brooke Fridley"),
+                        br(),
+                        p("For more information about our lab and other projects please check",
+                          "out our website at",
+                          a("https://lab.moffitt.org/fridley/", href = "https://lab.moffitt.org/fridley/")),
+                        br(),
+                        p("All code for this project are publically available on",
+                          a("GitHub.", href = "https://github.com/FridleyLab/iTIME")),
+                        br(),
+                        p("If you have any questions or comments, we would love to hear them.",
+                          "You can email us at Fridley.Lab@moffitt.org or feel free to",
+                          a("open an issue", href = "https://github.com/FridleyLab/iTIME/issues"),
+                          "in our GitHub repo.")
+                        ),
+                    box(title = "Getting Started",
+                        width = 8,
+                        p("iTIME accepts 3 files as input: a summary level file, ",
+                          "a clinical file, and a spatial file. All files should ",
+                          "be csv files. The summary file should contain summary level ",
+                          "statistics and should contain one row per sample, while ",
+                          "the clinical data file should contain one row per patient. ",
+                          "Both the clinical and sumary files should contain a variable ",
+                          "to link sample IDs and clinical IDs ('Merge Variable'), thought the variables do ",
+                          "not need to be named the same in both datasets."),
+                        p("The summary page can be used without uploading any spatial",
+                          "data. This page provides a summary of the marker chosen from the ",
+                          "dropdown menu below and allows users to plot a marker against",
+                          "clinical variables and select the appropriate plot type. A heatmap",
+                          "of the available markers is also produced and allows users the",
+                          "opportunity to annotate the heatmap by a clinical characteristics."),
+                        p("The spatial page plots the individual cells by positivity for the markers",
+                          "and plots Ripley's K estimates over a range of r values."),
+                        br(),
+                        h3("Summary File"),
+                        img(src='summary-file.png', align = "center", height="100%", width="100%"),
+                        br(),
+                        h3("Clinical File"),
+                        img(src='clinical-file.png', align = "center", height="100%", width="100%"),
+                        br(),
+                        h3("Spatial File"),
+                        img(src='spatial-file.png', align = "center", height="100%", width="100%"),
+                        br())
+                    )
         )
     )
 )

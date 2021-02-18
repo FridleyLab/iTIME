@@ -1,5 +1,5 @@
 #
-scatter_plotly = function(data = data, markers = markers, new_names = new_names){
+scatter_plotly_old = function(data = data, markers = markers, new_names = new_names){
   data$x <- (data$XMin + data$XMax) / 2
   data$y <- (data$YMin + data$YMax) / 2
   num_cells = c()
@@ -54,7 +54,9 @@ scatter_plotly = function(data = data, markers = markers, new_names = new_names)
               type="scatter",
               mode="markers",
               color = ~marks,
-              colors = "Paired",
+              # colors = "Paired",
+              # colors = viridis::viridis_pal()(length(markers)),
+              colorscale='Viridis',
               legendgroup="marks",
               marker=list(size=3,
                           symbol = '200'),
