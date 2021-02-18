@@ -18,34 +18,53 @@
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
     
+    buttons = reactiveValues(data = NULL)
+    observeEvent(input$exampleData, {
+        buttons$data = 1
+    })
+    
     summary_data = reactive({
-        infile = input$summaryData
-        if(is.null(infile)){
-            return()
+        if(is.null(buttons$data)){
+            infile = input$summaryData
+            if(is.null(infile)){
+                return()
+            }
+            
+            df = read.csv(infile$datapath, check.names = FALSE)
+        } else {
+            df = read.csv("./example_data/summary_example.csv", check.names = FALSE)
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE)
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
         return(df)
+        
     })
     
     clinical_data = reactive({
-        infile = input$clinicalData
-        if(is.null(infile)){
-            return()
+        if(is.null(buttons$data)){
+            infile = input$clinicalData
+            if(is.null(infile)){
+                return()
+            }
+            df = read.csv(infile$datapath, check.names = FALSE)
+        } else {
+            df = read.csv("./example_data/clinical_example.csv", check.names = FALSE)
         }
         
-        df = read.csv(infile$datapath, check.names = FALSE)
         return(df)
     })
     
     spatial_data = reactive({
-        infile = input$spatialData
-        if(is.null(infile)){
-            return()
+        if(is.null(buttons$data)){
+            infile = input$spatialData
+            if(is.null(infile)){
+                return()
+            }
+            df = read.csv(infile$datapath)
+        } else {
+            df = read.csv("./example_data/spatial_example.csv")
         }
         
-        df = read.csv(infile$datapath)
         return(df)
     })
     

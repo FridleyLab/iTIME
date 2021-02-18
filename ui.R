@@ -62,6 +62,12 @@ ui = dashboardPage(
                                                  "HALO summary data file",
                                                  c(".csv")))
                             #,uiOutput("choose_spatial_merge")
+                        ),
+                        box(
+                            actionButton(
+                                inputId = "exampleData",
+                                label = "Load Example Data"
+                            )
                         )
                     ),
             ),
