@@ -61,7 +61,7 @@ shinyServer(function(input, output) {
             }
             df = read.csv(infile$datapath)
         } else {
-            df = read.csv("./data/spatial2.csv")
+            df = read.csv("./data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv")
         }
         
         return(df)
