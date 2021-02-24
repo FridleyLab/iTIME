@@ -73,7 +73,35 @@ shinyServer(function(input, output) {
         }
         
         df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
-        print(colnames(df))
+        #print(colnames(df))
+        return(df)
+    })
+    
+    frequency_table = reactive({
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        data_table = summary_data_merged()
+        
+        markers = colnames(data_table)[grepl(") Positive", colnames(data_table))]
+        print(markers)
+        
+        df = freq_table(data_table, markers = markers, percent_threshold = input$choose_freq_thresh)
+        
+        return(df)
+    })
+    
+    cont_table = reactive({
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        
+        data_table = summary_data_merged()
+        markers = input$picked_cont_marker
+        clinvar <- input$picked_clinical
+        
+        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
+        
         return(df)
     })
     
@@ -169,7 +197,7 @@ shinyServer(function(input, output) {
 
         data_table = summary_data_merged()
         cellvar <-  input$picked_marker
-        sub_id = input$summary_merge
+        sub_id = input$clinical_merge
         
         temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
                           "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
@@ -181,7 +209,16 @@ shinyServer(function(input, output) {
                           "N Subs" = length(unique(data_table[,sub_id])),
                           "N Samples" = length(data_table[,sub_id])
                           )
+        #temp = cbind(temp, freq_table(df, markers = markers, percent_threshold = input$choose_freq_thresh))
         return(temp)
+    })
+    
+    output$freqTable = renderTable({
+        return(frequency_table())
+    })
+    
+    output$contTable = renderTable({
+        return(cont_table())
     })
     
     output$choose_summary_merge = renderUI({
@@ -211,6 +248,16 @@ shinyServer(function(input, output) {
         selectInput("spatial_merge", "Choose Spatial Merge Variable",
                     choices = spatial_column_names,
                     selected = spatial_column_names[1])
+        
+    })
+    
+    output$choose_cont_marker = renderUI({
+        
+        summary_marker_names = colnames(summary_data_merged())[grepl(") Positive", colnames(summary_data_merged()))]
+        
+        selectInput("picked_cont_marker", "Choose Cell Marker for Contingency Table",
+                    choices = summary_marker_names,
+                    selected = summary_marker_names[3])
         
     })
     

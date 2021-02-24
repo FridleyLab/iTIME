@@ -76,8 +76,27 @@ ui = dashboardPage(
                     fluidRow(
                         box(width = 12, 
                             title="Summary Table",
-                            tableOutput("summaryTable")),
+                            tableOutput("summaryTable")
+                            ),
+                        ),
+                    
+                    fluidRow(
+                        
                         box(width = 4,
+                            selectInput("choose_freq_thresh", "Select Frequency Threshold",
+                                        choices = c("% >0" = 0,
+                                                    "> 1%" = 1, 
+                                                    "> 3%" = 3,
+                                                    "> 5%" = 5),
+                                        selected = 0),
+                            selectInput("choose_cont_thresh", "Select Contingency Threshold",
+                                        choices = c("1%" = 1, 
+                                                    "2%" = 2, 
+                                                    "3%" = 3,
+                                                    "4%" = 4,
+                                                    "5%" = 5),
+                                        selected = 1),
+                            uiOutput("choose_cont_marker"),
                             uiOutput("choose_clinical"),
                             uiOutput("choose_marker"),
                             selectInput("summaryPlotType", "Select Plot Type",
@@ -92,12 +111,22 @@ ui = dashboardPage(
                                                     "Plasma" = "plasma", 
                                                     "Inferno" = "inferno"),
                                         selected = "viridis")
+                            ),
+                        
+                        box(width = 8, 
+                            title="Frequency Table",
+                            tableOutput("freqTable")
+                        ),
+                        
+                        box(width = 8, 
+                            title="Contingency Table",
+                            tableOutput("contTable")
                         ),
                         
                         box(width = 8, 
                             title = "Boxplot",
                             plotOutput("boxplot", height = 250)
-                        )
+                            )
                         ),
                     fluidRow(
                         
