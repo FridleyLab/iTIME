@@ -98,9 +98,12 @@ shinyServer(function(input, output) {
         
         data_table = summary_data_merged()
         markers = input$picked_cont_marker
+        print(markers)
         clinvar <- input$picked_clinical
+        print(clinvar)
         
-        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
+        df = data.frame(contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh))
+        print(df)
         
         return(df)
     })
@@ -257,7 +260,7 @@ shinyServer(function(input, output) {
         
         selectInput("picked_cont_marker", "Choose Cell Marker for Contingency Table",
                     choices = summary_marker_names,
-                    selected = summary_marker_names[3])
+                    selected = summary_marker_names[1])
         
     })
     
