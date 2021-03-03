@@ -3,7 +3,7 @@
 
 
 pheat_map <- function(summary_clinical_merge, markers = markers,
-                     clin_vars = clin_vars, colorscheme){
+                      clin_vars = clin_vars, colorscheme){
   
   cells <- summary_clinical_merge %>% select(any_of(markers))
   cells <- as.matrix(cells)
@@ -14,10 +14,6 @@ pheat_map <- function(summary_clinical_merge, markers = markers,
   pheatmap::pheatmap(t(sqrt(cells)),show_rownames = TRUE, 
                      show_colnames = FALSE, treeheight_col = 0,
                      treeheight_row = 0, annotation_col = annotation,
-                    )
+  )
   
 }
-
-
-
-
