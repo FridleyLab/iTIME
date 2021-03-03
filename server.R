@@ -63,7 +63,6 @@ shinyServer(function(input, output) {
         } else {
             df = read.csv("data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv")
         }
-        assign('spatial', df, envir=globalenv())
         
         return(df)
     })
