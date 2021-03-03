@@ -61,7 +61,7 @@ shinyServer(function(input, output) {
             }
             df = read.csv(infile$datapath)
         } else {
-            df = read.csv("./data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv")
+            df = read.csv("./data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv", check.names = F)
         }
         
         return(df)
@@ -92,18 +92,19 @@ shinyServer(function(input, output) {
     })
     
     cont_table = reactive({
-        if(is.null(summary_data_merged())){
+        if(is.null(clinical_data()) | is.null(summary_data())){
             return()
         }
         
         data_table = summary_data_merged()
+        assign("df", data_table, envir=globalenv())
         markers = input$picked_cont_marker
         print(markers)
         clinvar <- input$picked_clinical
-        print(clinvar)
+        print(input$choose_cont_thresh)
         
-        df = data.frame(contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh))
-        print(df)
+        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
+        #print(df)
         
         return(df)
     })
