@@ -99,9 +99,7 @@ shinyServer(function(input, output) {
         data_table = summary_data_merged()
         assign("df", data_table, envir=globalenv())
         markers = input$picked_cont_marker
-        print(markers)
         clinvar <- input$picked_clinical
-        print(input$choose_cont_thresh)
         
         df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
         #print(df)
@@ -136,6 +134,7 @@ shinyServer(function(input, output) {
     
     output$heatmap = renderPlot({
         heatmap_data = summary_data_merged()
+        print(input$heatmap_selection)
         
         heat_map(summary_clinical_merge = heatmap_data,
                  markers = input$heatmap_selection,

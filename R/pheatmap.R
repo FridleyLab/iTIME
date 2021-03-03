@@ -11,9 +11,6 @@ pheat_map <- function(summary_clinical_merge, markers = markers,
   annotation <- summary_clinical_merge %>% select(all_of(clin_vars)) %>%
     data.frame(check.names = FALSE)
   rownames(annotation) = 1:nrow(cells)
-  pheatmap::pheatmap(t(sqrt(cells)),show_rownames = TRUE, 
-                     show_colnames = FALSE, treeheight_col = 0,
-                     treeheight_row = 0, annotation_col = annotation,
-  )
+  pheatmap::pheatmap(t(sqrt(cells)), show_rownames = T, show_colnames = F, treeheight_col = 0, treeheight_row = 0, annotation_col = annotation)
   
 }
