@@ -1,16 +1,6 @@
-<<<<<<< HEAD
-# library(tidyverse)
-# summary <- read_csv("data/summary.csv")
-# clinical <- read_csv("data/clinical.csv")
-# 
-# summary_clinical_merge = inner_join(clinical,summary)
-# markers = c('FOXP3 (Opal 620) Positive Cells')
-# clin_vars = 'race'
-=======
 library(tidyverse)
 summary <- read_csv("data/summary.csv")
 clinical <- read_csv("data/clinical.csv")
->>>>>>> f17e7244ae4225e3f7189c1e46b5aedf57149c04
 
 contingency_table <- function(summary_clinical_merge, markers = markers,
                               clin_vars = clin_vars, percent_threshold = percent_threshold){
@@ -22,13 +12,6 @@ contingency_table <- function(summary_clinical_merge, markers = markers,
                                                  paste0('Less than ', percent_threshold, '%'))}
   
   table <- cells %>% mutate_all( ~ above(x = ., percent_threshold = percent_threshold)) %>% 
-<<<<<<< HEAD
-    bind_cols(.,summary_clinical_merge %>% select(clin_vars))
-  
-  return(table(table))
-}
-  
-=======
     bind_cols(.,summary_clinical_merge %>% select(clin_vars)) %>%
     group_by(.[[paste('%', markers)]],.[[clin_vars]]) %>% 
     tally() %>%
@@ -46,10 +29,6 @@ percent_threshold = 1
 grid = expand.grid(markers,clin_vars)
 
 for(i in 1:nrow(grid)){
- print(contingency_table(summary_clinical_merge, markers = grid[i,1],
-                                clin_vars = grid[i,2], percent_threshold = percent_threshold))
+  print(contingency_table(summary_clinical_merge, markers = grid[i,1],
+                          clin_vars = grid[i,2], percent_threshold = percent_threshold))
 }  
->>>>>>> f17e7244ae4225e3f7189c1e46b5aedf57149c04
-
-
-
