@@ -73,18 +73,18 @@ shinyServer(function(input, output) {
         }
         
         df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
-        #print(colnames(df))
         return(df)
     })
     
     frequency_table = reactive({
+        validate(need(input$choose_freq_thresh !="", "Please wait while things finish loading....."))
         if(is.null(summary_data_merged())){
             return()
         }
         data_table = summary_data_merged()
         
         markers = colnames(data_table)[grepl(") Positive", colnames(data_table))]
-        print(markers)
+        
         
         df = freq_table(data_table, markers = markers, percent_threshold = input$choose_freq_thresh)
         
@@ -92,6 +92,7 @@ shinyServer(function(input, output) {
     })
     
     cont_table = reactive({
+        validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
         if(is.null(clinical_data()) | is.null(summary_data())){
             return()
         }
@@ -101,21 +102,26 @@ shinyServer(function(input, output) {
         clinvar <- input$picked_clinical
         
         df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
-        #print(df)
+        
         
         return(df)
     })
     
-    output$summaryout = DT::renderDataTable({
+    sumTable = reactive({
+        validate(need(summary_data() !="", "Please wait while things finish loading....."))
+        if(is.null(summary_data())){
+            return()
+        }
         
-        DT::datatable(summary_data(), options = list(scrollX = TRUE))
+        return(summary_data())
         
     })
 
     output$boxplot <- renderPlot({
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
+        validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
+                 need(input$picked_clinical !="", ""),
+                 need(input$summaryPlotColors !="", ""),
+                 need(summary_data_merged() !="", ""))
         
         # generate bins based on input$bins from ui.R
         cellvar <-  input$picked_marker
@@ -132,13 +138,13 @@ shinyServer(function(input, output) {
     })
     
     output$heatmap = renderPlot({
+        validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
         if(is.null(summary_data_merged())){
             return()
         }
         
         
         heatmap_data = summary_data_merged()
-        print(input$heatmap_selection)
         
         pheat_map(summary_clinical_merge = heatmap_data,
                  markers = input$heatmap_selection,
@@ -189,7 +195,6 @@ shinyServer(function(input, output) {
                          ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
         tmp = ripleys_spatial_names[whichcols]
         acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
-        print(acceptable_ripleys_names)
         
         awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
                     choices = rev(acceptable_ripleys_names),
@@ -201,6 +206,9 @@ shinyServer(function(input, output) {
     })
     
     output$summaryTable = renderTable({
+        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
+                 need(input$picked_marker !="", "Please wait while things finish loading....."),
+                 need(input$clinical_merge !="", "Please wait while things finish loading....."))
 
         data_table = summary_data_merged()
         cellvar <-  input$picked_marker
@@ -226,6 +234,11 @@ shinyServer(function(input, output) {
     
     output$contTable = renderTable({
         return(cont_table())
+    })
+    
+    output$summaryout = renderTable({
+        return(sumTable())
+        
     })
     
     output$choose_summary_merge = renderUI({
