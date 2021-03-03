@@ -133,10 +133,15 @@ shinyServer(function(input, output) {
     })
     
     output$heatmap = renderPlot({
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        
+        
         heatmap_data = summary_data_merged()
         print(input$heatmap_selection)
         
-        heat_map(summary_clinical_merge = heatmap_data,
+        pheat_map(summary_clinical_merge = heatmap_data,
                  markers = input$heatmap_selection,
                  clin_vars = input$picked_clinical_factor,
                  colorscheme = input$summaryPlotColors)
