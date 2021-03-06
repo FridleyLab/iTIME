@@ -16,7 +16,7 @@
 # )
 # markers = markers_all[1]
 # percent_threshold  = c(1, 3, 5)
-freq_table <-
+freq_table_by_marker <-
   function(summary_clinical_merge,
            markers = markers) {
     cells <-
