@@ -146,21 +146,6 @@ shinyServer(function(input, output) {
 
     })
     
-    output$heatmap = renderPlot({
-        validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
-        if(is.null(summary_data_merged())){
-            return()
-        }
-        
-        
-        heatmap_data = summary_data_merged()
-        
-        pheat_map(summary_clinical_merge = heatmap_data,
-                 markers = input$heatmap_selection,
-                 clin_vars = input$picked_clinical_factor,
-                 colorscheme = input$summaryPlotColors)
-    }, height = 400)
-    
     output$choose_heatmap_marker = renderUI({
         heatmap_names = colnames(summary_data())
         
@@ -184,6 +169,27 @@ shinyServer(function(input, output) {
                     selected = clinical_heatmap_names[3])
         
     })
+    
+    output$heatmap = renderPlot({
+        validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        
+        if(input$heatmap_transform == "none"){
+            heatmap_data = summary_data_merged()
+        }else if(input$heatmap_transform == "square_root"){
+            heatmap_data = summary_data_merged()
+            heatmap_data[,input$heatmap_selection] = sqrt(heatmap_data[,input$heatmap_selection])
+        }
+        
+        
+        
+        pheat_map(summary_clinical_merge = heatmap_data,
+                 markers = input$heatmap_selection,
+                 clin_vars = input$picked_clinical_factor,
+                 colorscheme = input$summaryPlotColors)
+    }, height = 400)
     
     output$spatial_plotly = renderPlotly({
         validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))

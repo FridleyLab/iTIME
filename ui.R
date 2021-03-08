@@ -140,6 +140,10 @@ ui = dashboardPage(
                         
                         box(width = 4, 
                             uiOutput("choose_heatmap_clinical"),
+                            selectInput("heatmap_transform", "Select Transformation Method",
+                                        choices=c("None" = "none",
+                                                  "Square Root" = "square_root"),
+                                        selected="square_root"),
                             uiOutput("choose_heatmap_marker"),
                             tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
                         ),
