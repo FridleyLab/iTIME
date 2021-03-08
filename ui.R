@@ -13,8 +13,9 @@ ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
         sidebarMenu(
-            menuItem("Importing Data", tabName = 'import', icon = icon('table')),
-            menuItem("Univariate Summary", tabName = 'univariate', icon = icon('drafting-compass')),
+            menuItem("Importing Data", tabName = 'import', icon = icon('upload')),
+            menuItem("Univariate Summary", tabName = 'univariate', icon = icon('angle-right')),
+            menuItem("Multivariate Summary", tabName = 'multivariate', icon = icon('angle-double-right')),
             menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
             menuItem("Help", tabName = 'help', icon = icon('glasses')),
             tags$br(),
