@@ -101,6 +101,8 @@ ui = dashboardPage(
                                                     "Plasma" = "plasma", 
                                                     "Inferno" = "inferno"),
                                         selected = "viridis"),
+                            awesomeCheckbox("sqrt_transform", "Square Root Transformation",
+                                          value = FALSE),
                         style = "height:540px"
                             ),
                         

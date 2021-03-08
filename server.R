@@ -86,9 +86,6 @@ shinyServer(function(input, output) {
         
         markers = input$picked_marker
         
-        print(markers)
-        
-        
         df = freq_table_by_marker(data_table, markers = markers)
         
         return(df)
@@ -101,7 +98,7 @@ shinyServer(function(input, output) {
         }
         
         data_table = summary_data_merged()
-        assign("summary_data_merged", data_table, envir = globalenv())
+        #assign("summary_data_merged", data_table, envir = globalenv())
         
         markers = input$picked_marker
         clinvar <- input$picked_clinical
@@ -133,8 +130,15 @@ shinyServer(function(input, output) {
         clinvar <- input$picked_clinical
         colorscheme <- input$summaryPlotColors
         
-        data_table = summary_data_merged()
+        if(input$sqrt_transform == FALSE){
+            data_table = summary_data_merged()
+        }else{
+            data_table = summary_data_merged()
+            data_table[,cellvar] = sqrt(data_table[,cellvar])
+        }
+        
         #assign("summary_table", data_table, envir = .GlobalEnv)
+        #assign("cell_var", cellvar, envir=.GlobalEnv)
         
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
         
