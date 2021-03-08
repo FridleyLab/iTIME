@@ -14,7 +14,7 @@ ui = dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             menuItem("Importing Data", tabName = 'import', icon = icon('table')),
-            menuItem("Summary", tabName = 'summary', icon = icon('drafting-compass')),
+            menuItem("Univariate Summary", tabName = 'univariate', icon = icon('drafting-compass')),
             menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
             menuItem("Help", tabName = 'help', icon = icon('glasses')),
             tags$br(),
@@ -72,7 +72,7 @@ ui = dashboardPage(
                     ),
             ),
             
-            tabItem(tabName = 'summary',
+            tabItem(tabName = 'univariate',
                     fluidRow(
                         box(width = 12, 
                             title="Summary Table",
