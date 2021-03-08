@@ -78,16 +78,18 @@ shinyServer(function(input, output) {
     })
     
     frequency_table = reactive({
-        validate(need(input$choose_freq_thresh !="", "Please wait while things finish loading....."))
+        validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
         if(is.null(summary_data_merged())){
             return()
         }
         data_table = summary_data_merged()
         
-        markers = colnames(data_table)[grepl(") Positive", colnames(data_table))]
+        markers = input$picked_marker
+        
+        print(markers)
         
         
-        df = freq_table(data_table, markers = markers, percent_threshold = input$choose_freq_thresh)
+        df = freq_table_by_marker(data_table, markers = markers)
         
         return(df)
     })
@@ -99,7 +101,9 @@ shinyServer(function(input, output) {
         }
         
         data_table = summary_data_merged()
-        markers = input$picked_cont_marker
+        assign("summary_data_merged", data_table, envir = globalenv())
+        
+        markers = input$picked_marker
         clinvar <- input$picked_clinical
         
         df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
@@ -225,7 +229,6 @@ shinyServer(function(input, output) {
                           "N Subs" = length(unique(data_table[,sub_id])),
                           "N Samples" = length(data_table[,sub_id])
                           )
-        #temp = cbind(temp, freq_table(df, markers = markers, percent_threshold = input$choose_freq_thresh))
         return(temp)
     })
     
@@ -284,7 +287,7 @@ shinyServer(function(input, output) {
     
     output$choose_marker = renderUI({
         
-        summary_marker_names = colnames(summary_data())
+        summary_marker_names = colnames(summary_data_merged())[grepl("^Percent", colnames(summary_data_merged()))]
         
         selectInput("picked_marker", "Choose Cell Marker to Plot",
                     choices = summary_marker_names,

@@ -17,7 +17,7 @@ ui = dashboardPage(
             menuItem("Univariate Summary", tabName = 'univariate', icon = icon('angle-right')),
             menuItem("Multivariate Summary", tabName = 'multivariate', icon = icon('angle-double-right')),
             menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
-            menuItem("Help", tabName = 'help', icon = icon('glasses')),
+            menuItem("Getting Started", tabName = 'help', icon = icon('glasses')),
             tags$br(),
             fluidRow(column(12, align="center",
                             tags$br(),
@@ -37,6 +37,7 @@ ui = dashboardPage(
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
+                    h1("Import Data", align="center"),
                     fluidRow(
                         box(
                             fileInput("summaryData", "Choose a Summary File",
@@ -74,22 +75,11 @@ ui = dashboardPage(
             ),
             
             tabItem(tabName = 'univariate',
-                    fluidRow(
-                        box(width = 12, 
-                            title="Summary Table",
-                            tableOutput("summaryTable")
-                            ),
-                        ),
-                    
+                    h1("Univariate Summary and Visualization", align="center"),
                     fluidRow(
                         
-                        box(width = 4,
-                            selectInput("choose_freq_thresh", "Select Frequency Threshold",
-                                        choices = c("% >0" = 0,
-                                                    "> 1%" = 1, 
-                                                    "> 3%" = 3,
-                                                    "> 5%" = 5),
-                                        selected = 0),
+                        box(title = "Selection Variables",
+                            width = 4,
                             selectInput("choose_cont_thresh", "Select Contingency Threshold",
                                         choices = c("1%" = 1, 
                                                     "2%" = 2, 
@@ -97,9 +87,8 @@ ui = dashboardPage(
                                                     "4%" = 4,
                                                     "5%" = 5),
                                         selected = 1),
-                            uiOutput("choose_cont_marker"),
-                            uiOutput("choose_clinical"),
                             uiOutput("choose_marker"),
+                            uiOutput("choose_clinical"),
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
                                                     "Violin Plot" = 2, 
@@ -111,24 +100,40 @@ ui = dashboardPage(
                                                     "Viridis" = "viridis", 
                                                     "Plasma" = "plasma", 
                                                     "Inferno" = "inferno"),
-                                        selected = "viridis")
+                                        selected = "viridis"),
+                        style = "height:540px"
                             ),
                         
                         box(width = 8, 
-                            title="Frequency Table",
-                            tableOutput("freqTable")
-                        ),
-                        
-                        box(width = 8, 
-                            title="Contingency Table",
-                            tableOutput("contTable")
-                        ),
-                        
-                        box(width = 8, 
                             title = "Boxplot",
-                            plotOutput("boxplot", height = 250)
+                            plotOutput("boxplot", height = 520)
                             )
+                        )
+                    ,
+                    
+                    fluidRow(
+                        box(width = 4, 
+                            title="Contingency Table",
+                            tableOutput("contTable"),
+                            style = "height:120px"
+                            ),
+                        
+                        box(width = 3, 
+                            title="Frequency Table",
+                            tableOutput("freqTable"),
+                            style = "height:120px"
                         ),
+                        
+                        box(width = 5, 
+                            title="Summary Table",
+                            tableOutput("summaryTable"),
+                            style = "height:120px"
+                            )
+                        
+                        )
+            ),
+            tabItem(tabName='multivariate',
+                    h1("Multivariate Summary and Visualization", align="center"),
                     fluidRow(
                         
                         box(width = 4, 
@@ -146,6 +151,7 @@ ui = dashboardPage(
                 )
             ,
             tabItem(tabName = 'spatial',
+                    h1("Spatial Summary", align="center"),
                     box(title = "Spatial Plot Selections"
                         ,width=4,
                         uiOutput("choosePlotlyMarkers")

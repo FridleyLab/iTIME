@@ -16,19 +16,22 @@
 # )
 # markers = markers_all[1]
 # percent_threshold  = c(1, 3, 5)
+
+#Chris's function
+#removed percent
 freq_table_by_marker <-
   function(summary_clinical_merge,
            markers = markers) {
     cells <-
-      summary_clinical_merge %>% select(any_of(paste('Percent', markers)))
+      summary_clinical_merge %>% select(any_of(paste( markers)))
     
     table <-
       cells %>% 
-      mutate(`> 1%` = .[[paste('Percent', markers)]]>1,
-             `> 2%` = .[[paste('Percent', markers)]]>2,
-             `> 3%` = .[[paste('Percent', markers)]]>3,
-             `> 4%` = .[[paste('Percent', markers)]]>4,
-             `> 5%` = .[[paste('Percent', markers)]]>5) %>% 
+      mutate(`> 1%` = .[[paste( markers)]]>1,
+             `> 2%` = .[[paste( markers)]]>2,
+             `> 3%` = .[[paste( markers)]]>3,
+             `> 4%` = .[[paste( markers)]]>4,
+             `> 5%` = .[[paste( markers)]]>5) %>% 
       select(`> 1%`,`> 2%`,`> 3%`,`> 5%`,`> 5%`) %>%
       summarize_all( ~ sum(.))
     rownames(table) = markers
