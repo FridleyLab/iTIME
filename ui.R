@@ -103,7 +103,7 @@ ui = dashboardPage(
                                         selected = "viridis"),
                             awesomeCheckbox("sqrt_transform", "Square Root Transformation",
                                           value = FALSE),
-                        style = "height:540px"
+                        style = "height:575px"
                             ),
                         
                         box(width = 8, 
@@ -155,8 +155,9 @@ ui = dashboardPage(
                         
                         box(width = 8, 
                             title = "Heatmap",
-                            plotOutput("heatmap", height = 250),
-                            height = 500
+                            plotOutput("heatmap", height = 510),
+                            downloadButton('download_heatmap', "Download Heatmap"),
+                            height = 607
                         )
                     ),
                 )

@@ -118,13 +118,12 @@ shinyServer(function(input, output) {
         return(summary_data())
         
     })
-
-    output$boxplot <- renderPlot({
-        validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
+    
+    univar_plots = reactive({
+         validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
                  need(input$picked_clinical !="", ""),
                  need(input$summaryPlotColors !="", ""),
                  need(summary_data_merged() !="", ""))
-        
         # generate bins based on input$bins from ui.R
         cellvar <-  input$picked_marker
         clinvar <- input$picked_clinical
@@ -143,24 +142,19 @@ shinyServer(function(input, output) {
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
         
         plots[[as.integer(input$summaryPlotType)]]
+    })
 
+    output$boxplot <- renderPlot({
+        univar_plots()
     })
     
     output$download_boxplot = downloadHandler(
-        filename = function() { paste(Sys.Date(), '-boxplot.png', sep='') },
+        filename = function() { paste(Sys.Date(), '-summary_plot.png', sep='') },
         
         content = function(file) {
-            ggsave(file, plot = summary_plots_fn(if(input$sqrt_transform == FALSE){
-                data_table = summary_data_merged()
-            }else{
-                data_table = summary_data_merged()
-                data_table[,cellvar] = sqrt(data_table[,cellvar])
-            }, 
-            input$picked_clinical, 
-            input$picked_marker, 
-            input$summaryPlotColors)[[as.integer(input$summaryPlotType)]], device = "png")
+            ggsave(file, plot = univar_plots(), device = "png")
         }
-        )
+    )
     
     output$choose_heatmap_marker = renderUI({
         heatmap_names = colnames(summary_data())
@@ -186,8 +180,8 @@ shinyServer(function(input, output) {
         
     })
     
-    output$heatmap = renderPlot({
-        validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
+    heatmap_plot = reactive({
+         validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
         if(is.null(summary_data_merged())){
             return()
         }
@@ -211,7 +205,19 @@ shinyServer(function(input, output) {
         #          markers = input$heatmap_selection,
         #          clin_vars = input$picked_clinical_factor,
         #          colorscheme = input$summaryPlotColors)
-    }, height = 400)
+    })
+    
+    output$heatmap = renderPlot({
+       heatmap_plot()
+    }, height = 500)
+    
+    output$download_heatmap = downloadHandler(
+        filename = function() { paste(Sys.Date(), '-heatmap.png', sep='') },
+        
+        content = function(file) {
+            ggsave(file, plot = heatmap_plot(), device = "png")
+        }
+    )
     
     output$spatial_plotly = renderPlotly({
         validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
