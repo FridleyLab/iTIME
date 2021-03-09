@@ -3,7 +3,8 @@
 #removed forced sqrt of cells' value
 
 pheat_map <- function(summary_clinical_merge, markers = markers,
-                      clin_vars = clin_vars, colorscheme){
+                      clin_vars = clin_vars, colorscheme, 
+                      anno_clust = anno_clust, mark_clust = mark_clust){
   
   cells <- summary_clinical_merge %>% select(any_of(markers))
   cells <- as.matrix(cells)
@@ -11,6 +12,13 @@ pheat_map <- function(summary_clinical_merge, markers = markers,
   annotation <- summary_clinical_merge %>% select(all_of(clin_vars)) %>%
     data.frame(check.names = FALSE)
   rownames(annotation) = 1:nrow(cells)
-  pheatmap::pheatmap(t(cells), show_rownames = T, show_colnames = F, treeheight_col = 0, treeheight_row = 0, annotation_col = annotation)
+  pheatmap::pheatmap(t(cells), 
+                     show_rownames = T, 
+                     cluster_rows = mark_clust, 
+                     cluster_cols = anno_clust, 
+                     show_colnames = F, 
+                     treeheight_col = 0, 
+                     treeheight_row = 0, 
+                     annotation_col = annotation)
   
 }
