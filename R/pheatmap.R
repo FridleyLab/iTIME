@@ -6,10 +6,13 @@ pheat_map <- function(summary_clinical_merge, markers = markers,
                       clin_vars = clin_vars, colorscheme, 
                       anno_clust = anno_clust, mark_clust = mark_clust){
   
-  cells <- summary_clinical_merge %>% select(any_of(markers))
+  tmp <- summary_clinical_merge %>% select(any_of(markers),all_of(clin_vars)) %>%
+    group_by(.[[clin_vars]]) %>% arrange(.[[clin_vars]]) %>% 
+    data.frame(check.names = FALSE)
+  cells <- tmp %>% select(any_of(markers))
   cells <- as.matrix(cells)
-  rownames(cells) = 1:nrow(cells)
-  annotation <- summary_clinical_merge %>% select(all_of(clin_vars)) %>%
+  rownames(cells) <- 1:nrow(cells)
+  annotation <- tmp %>% select(all_of(clin_vars)) %>%
     data.frame(check.names = FALSE)
   rownames(annotation) = 1:nrow(cells)
   pheatmap::pheatmap(t(cells), 

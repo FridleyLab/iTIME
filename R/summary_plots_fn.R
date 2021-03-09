@@ -16,11 +16,12 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme){
     labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
     viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
   
-  hist_p <- ggplot(datatable, aes(x=get(cellvar), fill=get(clinvar))) + 
-    geom_histogram(binwidth=100, position='stack') +
+  hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
+    geom_histogram(position='stack', fill = 'white') + facet_wrap(get(clinvar)~., nrow = 1) +   
     xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
     labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
-    viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE)
+    viridis::scale_color_viridis(option = colorscheme, discrete = TRUE) + 
+    theme(legend.position = 'none')
   
   if(is.character(datatable[[clinvar]])){
     scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
