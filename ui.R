@@ -144,8 +144,8 @@ ui = dashboardPage(
                                         choices=c("None" = "none",
                                                   "Square Root" = "square_root"),
                                         selected="square_root"),
-                            awesomeCheckbox("cluster_heatmap_annotation", "Cluster by Annotation",
-                                            value = FALSE),
+                            awesomeCheckbox("cluster_heatmap_annotation", "Cluster Columns",
+                                            value = TRUE),
                             awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
                                             value = TRUE),
                             uiOutput("choose_heatmap_marker"),
@@ -185,7 +185,10 @@ ui = dashboardPage(
                     box(width = 8
                         ,title = "Ripley's Plot"
                         ,plotOutput("ripleysPlot", height = 250)
-                    )
+                    ),
+                    HTML('<footer>
+                         In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
+                         </footer>')
                 ),
             tabItem(tabName = 'help',
                     box(title = "Development Team", 

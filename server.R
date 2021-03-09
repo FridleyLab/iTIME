@@ -185,16 +185,13 @@ shinyServer(function(input, output) {
         
         
         
-        # pheat_map(summary_clinical_merge = heatmap_data,
-        #          markers = input$heatmap_selection,
-        #          clin_vars = input$picked_clinical_factor,
-        #          colorscheme = input$summaryPlotColors,
-        #          anno_clust = input$cluster_heatmap_annotation,
-        #          mark_clust = input$cluster_heatmap_Marker)
-        heat_map(summary_clinical_merge = heatmap_data,
+        pheat_map(summary_clinical_merge = heatmap_data,
                  markers = input$heatmap_selection,
                  clin_vars = input$picked_clinical_factor,
-                 colorscheme = input$summaryPlotColors)
+                 colorscheme = input$summaryPlotColors,
+                 anno_clust = input$cluster_heatmap_annotation,
+                 mark_clust = input$cluster_heatmap_Marker)
+        
     }, height = 400)
     
     output$spatial_plotly = renderPlotly({
