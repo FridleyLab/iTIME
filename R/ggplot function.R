@@ -12,7 +12,9 @@ Ripley <- function(data, cell_type, estimator, sampleInfo, colorscheme, alpha=0.
     set.seed(333)
     EL = envelope(po_pp[w], Kest, nsim=sims)
     est2 <- est %>% pivot_longer(2:ncol(.), names_to = "type", values_to = "value")
-    
+    est2$value = est2$value
+    EL$lo = EL$lo
+    EL$hi = EL$hi
     
   } else if(estimator=="L"){
     est <- as.data.frame(Lest(po_pp)) %>% select(-border)
@@ -34,7 +36,7 @@ Ripley <- function(data, cell_type, estimator, sampleInfo, colorscheme, alpha=0.
   }
   
   p = ggplot() + geom_line(aes(x=r, y=value, color = type),est2) + 
-    ggtitle(paste(n, " points; ", paste0(paste(names(sampleInfo), sampleInfo, sep=":")[-length(sampleInfo)], collapse = "; "), sep="")) +
+    #ggtitle(paste(n, " points; ", paste0(paste(names(sampleInfo), sampleInfo, sep=":")[-length(sampleInfo)], collapse = "; "), sep="")) +
     theme_classic(base_size = 20) +
     #theme(legend.position="bottom") +
     viridis::scale_color_viridis(option = colorscheme, discrete = TRUE, name = "Estimate", ############### NEW
@@ -43,11 +45,8 @@ Ripley <- function(data, cell_type, estimator, sampleInfo, colorscheme, alpha=0.
     #scale_color_discrete(name = "Estimate", ############### NEW
     #                     labels = c("Observed Isotropic", "Theoretical CSR", "Observed Translate"))
   
-  if(estimator == "K" | estimator == "L"){
     p + geom_ribbon(data = EL, aes(x=r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA)
-  } else {
-    p
-  }
+
     
 }
 
