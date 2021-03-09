@@ -69,7 +69,7 @@ scatter_plotly_old = function(data = data, markers = markers, new_names = new_na
                      legendtitle=TRUE, showarrow=FALSE ) %>%
     add_annotations( text="Marker Type:", xref="paper", yref="paper",
                      x=1.02, xanchor="left",
-                     y=0.73, yanchor="bottom",   
+                     y=0.75, yanchor="bottom",   
                      legendtitle=TRUE, showarrow=FALSE ) %>%
     layout(legend=list(tracegroupgap =30, y=0.9, yanchor="top"))
   

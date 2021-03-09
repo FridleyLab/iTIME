@@ -182,7 +182,8 @@ ui = dashboardPage(
                                      choices = c("Ripley's K" = "K",
                                                  "Besag's L" = "L",
                                                  "Marcon's M" = "M"),
-                                     selected = "K")
+                                     selected = "K"),
+                        height = 
                     ),
                     
                     box(width = 8
