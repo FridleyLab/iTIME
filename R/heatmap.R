@@ -20,10 +20,11 @@ heat_map <- function(summary_clinical_merge, markers = markers,
                                                          fill = annotation_colors)
                           )
   
-  full_heatmap <- Heatmap(mat = t(sqrt(cells)), 
+  full_heatmap <- Heatmap(mat = t(cells), 
                           col = viridis::viridis_pal(option = colorscheme)(20),
                           show_column_names = FALSE,
                           show_row_names = TRUE,
+                          row_names_side = "left",
                           cluster_columns = TRUE,
                           show_row_dend = FALSE,
                           show_column_dend = FALSE,
@@ -36,7 +37,7 @@ heat_map <- function(summary_clinical_merge, markers = markers,
                           )
   
 
-  full_heatmap
+  draw(full_heatmap, padding = unit(c(2, 40, 2, 40), "mm"))
   }
 
 

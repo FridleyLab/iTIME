@@ -30,7 +30,7 @@ custom_blue <- {shinyDashboardThemeDIY(
   ,bodyBackColor = "rgb(248,248,248)"
   
   ### header
-  ,logoBackColor = "rgb(23,103,124)"
+  ,logoBackColor = "rgb(0, 120, 206)"
   
   ,headerButtonBackColor = "rgb(238,238,238)"
   ,headerButtonIconColor = "rgb(75,75,75)"
@@ -44,9 +44,9 @@ custom_blue <- {shinyDashboardThemeDIY(
   ### sidebar
   ,sidebarBackColor = cssGradientThreeColors(
     direction = "down"
-    ,colorStart = "rgb(20,97,117)"
-    ,colorMiddle = "rgb(56,161,187)"
-    ,colorEnd = "rgb(3,22,56)"
+    ,colorStart = "rgb(0, 120, 206)"
+    ,colorMiddle = "rgb(0, 90, 155)"
+    ,colorEnd = "rgb(0, 60, 104)"
     ,colorStartPos = 0
     ,colorMiddlePos = 50
     ,colorEndPos = 100
@@ -74,9 +74,9 @@ custom_blue <- {shinyDashboardThemeDIY(
   
   ,sidebarTabBackColorSelected = cssGradientThreeColors(
     direction = "right"
-    ,colorStart = "rgba(44,222,235,1)"
-    ,colorMiddle = "rgba(44,222,235,1)"
-    ,colorEnd = "rgba(0,255,213,1)"
+    ,colorStart = "rgb(70, 177, 255)"
+    ,colorMiddle = "rgb(70, 177, 255)"
+    ,colorEnd = "rgb(70, 177, 255)"
     ,colorStartPos = 0
     ,colorMiddlePos = 30
     ,colorEndPos = 100
@@ -86,9 +86,9 @@ custom_blue <- {shinyDashboardThemeDIY(
   
   ,sidebarTabBackColorHover = cssGradientThreeColors(
     direction = "right"
-    ,colorStart = "rgba(44,222,235,1)"
-    ,colorMiddle = "rgba(44,222,235,1)"
-    ,colorEnd = "rgba(0,255,213,1)"
+    ,colorStart = "rgb(70, 177, 255)"
+    ,colorMiddle = "rgb(70, 177, 255)"
+    ,colorEnd = "rgb(70, 177, 255)"
     ,colorStartPos = 0
     ,colorMiddlePos = 30
     ,colorEndPos = 100
@@ -106,9 +106,9 @@ custom_blue <- {shinyDashboardThemeDIY(
   ,boxShadowColor = "rgba(0,0,0,.1)"
   ,boxTitleSize = 16
   ,boxDefaultColor = "rgb(210,214,220)"
-  ,boxPrimaryColor = "rgba(44,222,235,1)"
+  ,boxPrimaryColor = "rgb(70, 177, 255)"
   ,boxInfoColor = "rgb(210,214,220)"
-  ,boxSuccessColor = "rgba(44,222,235,1)"
+  ,boxSuccessColor = "rgb(70, 177, 255)"
   ,boxWarningColor = "rgb(244,156,104)"
   ,boxDangerColor = "rgb(255,88,55)"
   
@@ -117,7 +117,7 @@ custom_blue <- {shinyDashboardThemeDIY(
   ,tabBoxTabTextColor = "rgb(0,0,0)"
   ,tabBoxTabTextColorSelected = "rgb(0,0,0)"
   ,tabBoxBackColor = "rgb(255,255,255)"
-  ,tabBoxHighlightColor = "rgba(44,222,235,1)"
+  ,tabBoxHighlightColor = "rgb(70, 177, 255)"
   ,tabBoxBorderRadius = 5
   
   ### inputs

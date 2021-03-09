@@ -63,170 +63,9 @@ shinyServer(function(input, output) {
         } else {
             df = read.csv("data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv")
         }
-        assign('spatial', df, envir=globalenv())
+        #assign('spatial', df, envir=globalenv())
         
         return(df)
-    })
-    
-    summary_data_merged = reactive({
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
-        
-        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
-        #print(colnames(df))
-        return(df)
-    })
-    
-    frequency_table = reactive({
-        if(is.null(summary_data_merged())){
-            return()
-        }
-        data_table = summary_data_merged()
-        
-        markers = colnames(data_table)[grepl(") Positive", colnames(data_table))]
-        print(markers)
-        
-        df = freq_table(data_table, markers = markers, percent_threshold = input$choose_freq_thresh)
-        
-        return(df)
-    })
-    
-    cont_table = reactive({
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
-        
-        data_table = summary_data_merged()
-        markers = input$picked_cont_marker
-        clinvar <- input$picked_clinical
-        
-        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
-        #print(df)
-        
-        return(df)
-    })
-    
-    output$summaryout = DT::renderDataTable({
-        
-        DT::datatable(summary_data(), options = list(scrollX = TRUE))
-        
-    })
-
-    output$boxplot <- renderPlot({
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
-        
-        # generate bins based on input$bins from ui.R
-        cellvar <-  input$picked_marker
-        clinvar <- input$picked_clinical
-        colorscheme <- input$summaryPlotColors
-        
-        data_table = summary_data_merged()
-        #assign("summary_table", data_table, envir = .GlobalEnv)
-        
-        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
-        
-        plots[[as.integer(input$summaryPlotType)]]
-
-    })
-    
-    output$heatmap = renderPlot({
-        if(is.null(summary_data_merged())){
-            return()
-        }
-        
-        
-        heatmap_data = summary_data_merged()
-        print(input$heatmap_selection)
-        
-        pheat_map(summary_clinical_merge = heatmap_data,
-                 markers = input$heatmap_selection,
-                 clin_vars = input$picked_clinical_factor,
-                 colorscheme = input$summaryPlotColors)
-    }, height = 400)
-    
-    output$choose_heatmap_marker = renderUI({
-        heatmap_names = colnames(summary_data())
-        
-        heatmap_names2 = heatmap_names[grep("^(?=Percent.*)",
-                              heatmap_names,perl=TRUE,ignore.case = TRUE)]
-        
-        awesomeCheckboxGroup("heatmap_selection",
-                           "Choose Cell Marker for Heatmap",
-                           choices = heatmap_names2,
-                           selected = heatmap_names2,
-                           status = "info"
-        )
-    })
-    
-    output$choose_heatmap_clinical = renderUI({
-        
-        clinical_heatmap_names = colnames(clinical_data())
-        
-        selectInput("picked_clinical_factor", "Choose Annotation for Heatmap",
-                    choices = clinical_heatmap_names,
-                    selected = clinical_heatmap_names[3])
-        
-    })
-    
-    output$spatial_plotly = renderPlotly({
-        validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
-        
-        markers = input$plotly_selection
-        new_names = markers
-        colorscheme = input$summaryPlotColors
-        colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
-        
-        scatter_plotly_old(data = spatial_data(), markers = markers, 
-                           new_names = new_names, colorscheme = colorscheme)
-    })
-    
-    output$choosePlotlyMarkers = renderUI({
-        ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
-        
-        whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
-                         ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
-        tmp = ripleys_spatial_names[whichcols]
-        acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
-        print(acceptable_ripleys_names)
-        
-        awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
-                    choices = rev(acceptable_ripleys_names),
-                    selected = acceptable_ripleys_names[grep("^(?=.*Opal)",
-                                                             acceptable_ripleys_names, 
-                                                             perl=TRUE)],
-                    status = "info"
-                    )
-    })
-    
-    output$summaryTable = renderTable({
-
-        data_table = summary_data_merged()
-        cellvar <-  input$picked_marker
-        sub_id = input$clinical_merge
-        
-        temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-                          "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
-                          "Median" = median(data_table[,cellvar], na.rm = TRUE),
-                          "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-                          "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
-                          "Max" = max(data_table[,cellvar], na.rm=TRUE),
-                          "SD" = sd(data_table[,cellvar], na.rm=TRUE),
-                          "N Subs" = length(unique(data_table[,sub_id])),
-                          "N Samples" = length(data_table[,sub_id])
-                          )
-        #temp = cbind(temp, freq_table(df, markers = markers, percent_threshold = input$choose_freq_thresh))
-        return(temp)
-    })
-    
-    output$freqTable = renderTable({
-        return(frequency_table())
-    })
-    
-    output$contTable = renderTable({
-        return(cont_table())
     })
     
     output$choose_summary_merge = renderUI({
@@ -271,7 +110,7 @@ shinyServer(function(input, output) {
     
     output$choose_marker = renderUI({
         
-        summary_marker_names = colnames(summary_data())
+        summary_marker_names = colnames(summary_data_merged())[grepl("^Percent", colnames(summary_data_merged()))]
         
         selectInput("picked_marker", "Choose Cell Marker to Plot",
                     choices = summary_marker_names,
@@ -287,6 +126,225 @@ shinyServer(function(input, output) {
                     choices = summary_clinical_names,
                     selected = summary_clinical_names[3])
         
+    })
+    
+    summary_data_merged = reactive({
+        if(is.null(clinical_data()) | is.null(summary_data())){
+            return()
+        }
+        
+        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+        return(df)
+    })
+    
+    frequency_table = reactive({
+        validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        data_table = summary_data_merged()
+        
+        markers = input$picked_marker
+        
+        df = freq_table_by_marker(data_table, markers = markers)
+        
+        return(df)
+    })
+    
+    cont_table = reactive({
+        validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
+        if(is.null(clinical_data()) | is.null(summary_data())){
+            return()
+        }
+        
+        data_table = summary_data_merged()
+        #assign("summary_data_merged", data_table, envir = globalenv())
+        
+        markers = input$picked_marker
+        clinvar <- input$picked_clinical
+        
+        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
+        
+        
+        return(df)
+    })
+    
+    sumTable = reactive({
+        validate(need(summary_data() !="", "Please wait while things finish loading....."))
+        if(is.null(summary_data())){
+            return()
+        }
+        
+        return(summary_data())
+        
+    })
+    
+    output$summaryTable = renderTable({
+        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
+                 need(input$picked_marker !="", "Please wait while things finish loading....."),
+                 need(input$clinical_merge !="", "Please wait while things finish loading....."))
+
+        data_table = summary_data_merged()
+        cellvar <-  input$picked_marker
+        sub_id = input$clinical_merge
+        
+        temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
+                          "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
+                          "Median" = median(data_table[,cellvar], na.rm = TRUE),
+                          "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
+                          "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
+                          "Max" = max(data_table[,cellvar], na.rm=TRUE),
+                          "SD" = sd(data_table[,cellvar], na.rm=TRUE),
+                          "N Subs" = length(unique(data_table[,sub_id])),
+                          "N Samples" = length(data_table[,sub_id])
+                          )
+        return(temp)
+    })
+    
+    output$freqTable = renderTable({
+        return(frequency_table())
+    })
+    
+    output$contTable = renderTable({
+        return(cont_table())
+    })
+    
+    output$summaryout = renderTable({
+        return(sumTable())
+        
+    })
+    
+    univar_plots = reactive({
+         validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
+                 need(input$picked_clinical !="", ""),
+                 need(input$summaryPlotColors !="", ""),
+                 need(summary_data_merged() !="", ""))
+        # generate bins based on input$bins from ui.R
+        cellvar <-  input$picked_marker
+        clinvar <- input$picked_clinical
+        colorscheme <- input$summaryPlotColors
+        
+        if(input$sqrt_transform == FALSE){
+            data_table = summary_data_merged()
+        }else{
+            data_table = summary_data_merged()
+            data_table[,cellvar] = sqrt(data_table[,cellvar])
+        }
+        
+        #assign("summary_table", data_table, envir = .GlobalEnv)
+        #assign("cell_var", cellvar, envir=.GlobalEnv)
+        
+        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
+        
+        plots[[as.integer(input$summaryPlotType)]]
+    })
+
+    output$boxplot <- renderPlot({
+        univar_plots()
+    })
+    
+    output$download_boxplot = downloadHandler(
+        filename = function() { paste(Sys.Date(), '-summary_plot.png', sep='') },
+        
+        content = function(file) {
+            ggsave(file, plot = univar_plots(), device = "png")
+        }
+    )
+    
+    output$choose_heatmap_marker = renderUI({
+        heatmap_names = colnames(summary_data())
+        
+        heatmap_names2 = heatmap_names[grep("^(?=Percent.*)",
+                              heatmap_names,perl=TRUE,ignore.case = TRUE)]
+        
+        awesomeCheckboxGroup("heatmap_selection",
+                           "Choose Cell Marker for Heatmap",
+                           choices = heatmap_names2,
+                           selected = heatmap_names2,
+                           status = "primary"
+        )
+    })
+    
+    output$choose_heatmap_clinical = renderUI({
+        
+        clinical_heatmap_names = colnames(clinical_data())
+        
+        selectInput("picked_clinical_factor", "Choose Annotation for Heatmap",
+                    choices = clinical_heatmap_names,
+                    selected = clinical_heatmap_names[3])
+        
+    })
+    
+    heatmap_plot = reactive({
+         validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        
+        if(input$heatmap_transform == "none"){
+            heatmap_data = summary_data_merged()
+        }else if(input$heatmap_transform == "square_root"){
+            heatmap_data = summary_data_merged()
+            heatmap_data[,input$heatmap_selection] = sqrt(heatmap_data[,input$heatmap_selection])
+        }
+        
+        
+        
+        pheat_map(summary_clinical_merge = heatmap_data,
+                 markers = input$heatmap_selection,
+                 clin_vars = input$picked_clinical_factor,
+                 colorscheme = input$summaryPlotColors,
+                 anno_clust = input$cluster_heatmap_annotation,
+                 mark_clust = input$cluster_heatmap_Marker)
+        # heat_map(summary_clinical_merge = heatmap_data,
+        #          markers = input$heatmap_selection,
+        #          clin_vars = input$picked_clinical_factor,
+        #          colorscheme = input$summaryPlotColors)
+    })
+    
+    output$heatmap = renderPlot({
+       heatmap_plot()
+    }, height = 500)
+    
+    output$download_heatmap = downloadHandler(
+        filename = function() { paste(Sys.Date(), '-heatmap.png', sep='') },
+        
+        content = function(file) {
+            ggsave(file, plot = heatmap_plot(), device = "png")
+        }
+    )
+    
+    output$choosePlotlyMarkers = renderUI({
+        ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
+        
+        whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
+                         ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
+        tmp = ripleys_spatial_names[whichcols]
+        acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
+        
+        awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
+                    choices = rev(acceptable_ripleys_names),
+                    selected = acceptable_ripleys_names[grep("^(?=.*Opal)",
+                                                             acceptable_ripleys_names, 
+                                                             perl=TRUE)],
+                    status = "info"
+                    )
+    })
+    
+    spatial_plot = reactive({
+        validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
+        
+        markers = input$plotly_selection
+        new_names = markers
+        colorscheme = input$summaryPlotColors
+        colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
+        
+        scatter_plotly_old(data = spatial_data(), markers = markers, 
+                           new_names = new_names, colorscheme = colorscheme)
+    })
+    
+    output$spatial_plotly = renderPlotly({
+        spatial_plot()
     })
     
     output$choose_ripley = renderUI({

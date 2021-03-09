@@ -13,10 +13,11 @@ ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
         sidebarMenu(
-            menuItem("Importing Data", tabName = 'import', icon = icon('table')),
-            menuItem("Summary", tabName = 'summary', icon = icon('drafting-compass')),
+            menuItem("Importing Data", tabName = 'import', icon = icon('upload')),
+            menuItem("Univariate Summary", tabName = 'univariate', icon = icon('angle-right')),
+            menuItem("Multivariate Summary", tabName = 'multivariate', icon = icon('angle-double-right')),
             menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
-            menuItem("Help", tabName = 'help', icon = icon('glasses')),
+            menuItem("Getting Started", tabName = 'help', icon = icon('glasses')),
             tags$br(),
             fluidRow(column(12, align="center",
                             tags$br(),
@@ -36,6 +37,7 @@ ui = dashboardPage(
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
+                    h1("Import Data", align="center"),
                     fluidRow(
                         box(
                             fileInput("summaryData", "Choose a Summary File",
@@ -72,23 +74,12 @@ ui = dashboardPage(
                     ),
             ),
             
-            tabItem(tabName = 'summary',
-                    fluidRow(
-                        box(width = 12, 
-                            title="Summary Table",
-                            tableOutput("summaryTable")
-                            ),
-                        ),
-                    
+            tabItem(tabName = 'univariate',
+                    h1("Univariate Summary and Visualization", align="center"),
                     fluidRow(
                         
-                        box(width = 4,
-                            selectInput("choose_freq_thresh", "Select Frequency Threshold",
-                                        choices = c("% >0" = 0,
-                                                    "> 1%" = 1, 
-                                                    "> 3%" = 3,
-                                                    "> 5%" = 5),
-                                        selected = 0),
+                        box(title = "Selection Variables",
+                            width = 4,
                             selectInput("choose_cont_thresh", "Select Contingency Threshold",
                                         choices = c("1%" = 1, 
                                                     "2%" = 2, 
@@ -96,9 +87,8 @@ ui = dashboardPage(
                                                     "4%" = 4,
                                                     "5%" = 5),
                                         selected = 1),
-                            uiOutput("choose_cont_marker"),
-                            uiOutput("choose_clinical"),
                             uiOutput("choose_marker"),
+                            uiOutput("choose_clinical"),
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
                                                     "Violin Plot" = 2, 
@@ -110,49 +100,79 @@ ui = dashboardPage(
                                                     "Viridis" = "viridis", 
                                                     "Plasma" = "plasma", 
                                                     "Inferno" = "inferno"),
-                                        selected = "viridis")
+                                        selected = "viridis"),
+                            awesomeCheckbox("sqrt_transform", "Square Root Transformation",
+                                          value = FALSE),
+                        style = "height:575px"
                             ),
                         
                         box(width = 8, 
-                            title="Frequency Table",
-                            tableOutput("freqTable")
-                        ),
-                        
-                        box(width = 8, 
-                            title="Contingency Table",
-                            tableOutput("contTable")
-                        ),
-                        
-                        box(width = 8, 
                             title = "Boxplot",
-                            plotOutput("boxplot", height = 250)
+                            plotOutput("boxplot", height = 520),
+                        downloadButton('download_boxplot', "Download Plot")
                             )
+                        )
+                    ,
+                    
+                    fluidRow(
+                        box(width = 4, 
+                            title="Contingency Table",
+                            tableOutput("contTable"),
+                            style = "height:120px"
+                            ),
+                        
+                        box(width = 3, 
+                            title="Frequency Table",
+                            tableOutput("freqTable"),
+                            style = "height:120px"
                         ),
+                        
+                        box(width = 5, 
+                            title="Summary Table",
+                            tableOutput("summaryTable"),
+                            style = "height:120px"
+                            )
+                        
+                        )
+            ),
+            tabItem(tabName='multivariate',
+                    h1("Multivariate Summary and Visualization", align="center"),
                     fluidRow(
                         
                         box(width = 4, 
                             uiOutput("choose_heatmap_clinical"),
+                            selectInput("heatmap_transform", "Select Transformation Method",
+                                        choices=c("None" = "none",
+                                                  "Square Root" = "square_root"),
+                                        selected="square_root"),
+                            awesomeCheckbox("cluster_heatmap_annotation", "Cluster Columns",
+                                            value = TRUE),
+                            awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
+                                            value = TRUE),
                             uiOutput("choose_heatmap_marker"),
                             tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
                         ),
                         
                         box(width = 8, 
                             title = "Heatmap",
-                            plotOutput("heatmap", height = 250),
-                            height = 500
+                            plotOutput("heatmap", height = 510),
+                            downloadButton('download_heatmap', "Download Heatmap"),
+                            height = 607
                         )
                     ),
                 )
             ,
             tabItem(tabName = 'spatial',
+                    h1("Spatial Summary", align="center"),
                     box(title = "Spatial Plot Selections"
                         ,width=4,
-                        uiOutput("choosePlotlyMarkers")
+                        uiOutput("choosePlotlyMarkers"),
+                        height = 607
                     ),
                     
                     box(width = 8
                         ,title = "Spatial Plot"
-                        ,plotlyOutput("spatial_plotly")
+                        ,plotlyOutput("spatial_plotly", height = 545)
                     ),
                     
                     box(title = "Ripley's K Selections"
@@ -162,13 +182,17 @@ ui = dashboardPage(
                                      choices = c("Ripley's K" = "K",
                                                  "Besag's L" = "L",
                                                  "Marcon's M" = "M"),
-                                     selected = "K")
+                                     selected = "K"),
+                        height = 
                     ),
                     
                     box(width = 8
                         ,title = "Ripley's Plot"
                         ,plotOutput("ripleysPlot", height = 250)
-                    )
+                    ),
+                    HTML('<footer>
+                         In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
+                         </footer>')
                 ),
             tabItem(tabName = 'help',
                     box(title = "Development Team", 
