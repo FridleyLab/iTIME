@@ -146,6 +146,22 @@ shinyServer(function(input, output) {
 
     })
     
+    output$download_boxplot = downloadHandler(
+        filename = function() { paste(Sys.Date(), '-boxplot.png', sep='') },
+        
+        content = function(file) {
+            ggsave(file, plot = summary_plots_fn(if(input$sqrt_transform == FALSE){
+                data_table = summary_data_merged()
+            }else{
+                data_table = summary_data_merged()
+                data_table[,cellvar] = sqrt(data_table[,cellvar])
+            }, 
+            input$picked_clinical, 
+            input$picked_marker, 
+            input$summaryPlotColors)[[as.integer(input$summaryPlotType)]], device = "png")
+        }
+        )
+    
     output$choose_heatmap_marker = renderUI({
         heatmap_names = colnames(summary_data())
         

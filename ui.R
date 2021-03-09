@@ -108,7 +108,8 @@ ui = dashboardPage(
                         
                         box(width = 8, 
                             title = "Boxplot",
-                            plotOutput("boxplot", height = 520)
+                            plotOutput("boxplot", height = 520),
+                        downloadButton('download_boxplot', "Download Plot")
                             )
                         )
                     ,
