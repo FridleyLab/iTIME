@@ -68,6 +68,66 @@ shinyServer(function(input, output) {
         return(df)
     })
     
+    output$choose_summary_merge = renderUI({
+        
+        summary_column_names = colnames(summary_data())
+        
+        selectInput("summary_merge", "Choose Summary Merge Variable",
+                    choices = summary_column_names,
+                    selected = summary_column_names[1])
+        
+    })
+    
+    output$choose_clinical_merge = renderUI({
+        
+        clinical_column_names = colnames(clinical_data())
+        
+        selectInput("clinical_merge", "Choose Clinical Merge Variable",
+                    choices = clinical_column_names,
+                    selected = clinical_column_names[1])
+        
+    })
+    
+    output$choose_spatial_merge = renderUI({
+        
+        spatial_column_names = colnames(spatial_data())
+        
+        selectInput("spatial_merge", "Choose Spatial Merge Variable",
+                    choices = spatial_column_names,
+                    selected = spatial_column_names[1])
+        
+    })
+    
+    output$choose_cont_marker = renderUI({
+        
+        summary_marker_names = colnames(summary_data_merged())[grepl(") Positive", colnames(summary_data_merged()))]
+        
+        selectInput("picked_cont_marker", "Choose Cell Marker for Contingency Table",
+                    choices = summary_marker_names,
+                    selected = summary_marker_names[1])
+        
+    })
+    
+    output$choose_marker = renderUI({
+        
+        summary_marker_names = colnames(summary_data_merged())[grepl("^Percent", colnames(summary_data_merged()))]
+        
+        selectInput("picked_marker", "Choose Cell Marker to Plot",
+                    choices = summary_marker_names,
+                    selected = summary_marker_names[3])
+        
+    })
+    
+    output$choose_clinical = renderUI({
+        
+        summary_clinical_names = colnames(clinical_data())
+        
+        selectInput("picked_clinical", "Choose Clinical Variable to Plot",
+                    choices = summary_clinical_names,
+                    selected = summary_clinical_names[3])
+        
+    })
+    
     summary_data_merged = reactive({
         if(is.null(clinical_data()) | is.null(summary_data())){
             return()
@@ -116,6 +176,41 @@ shinyServer(function(input, output) {
         }
         
         return(summary_data())
+        
+    })
+    
+    output$summaryTable = renderTable({
+        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
+                 need(input$picked_marker !="", "Please wait while things finish loading....."),
+                 need(input$clinical_merge !="", "Please wait while things finish loading....."))
+
+        data_table = summary_data_merged()
+        cellvar <-  input$picked_marker
+        sub_id = input$clinical_merge
+        
+        temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
+                          "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
+                          "Median" = median(data_table[,cellvar], na.rm = TRUE),
+                          "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
+                          "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
+                          "Max" = max(data_table[,cellvar], na.rm=TRUE),
+                          "SD" = sd(data_table[,cellvar], na.rm=TRUE),
+                          "N Subs" = length(unique(data_table[,sub_id])),
+                          "N Samples" = length(data_table[,sub_id])
+                          )
+        return(temp)
+    })
+    
+    output$freqTable = renderTable({
+        return(frequency_table())
+    })
+    
+    output$contTable = renderTable({
+        return(cont_table())
+    })
+    
+    output$summaryout = renderTable({
+        return(sumTable())
         
     })
     
@@ -219,18 +314,6 @@ shinyServer(function(input, output) {
         }
     )
     
-    output$spatial_plotly = renderPlotly({
-        validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
-        
-        markers = input$plotly_selection
-        new_names = markers
-        colorscheme = input$summaryPlotColors
-        colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
-        
-        scatter_plotly_old(data = spatial_data(), markers = markers, 
-                           new_names = new_names, colorscheme = colorscheme)
-    })
-    
     output$choosePlotlyMarkers = renderUI({
         ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
         
@@ -248,99 +331,20 @@ shinyServer(function(input, output) {
                     )
     })
     
-    output$summaryTable = renderTable({
-        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
-                 need(input$picked_marker !="", "Please wait while things finish loading....."),
-                 need(input$clinical_merge !="", "Please wait while things finish loading....."))
-
-        data_table = summary_data_merged()
-        cellvar <-  input$picked_marker
-        sub_id = input$clinical_merge
+    spatial_plot = reactive({
+        validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
         
-        temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-                          "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
-                          "Median" = median(data_table[,cellvar], na.rm = TRUE),
-                          "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-                          "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
-                          "Max" = max(data_table[,cellvar], na.rm=TRUE),
-                          "SD" = sd(data_table[,cellvar], na.rm=TRUE),
-                          "N Subs" = length(unique(data_table[,sub_id])),
-                          "N Samples" = length(data_table[,sub_id])
-                          )
-        return(temp)
+        markers = input$plotly_selection
+        new_names = markers
+        colorscheme = input$summaryPlotColors
+        colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
+        
+        scatter_plotly_old(data = spatial_data(), markers = markers, 
+                           new_names = new_names, colorscheme = colorscheme)
     })
     
-    output$freqTable = renderTable({
-        return(frequency_table())
-    })
-    
-    output$contTable = renderTable({
-        return(cont_table())
-    })
-    
-    output$summaryout = renderTable({
-        return(sumTable())
-        
-    })
-    
-    output$choose_summary_merge = renderUI({
-        
-        summary_column_names = colnames(summary_data())
-        
-        selectInput("summary_merge", "Choose Summary Merge Variable",
-                    choices = summary_column_names,
-                    selected = summary_column_names[1])
-        
-    })
-    
-    output$choose_clinical_merge = renderUI({
-        
-        clinical_column_names = colnames(clinical_data())
-        
-        selectInput("clinical_merge", "Choose Clinical Merge Variable",
-                    choices = clinical_column_names,
-                    selected = clinical_column_names[1])
-        
-    })
-    
-    output$choose_spatial_merge = renderUI({
-        
-        spatial_column_names = colnames(spatial_data())
-        
-        selectInput("spatial_merge", "Choose Spatial Merge Variable",
-                    choices = spatial_column_names,
-                    selected = spatial_column_names[1])
-        
-    })
-    
-    output$choose_cont_marker = renderUI({
-        
-        summary_marker_names = colnames(summary_data_merged())[grepl(") Positive", colnames(summary_data_merged()))]
-        
-        selectInput("picked_cont_marker", "Choose Cell Marker for Contingency Table",
-                    choices = summary_marker_names,
-                    selected = summary_marker_names[1])
-        
-    })
-    
-    output$choose_marker = renderUI({
-        
-        summary_marker_names = colnames(summary_data_merged())[grepl("^Percent", colnames(summary_data_merged()))]
-        
-        selectInput("picked_marker", "Choose Cell Marker to Plot",
-                    choices = summary_marker_names,
-                    selected = summary_marker_names[3])
-        
-    })
-    
-    output$choose_clinical = renderUI({
-        
-        summary_clinical_names = colnames(clinical_data())
-        
-        selectInput("picked_clinical", "Choose Clinical Variable to Plot",
-                    choices = summary_clinical_names,
-                    selected = summary_clinical_names[3])
-        
+    output$spatial_plotly = renderPlotly({
+        spatial_plot()
     })
     
     output$choose_ripley = renderUI({

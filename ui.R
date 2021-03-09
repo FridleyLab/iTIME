@@ -166,12 +166,13 @@ ui = dashboardPage(
                     h1("Spatial Summary", align="center"),
                     box(title = "Spatial Plot Selections"
                         ,width=4,
-                        uiOutput("choosePlotlyMarkers")
+                        uiOutput("choosePlotlyMarkers"),
+                        height = 607
                     ),
                     
                     box(width = 8
                         ,title = "Spatial Plot"
-                        ,plotlyOutput("spatial_plotly")
+                        ,plotlyOutput("spatial_plotly", height = 545)
                     ),
                     
                     box(title = "Ripley's K Selections"
