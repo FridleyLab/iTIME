@@ -59,9 +59,10 @@ shinyServer(function(input, output) {
             if(is.null(infile)){
                 return()
             }
-            df = read.csv(infile$datapath)
+            df = read.csv(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv")
+            df = read.csv("data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv",
+                          check.names = FALSE)
         }
         #assign('spatial', df, envir=globalenv())
         

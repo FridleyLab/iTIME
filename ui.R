@@ -107,7 +107,7 @@ ui = dashboardPage(
                             ),
                         
                         box(width = 8, 
-                            title = "Boxplot",
+                            title = "Summary Plot",
                             plotOutput("boxplot", height = 520),
                         downloadButton('download_boxplot', "Download Plot")
                             )
@@ -175,7 +175,7 @@ ui = dashboardPage(
                         ,plotlyOutput("spatial_plotly", height = 545)
                     ),
                     
-                    box(title = "Ripley's K Selections"
+                    box(title = "Spatial Clustering Estimator Selections"
                         ,width=4
                         ,uiOutput("choose_ripley")
                         ,selectInput("ripleysEstimator", "Select an Estimator",
@@ -187,7 +187,7 @@ ui = dashboardPage(
                     ),
                     
                     box(width = 8
-                        ,title = "Ripley's Plot"
+                        ,title = "Plot of Spatial Clustering Estimator"
                         ,plotOutput("ripleysPlot", height = 250)
                     ),
                     HTML('<footer>
