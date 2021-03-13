@@ -2,31 +2,26 @@ library(heatmap.plus)
 library(RColorBrewer)
 library(gplots)
 
-itime_heatmap <- function(data){
+# toogle_var <- "race"
+# annotation_info <- tibble(topbar = select(summary_clinical_merge, all_of(toogle_var)) )
+
+itime_heatmap <- function(data, toogle_var){
   df1 <- data %>% select(starts_with("%"))
-  annotation_info <- data_frame(topbar = summary_clinical_merge$race)
+  annotation_info <- tibble(topbar = select(data, all_of(toogle_var)) )
   
   df2 <- t(scale(df1))
   
-  # annotation_info
   ann <- annotation_info %>% distinct(topbar)
-  # ann
-  # NROW(ann)
-  annotation_colors <- data_frame(colss = c(RColorBrewer::brewer.pal(n = NROW(ann), "Set3")))# c(colors())
-  # annotation_colors
-  # class(annotation_colors)
-  foo <- bind_cols(ann, annotation_colors)
-  # foo
-  # 
-  super <- left_join(annotation_info, foo, by = ("topbar"))
-  # super
-  
+  annotation_colors <- tibble(colss = c(RColorBrewer::brewer.pal(n = NROW(ann), "Set3")))# c(colors())
+  color_df <- bind_cols(ann, annotation_colors)
+  color_df <- left_join(annotation_info, color_df, by = ("topbar"))
+
   heatmap.2(df2, main = "",
             
             trace = "none", density="none", col=bluered(20), cexRow=1, cexCol = 1,
             margins = c(1,16), # bottom, right
-            ColSideColors = super$colss,
+            ColSideColors = color_df$colss,
             scale = "column")
 }
 
-itime_heatmap(summary_clinical_merge)
+itime_heatmap(summary_clinical_merge, "race")
