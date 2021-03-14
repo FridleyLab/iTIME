@@ -106,7 +106,7 @@ custom_blue <- {shinyDashboardThemeDIY(
   ,boxShadowColor = "rgba(0,0,0,.1)"
   ,boxTitleSize = 16
   ,boxDefaultColor = "rgb(210,214,220)"
-  ,boxPrimaryColor = "rgb(70, 177, 255)"
+  ,boxPrimaryColor = "rgb(0, 120, 206)"
   ,boxInfoColor = "rgb(210,214,220)"
   ,boxSuccessColor = "rgb(70, 177, 255)"
   ,boxWarningColor = "rgb(244,156,104)"

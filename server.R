@@ -190,10 +190,10 @@ shinyServer(function(input, output) {
         sub_id = input$clinical_merge
         
         temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-                          "Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
+                          #"Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
                           "Median" = median(data_table[,cellvar], na.rm = TRUE),
                           "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-                          "Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
+                          #"Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
                           "Max" = max(data_table[,cellvar], na.rm=TRUE),
                           "SD" = sd(data_table[,cellvar], na.rm=TRUE),
                           "N Subs" = length(unique(data_table[,sub_id])),

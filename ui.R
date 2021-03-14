@@ -39,7 +39,7 @@ ui = dashboardPage(
             tabItem(tabName = 'import',
                     h1("Import Data", align="center"),
                     fluidRow(
-                        box(
+                        box( status = "primary",
                             fileInput("summaryData", "Choose a Summary File",
                                       multiple = FALSE,
                                       accept = c("csv",
@@ -48,7 +48,7 @@ ui = dashboardPage(
                             uiOutput("choose_summary_merge")
                         ),
                         
-                        box(
+                        box( status = "primary",
                             fileInput("clinicalData", "Choose a Clinical Data File",
                                       multiple = FALSE,
                                       accept = c("csv",
@@ -57,7 +57,7 @@ ui = dashboardPage(
                             uiOutput("choose_clinical_merge")
                         ),
                         
-                        box(
+                        box( status = "primary",
                             fileInput("spatialData", "Choose a Spatial Data File",
                                       multiple = FALSE,
                                       accept = c("csv",
@@ -65,11 +65,12 @@ ui = dashboardPage(
                                                  c(".csv")))
                             #,uiOutput("choose_spatial_merge")
                         ),
-                        box(
+                        box( status = "primary",
                             actionButton(
                                 inputId = "exampleData",
                                 label = "Load Example Data"
-                            )
+                            ),
+                            style = "height:118px"
                         )
                     ),
             ),
@@ -78,7 +79,7 @@ ui = dashboardPage(
                     h1("Univariate Summary and Visualization", align="center"),
                     fluidRow(
                         
-                        box(title = "Selection Variables",
+                        box(title = "Selection Variables", status = "primary",
                             width = 4,
                             selectInput("choose_cont_thresh", "Select Contingency Threshold",
                                         choices = c("1%" = 1, 
@@ -107,7 +108,7 @@ ui = dashboardPage(
                             ),
                         
                         box(width = 8, 
-                            title = "Summary Plot",
+                            title = "Summary Plot", status = "primary",
                             plotOutput("boxplot", height = 520),
                         downloadButton('download_boxplot', "Download Plot")
                             )
@@ -116,21 +117,23 @@ ui = dashboardPage(
                     
                     fluidRow(
                         box(width = 4, 
-                            title="Contingency Table",
-                            tableOutput("contTable"),
-                            style = "height:120px"
+                            title="Contingency Table", status = "primary",
+                            div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable'))
                             ),
                         
                         box(width = 3, 
-                            title="Frequency Table",
+                            title="Frequency Table", status = "primary",
                             tableOutput("freqTable"),
-                            style = "height:120px"
+                            style = "height:140px",
+                            column(12,align="center")
                         ),
                         
-                        box(width = 5, 
-                            title="Summary Table",
-                            tableOutput("summaryTable"),
-                            style = "height:120px"
+                        column(width = 5,
+                            
+                            box(width = NULL,
+                                title="Summary Table", status = "primary",
+                                div(style = 'height:120px; overflow-x: scroll', tableOutput('summaryTable'))
+                                )
                             )
                         
                         )
@@ -139,7 +142,7 @@ ui = dashboardPage(
                     h1("Multivariate Summary and Visualization", align="center"),
                     fluidRow(
                         
-                        box(width = 4, 
+                        box(width = 4, status = "primary",
                             uiOutput("choose_heatmap_clinical"),
                             selectInput("heatmap_transform", "Select Transformation Method",
                                         choices=c("None" = "none",
@@ -153,8 +156,8 @@ ui = dashboardPage(
                             tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
                         ),
                         
-                        box(width = 8, 
-                            title = "Heatmap",
+                        box(title = "Heatmap",
+                            width = 8, status = "primary",
                             plotOutput("heatmap", height = 510),
                             downloadButton('download_heatmap', "Download Heatmap"),
                             height = 607
@@ -164,20 +167,20 @@ ui = dashboardPage(
             ,
             tabItem(tabName = 'spatial',
                     h1("Spatial Summary", align="center"),
-                    box(title = "Spatial Plot Selections"
-                        ,width=4,
+                    box(title = "Spatial Plot Selections",
+                        width=4, status = "primary",
                         uiOutput("choosePlotlyMarkers"),
                         height = 607
                     ),
                     
-                    box(width = 8
-                        ,title = "Spatial Plot"
-                        ,plotlyOutput("spatial_plotly", height = 545)
+                    box(title = "Spatial Plot",
+                        width = 8, status = "primary",
+                        plotlyOutput("spatial_plotly", height = 545)
                     ),
                     
-                    box(title = "Spatial Clustering Estimator Selections"
-                        ,width=4
-                        ,uiOutput("choose_ripley")
+                    box(title = "Spatial Clustering Estimator Selections",
+                        width=4, status = "primary",
+                        uiOutput("choose_ripley")
                         ,selectInput("ripleysEstimator", "Select an Estimator",
                                      choices = c("Ripley's K" = "K",
                                                  "Besag's L" = "L",
@@ -186,17 +189,18 @@ ui = dashboardPage(
                         height = 
                     ),
                     
-                    box(width = 8
-                        ,title = "Plot of Spatial Clustering Estimator"
-                        ,plotOutput("ripleysPlot", height = 250)
+                    box(title = "Plot of Spatial Clustering Estimator",
+                        width = 8, status = "primary",
+                        plotOutput("ripleysPlot", height = 250)
                     ),
                     HTML('<footer>
                          In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
                          </footer>')
                 ),
             tabItem(tabName = 'help',
-                    box(title = "Development Team", 
-                        width = 4,
+                    box(title = "Development Team",
+                        width = 4, status = "primary",
+                        
                         p("- Jordan Creed"),
                         p("- Chris Wilson"),
                         p("- Oscar Ospina"),
@@ -220,7 +224,7 @@ ui = dashboardPage(
                           "in our GitHub repo.")
                         ),
                     box(title = "Getting Started",
-                        width = 8,
+                        width = 8, status = "primary",
                         p("iTIME accepts 3 files as input: a summary level file, ",
                           "a clinical file, and a spatial file. All files should ",
                           "be csv files. The summary file should contain summary level ",

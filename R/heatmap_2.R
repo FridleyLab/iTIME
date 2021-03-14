@@ -24,4 +24,4 @@ itime_heatmap <- function(data, toogle_var){
             scale = "column")
 }
 
-itime_heatmap(summary_clinical_merge, "race")
+#itime_heatmap(summary_clinical_merge, "race")
