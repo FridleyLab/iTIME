@@ -148,7 +148,7 @@ ui = dashboardPage(
                                         choices=c("None" = "none",
                                                   "Square Root" = "square_root"),
                                         selected="square_root"),
-                            awesomeCheckbox("cluster_heatmap_annotation", "Cluster Columns",
+                            awesomeCheckbox("cluster_heatmap_annotation", "Group Annotation",
                                             value = TRUE),
                             awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
                                             value = TRUE),
