@@ -5,9 +5,9 @@ library(gplots)
 # toogle_var <- "race"
 # annotation_info <- tibble(topbar = select(summary_clinical_merge, all_of(toogle_var)) )
 
-itime_heatmap <- function(data, toogle_var){
-  df1 <- data %>% select(starts_with("%"))
-  annotation_info <- tibble(topbar = select(data, all_of(toogle_var)) )
+itime_heatmap <- function(summary_clinical_merge, markers = markers, clin_vars = clin_vars){
+  df1 <- summary_clinical_merge %>% select(any_of(markers))
+  annotation_info <- tibble(topbar = select(summary_clinical_merge, all_of(clin_vars)) )
   
   df2 <- t(scale(df1))
   
