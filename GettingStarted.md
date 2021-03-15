@@ -8,9 +8,7 @@ output:
     self_contained: false
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ### Input Files
 
@@ -43,16 +41,11 @@ $$
 where $n$ is the number of cells, $A$ is the area of the TMA, $d(x_i,x_j)$ is the distance between the $ith$ and $jth$ cell, and $w_{ij}$ is weighting factor from the border correction. The expected value of $K$ under the csr is $\pi r^2$. Both Besag's L and Marcon's M are slight modifications to Ripley's K and both more easily interpretale than Rpley's K.
 
 
-```{r, modified_ripleys, echo=F}
 
-tbl = data.frame("Metric" = c("Besag's L","Marcon's M"),
-                 "Formula" = c("$L\\left(r\\right) = \\sqrt{K\\left(r\\right)/\\pi}$", "$M\\left(r\\right) = K\\left(r\\right)/(\\pi r^2)$"),
-                 "Expected Value" = c("$r$", "$l$"),
-                 "Formula Displayed in Plot" = c("$L\\left(r\\right) - r$","$M\\left(r\\right)$"))
-
-colnames(tbl) = c("Metric","Formula","Expected Value","Formula Displayed in Plot")
-knitr::kable( tbl, escape = F, align = 'c') #%>% kableExtra::kable_styling()
-```
+|   Metric   |                    Formula                     | Expected Value | Formula Displayed in Plot |
+|:----------:|:----------------------------------------------:|:--------------:|:-------------------------:|
+| Besag's L  | $L\left(r\right) = \sqrt{K\left(r\right)/\pi}$ |      $r$       |   $L\left(r\right) - r$   |
+| Marcon's M | $M\left(r\right) = K\left(r\right)/(\pi r^2)$  |      $l$       |     $M\left(r\right)$     |
 
 <br/>
 Besag's L Interpretation: If value is larger than 0, than there is evidence of spatial clustering.
