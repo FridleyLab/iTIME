@@ -81,6 +81,7 @@ ui = dashboardPage(
                         
                         box(title = "Selection Variables", status = "primary",
                             width = 4,
+                            uiOutput("choose_marker"),
                             selectInput("choose_cont_thresh", "Select Contingency Threshold",
                                         choices = c("1%" = 1, 
                                                     "2%" = 2, 
@@ -88,7 +89,6 @@ ui = dashboardPage(
                                                     "4%" = 4,
                                                     "5%" = 5),
                                         selected = 1),
-                            uiOutput("choose_marker"),
                             uiOutput("choose_clinical"),
                             selectInput("summaryPlotType", "Select Plot Type",
                                         choices = c("Boxplot" = 1,
@@ -121,18 +121,18 @@ ui = dashboardPage(
                             div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable'))
                             ),
                         
-                        box(width = 3, 
-                            title="Frequency Table", status = "primary",
-                            tableOutput("freqTable"),
-                            style = "height:140px",
-                            column(12,align="center")
-                        ),
+#                        box(width = 3, 
+#                            title="Frequency Table", status = "primary",
+#                            tableOutput("freqTable"),
+#                            style = "height:140px",
+#                            column(12,align="center")
+#                        ),
                         
-                        column(width = 5,
+                        column(width = 8,
                             
                             box(width = NULL,
                                 title="Summary Table", status = "primary",
-                                div(style = 'height:120px; overflow-x: scroll', tableOutput('summaryTable'))
+                                div(style = 'height:120px', tableOutput('summaryTable')) #for scroll in style "; overflow-x: scroll"
                                 )
                             )
                         
@@ -198,6 +198,45 @@ ui = dashboardPage(
                          </footer>')
                 ),
             tabItem(tabName = 'help',
+                    h1("Getting Started", align="center"),
+                    box(width = 8, status = "primary",
+                        uiOutput('gettingstarted'),
+                        ),
+                    
+#                    box(#title = "Getting Started",
+#                        width = 8, status = "primary",
+#                        h3("Input Files"),
+#                        p("iTIME accepts 3 files as input: a summary level file, ",
+#                          "a clinical file, and a spatial file. All files should ",
+#                          "be csv files. The summary file should contain summary level ",
+#                          "statistics and should contain one row per sample, while ",
+#                          "the clinical data file should contain one row per patient. ",
+#                          "Both the clinical and sumary files should contain a variable ",
+#                          "to link sample IDs and clinical IDs ('Merge Variable'), thought the variables do ",
+#                          "not need to be named the same in both datasets."),
+#                        
+#                        h3("Summary"),
+#                        p("The summary page can be used without uploading any spatial",
+#                          "data. This page provides a summary of the marker chosen from the ",
+#                          "dropdown menu below and allows users to plot a marker against",
+#                          "clinical variables and select the appropriate plot type. A heatmap",
+#                          "of the available markers is also produced and allows users the",
+#                          "opportunity to annotate the heatmap by a clinical characteristics."),
+#                        
+#                        h3("Spatial"),
+#                        p("The spatial page plots the individual cells by positivity for the markers",
+#                          "and plots Ripley's K estimates over a range of r values."),
+#                        br(),
+#                        h3("Summary File"),
+#                        img(src='summary-file.png', align = "center", height="100%", width="100%"),
+#                        br(),
+#                        h3("Clinical File"),
+#                        img(src='clinical-file.png', align = "center", height="100%", width="100%"),
+#                        br(),
+#                        h3("Spatial File"),
+#                        img(src='spatial-file.png', align = "center", height="100%", width="100%"),
+#                        br()),
+                    
                     box(title = "Development Team",
                         width = 4, status = "primary",
                         
@@ -222,35 +261,7 @@ ui = dashboardPage(
                           "You can email us at Fridley.Lab@moffitt.org or feel free to",
                           a("open an issue", href = "https://github.com/FridleyLab/iTIME/issues"),
                           "in our GitHub repo.")
-                        ),
-                    box(title = "Getting Started",
-                        width = 8, status = "primary",
-                        p("iTIME accepts 3 files as input: a summary level file, ",
-                          "a clinical file, and a spatial file. All files should ",
-                          "be csv files. The summary file should contain summary level ",
-                          "statistics and should contain one row per sample, while ",
-                          "the clinical data file should contain one row per patient. ",
-                          "Both the clinical and sumary files should contain a variable ",
-                          "to link sample IDs and clinical IDs ('Merge Variable'), thought the variables do ",
-                          "not need to be named the same in both datasets."),
-                        p("The summary page can be used without uploading any spatial",
-                          "data. This page provides a summary of the marker chosen from the ",
-                          "dropdown menu below and allows users to plot a marker against",
-                          "clinical variables and select the appropriate plot type. A heatmap",
-                          "of the available markers is also produced and allows users the",
-                          "opportunity to annotate the heatmap by a clinical characteristics."),
-                        p("The spatial page plots the individual cells by positivity for the markers",
-                          "and plots Ripley's K estimates over a range of r values."),
-                        br(),
-                        h3("Summary File"),
-                        img(src='summary-file.png', align = "center", height="100%", width="100%"),
-                        br(),
-                        h3("Clinical File"),
-                        img(src='clinical-file.png', align = "center", height="100%", width="100%"),
-                        br(),
-                        h3("Spatial File"),
-                        img(src='spatial-file.png', align = "center", height="100%", width="100%"),
-                        br())
+                        )
                     )
         )
     )
