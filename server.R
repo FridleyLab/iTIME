@@ -138,20 +138,6 @@ shinyServer(function(input, output) {
         return(df)
     })
     
-    frequency_table = reactive({
-        validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
-        if(is.null(summary_data_merged())){
-            return()
-        }
-        data_table = summary_data_merged()
-        
-        markers = input$picked_marker
-        
-        df = freq_table_by_marker(data_table, markers = markers)
-        
-        return(df)
-    })
-    
     cont_table = reactive({
         validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
         if(is.null(clinical_data()) | is.null(summary_data())){
@@ -166,6 +152,20 @@ shinyServer(function(input, output) {
         
         df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
         
+        
+        return(df)
+    })
+    
+    frequency_table = reactive({
+        validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        data_table = summary_data_merged()
+        
+        markers = input$picked_marker
+        
+        df = freq_table_by_marker(data_table, markers = markers)
         
         return(df)
     })
@@ -199,7 +199,7 @@ shinyServer(function(input, output) {
                           "N Subs" = length(unique(data_table[,sub_id])),
                           "N Samples" = length(data_table[,sub_id])
                           )
-        return(temp)
+        return(cbind(frequency_table(), temp))
     })
     
     output$freqTable = renderTable({
@@ -208,11 +208,6 @@ shinyServer(function(input, output) {
     
     output$contTable = renderTable({
         return(cont_table())
-    })
-    
-    output$summaryout = renderTable({
-        return(sumTable())
-        
     })
     
     univar_plots = reactive({
@@ -392,6 +387,13 @@ shinyServer(function(input, output) {
         Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator, sampleInfo, colorscheme)
         
         #progress$inc(1/5, message=paste("Finished Estimating"))
+    })
+    
+    output$gettingstarted <- renderUI({
+        withMathJax({
+            k = knitr::knit(input = "GettingStarted.Rmd", quiet = T)
+            HTML(markdown::markdownToHTML(k, fragment.only = T))
+        })
     })
     
     # summary_data_merged = reactive({
