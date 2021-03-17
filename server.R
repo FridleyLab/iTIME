@@ -374,17 +374,17 @@ shinyServer(function(input, output) {
         clinical_sample_data = clinical_data()
         
         progress$inc(1/5, message=paste("Selecting Sample Data"))
-        sampleInfo = Filter(function(x) !any(is.na(x)),
-                            clinical_sample_data[which(clinical_sample_data$image_tag ==
-                                                           tail(strsplit(spatial_data()[1,1],
-                                                                         "\\\\|[^[:print:]]")[[1]], n=1)),])
+        #sampleInfo = Filter(function(x) !any(is.na(x)),
+        #                    clinical_sample_data[which(clinical_sample_data$image_tag ==
+        #                                                   tail(strsplit(spatial_data()[1,1],
+        #                                                                 "\\\\|[^[:print:]]")[[1]], n=1)),])
         progress$inc(1/5, message=paste("Removing Clinical Merge ID"))
         #sampleInfo = sampleInfo[,-which(names(sampleInfo) %in% input$clinical_merge)]
         
         progress$inc(1/5, message=paste("Running Ripley's Estimator"))
         
         colorscheme <- input$summaryPlotColors
-        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator, sampleInfo, colorscheme)
+        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator)
         
         #progress$inc(1/5, message=paste("Finished Estimating"))
     })

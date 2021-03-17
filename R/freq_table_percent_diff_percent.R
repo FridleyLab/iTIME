@@ -32,7 +32,7 @@ freq_table_by_marker <-
              `> 3%` = .[[paste( markers)]]>3,
              `> 4%` = .[[paste( markers)]]>4,
              `> 5%` = .[[paste( markers)]]>5) %>% 
-      select(`> 1%`,`> 2%`,`> 3%`,`> 5%`,`> 5%`) %>%
+      select(`> 1%`,`> 2%`,`> 3%`,`> 4%`,`> 5%`) %>%
       summarize_all( ~ sum(.))
     rownames(table) = markers
     

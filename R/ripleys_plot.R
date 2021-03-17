@@ -1,6 +1,6 @@
 #christelle
 
-Ripley <- function(data, cell_type, estimator, sampleInfo, colorscheme, alpha=0.05, sims = 100)
+Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
 {
   location2 <- data %>% mutate(Xloc = (XMin + XMax)/2, Yloc = (YMin + YMax)/2)
   loc <- location2 %>% select(c(Xloc, Yloc, cell_type)) %>% filter(.[[cell_type]] == 1)
@@ -37,16 +37,22 @@ Ripley <- function(data, cell_type, estimator, sampleInfo, colorscheme, alpha=0.
   
   p = ggplot() + geom_line(aes(x=r, y=value, color = type),est2) + 
     #ggtitle(paste(n, " points; ", paste0(paste(names(sampleInfo), sampleInfo, sep=":")[-length(sampleInfo)], collapse = "; "), sep="")) +
-    theme_classic(base_size = 20) +
+    theme_classic(base_size = 20)
     #theme(legend.position="bottom") +
-    viridis::scale_color_viridis(option = colorscheme, discrete = TRUE, name = "Estimate", ############### NEW
-                                 labels = c("Observed Isotropic", "Theoretical CSR", "Observed Translate"))
+    #viridis::scale_color_viridis(option = colorscheme, discrete = TRUE, name = "Estimate", ############### NEW
+    #                             labels = c("Observed Isotropic", "Theoretical CSR", 
+    #                                        "Observed Translational"))
     #+ # Add base_size
-    #scale_color_discrete(name = "Estimate", ############### NEW
-    #                     labels = c("Observed Isotropic", "Theoretical CSR", "Observed Translate"))
-  
-    p + geom_ribbon(data = EL, aes(x=r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA)
-
+    p = p + scale_color_manual(name = "Estimate", ############### NEW
+                             labels = c("Observed Isotropic", "Theoretical CSR", "Observed Translational"),
+                             values = c('red', 'black', 'blue')) + 
+    geom_ribbon(data = EL, aes(x= r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA)
+    if(estimator == "M"){
+      #0/0 occurs when r is 0, and values for first few M are really high sometimes.
+      p + ylim(0,max(EL$hi[-(1:10)],3))
+    }else{
+      p
+    }
     
 }
 
