@@ -1,20 +1,10 @@
 # iteractive Tumor Immune MicroEnvironment
 # 
-# HALO output
-
+# iTIME Shiny Application is a tool to visualize spatial IF data that is output from HALO. 
+# Along with clinical data, brief summary statistics are presented.
 #
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+# Dev team in ui.R
 
-# require mappable subject ID between files
-
-
-# Define server logic required to draw a histogram
 shinyServer(function(input, output) {
     
     buttons = reactiveValues(data = NULL)
@@ -64,7 +54,6 @@ shinyServer(function(input, output) {
             df = read.csv("data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv",
                           check.names = FALSE)
         }
-        #assign('spatial', df, envir=globalenv())
         
         return(df)
     })
@@ -145,7 +134,6 @@ shinyServer(function(input, output) {
         }
         
         data_table = summary_data_merged()
-        #assign("summary_data_merged", data_table, envir = globalenv())
         
         markers = input$picked_marker
         clinvar <- input$picked_clinical
