@@ -64,3 +64,6 @@ Marcon's M Interpretation: If value is larger than 1, than there is evidence of 
 
 ![Spatial File Example](figures/spatial-file.png)
 
+### Help
+
+**If you have any questions or comments, we would love to hear them. You can email us at [Fridley.Lab@moffitt.org](mailto:Fridley.Lab@moffitt.org) or feel free to [open an issue](https://github.com/FridleyLab/iTIME/issues) in our github page.**
