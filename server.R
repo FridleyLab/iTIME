@@ -218,7 +218,7 @@ shinyServer(function(input, output) {
         #assign("summary_table", data_table, envir = .GlobalEnv)
         #assign("cell_var", cellvar, envir=.GlobalEnv)
         
-        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme)
+        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, input$choose_cont_thresh)
         
         plots[[as.integer(input$summaryPlotType)]]
     })
