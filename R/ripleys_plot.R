@@ -15,6 +15,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
     est2$value = est2$value
     EL$lo = EL$lo
     EL$hi = EL$hi
+    ylabel = "Ripley's K"
     
   } else if(estimator=="L"){
     est <- as.data.frame(Lest(po_pp)) %>% select(-border)
@@ -24,6 +25,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
     est2$value = est2$value - est2$r
     EL$lo = EL$lo - EL$r
     EL$hi = EL$hi - EL$r
+    ylabel = "Besag's K - r"
     
   } else {
     est <- as.data.frame(Kest(po_pp)) %>% select(-border)
@@ -33,6 +35,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
     est2$value = est2$value / (pi * (est2$r)^2)
     EL$lo = EL$lo / (pi * (EL$r)^2)
     EL$hi = EL$hi / (pi * (EL$r)^2)
+    ylabel = "Marcon's M"
   }
   
   p = ggplot() + geom_line(aes(x=r, y=value, color = type),est2) + 
@@ -47,7 +50,8 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
                              labels = c("Theoretical CSR", "Observed Isotropic","Observed Translational"),
                              values = c("theo" = 'black', "iso" = 'red', 
                                         "trans" = 'blue')) + 
-    geom_ribbon(data = EL, aes(x= r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA)
+    geom_ribbon(data = EL, aes(x= r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA) + 
+      ylab(ylabel)
     if(estimator == "M"){
       #0/0 occurs when r is 0, and values for first few M are really high sometimes.
       p + ylim(0,max(EL$hi[-(1:10)],3))

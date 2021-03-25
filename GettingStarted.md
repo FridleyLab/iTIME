@@ -35,22 +35,41 @@ Ripley’s K, Besag’s L, and Marcon’s M quantify the of the degree of spatia
 Border corrections are needed for these methods to account for the fact that these cell types are assumed occur outside of the TMA at the same rate. The edge corrections inflate the number of neighboring cells based on their proximity to the border and other cells. Two popular methods border corrections are isotropic and translational. Translation border correction translates the region of interest based on the distance between two points and then measures the area of the intersection of the original region and translated region. An isotropic border correction weights each pair of points based on how much of the circumference of a circle centered around one point and going through the other is outside of the region of interest.
 
 $$
-\widehat{K}\left(r\right) = (n(n-1))^{-1}A \sum^{n}_{i=1} \sum_{j\neq 1}w_{ij}|(x_j:d(x_i,x_j)\lt r)|,
+\hat{K}\left(r\right) = (n(n-1))^{-1}A \sum^{n}_{i=1} \sum_{j\neq 1}w_{ij}|(x_j:d(x_i,x_j)\lt r)|,
 $$
 
-where $n$ is the number of cells, $A$ is the area of the TMA, $d(x_i,x_j)$ is the distance between the $ith$ and $jth$ cell, and $w_{ij}$ is weighting factor from the border correction. The expected value of $K$ under the csr is $\pi r^2$. Both Besag's L and Marcon's M are slight modifications to Ripley's K and both more easily interpretale than Rpley's K.
+where $n$ is the number of cells, $A$ is the area of the TMA, $d(x_i,x_j)$ is the distance between the $ith$ and $jth$ cell, and $w_{ij}$ is weighting factor from the border correction. The expected value of $K$ under the csr is $\pi r^2$. Both Besag's L and Marcon's $M$ are slight modifications to Ripley's $K$ and both more easily interpretale than Ripley's $K$.
 
 
-
-|   Metric   |                    Formula                     | Expected Value | Formula Displayed in Plot |
-|:----------:|:----------------------------------------------:|:--------------:|:-------------------------:|
-| Besag's L  | $L\left(r\right) = \sqrt{K\left(r\right)/\pi}$ |      $r$       |   $L\left(r\right) - r$   |
-| Marcon's M | $M\left(r\right) = K\left(r\right)/(\pi r^2)$  |      $l$       |     $M\left(r\right)$     |
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Metric </th>
+   <th style="text-align:center;"> Formula </th>
+   <th style="text-align:center;"> Expected Value </th>
+   <th style="text-align:center;"> Formula Displayed in Plot </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Besag's L </td>
+   <td style="text-align:center;"> $L\left(r\right) = \sqrt{K\left(r\right)/\pi}$ </td>
+   <td style="text-align:center;"> $r$ </td>
+   <td style="text-align:center;"> $L\left(r\right) - r$ </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Marcon's M </td>
+   <td style="text-align:center;"> $M\left(r\right) = K\left(r\right)/(\pi r^2)$ </td>
+   <td style="text-align:center;"> $1$ </td>
+   <td style="text-align:center;"> $M\left(r\right)$ </td>
+  </tr>
+</tbody>
+</table>
 
 <br/>
-Besag's L Interpretation: If value is larger than 0, than there is evidence of spatial clustering.
+Besag's $L$ Interpretation: If value is larger than 0, than there is evidence of spatial clustering.
 
-Marcon's M Interpretation: If value is larger than 1, than there is evidence of spatial clustering. Additionally, $M\\left(r\\right)$ is 1.50 at some chosen radius means you're observing 50% more clustering than Poisson distribution would predict.
+Marcon's $M$ Interpretation: If value is larger than 1, than there is evidence of spatial clustering. Additionally, $M\\left(r\\right)$ is 1.50 at some chosen radius means you're observing 50% more clustering than Poisson distribution would predict.
 
 ### Summary File
 
