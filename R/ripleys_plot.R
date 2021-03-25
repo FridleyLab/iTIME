@@ -44,8 +44,9 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
     #                                        "Observed Translational"))
     #+ # Add base_size
     p = p + scale_color_manual(name = "Estimate", ############### NEW
-                             labels = c("Observed Isotropic", "Theoretical CSR", "Observed Translational"),
-                             values = c('red', 'black', 'blue')) + 
+                             labels = c("Theoretical CSR", "Observed Isotropic","Observed Translational"),
+                             values = c("theo" = 'black', "iso" = 'red', 
+                                        "trans" = 'blue')) + 
     geom_ribbon(data = EL, aes(x= r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA)
     if(estimator == "M"){
       #0/0 occurs when r is 0, and values for first few M are really high sometimes.
