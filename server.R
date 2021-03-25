@@ -210,15 +210,17 @@ shinyServer(function(input, output) {
         
         if(input$sqrt_transform == FALSE){
             data_table = summary_data_merged()
+            thres = input$choose_cont_thresh
         }else{
             data_table = summary_data_merged()
             data_table[,cellvar] = sqrt(data_table[,cellvar])
+            thres = sqrt(as.numeric(input$choose_cont_thresh))
         }
         
         #assign("summary_table", data_table, envir = .GlobalEnv)
         #assign("cell_var", cellvar, envir=.GlobalEnv)
         
-        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, input$choose_cont_thresh)
+        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
         
         plots[[as.integer(input$summaryPlotType)]]
     })
