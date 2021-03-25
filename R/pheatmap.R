@@ -12,6 +12,10 @@ pheat_map <- function(summary_clinical_merge, markers = markers,
   cells <- tmp %>% select(any_of(markers))
   cells <- as.matrix(cells)
   rownames(cells) <- 1:nrow(cells)
+  colnames(tmp) = gsub('Percent ', "", colnames(tmp))
+  colnames(tmp) = gsub(' Positive Cells', "", colnames(tmp))
+  colnames(cells) = gsub('Percent ', "", colnames(cells))
+  colnames(cells) = gsub(' Positive Cells', "", colnames(cells))
   annotation <- tmp %>% select(all_of(clin_vars)) %>%
     data.frame(check.names = FALSE)
   rownames(annotation) = 1:nrow(cells)
