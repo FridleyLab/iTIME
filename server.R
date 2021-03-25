@@ -231,7 +231,7 @@ shinyServer(function(input, output) {
         filename = function() { paste(Sys.Date(), '-summary_plot.png', sep='') },
         
         content = function(file) {
-            ggsave(file, plot = univar_plots(), device = "png")
+            ggsave(file, plot = univar_plots(), device = "png",width = 12, height = 10, units = "in")
         }
     )
     
@@ -294,7 +294,8 @@ shinyServer(function(input, output) {
         filename = function() { paste(Sys.Date(), '-heatmap.png', sep='') },
         
         content = function(file) {
-            ggsave(file, plot = heatmap_plot(), device = "png")
+            ggsave(file, plot = heatmap_plot(), device = "png",
+                   width = 10, height = 7, units = 'in')
         }
     )
     
