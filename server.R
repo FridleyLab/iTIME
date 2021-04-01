@@ -21,7 +21,7 @@ shinyServer(function(input, output) {
             
             df = read.csv(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("data/summary.csv", check.names = FALSE)
+            df = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
         }
         
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
@@ -37,7 +37,7 @@ shinyServer(function(input, output) {
             }
             df = read.csv(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("data/clinical.csv", check.names = FALSE)
+            df = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
         }
         
         return(df)
@@ -51,7 +51,7 @@ shinyServer(function(input, output) {
             }
             df = read.csv(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("data/Coghill_P2_Anal-Invasive-TMA1_[5,B].tif_74186_job45081.object_results copy.csv",
+            df = read.csv("example_data/deidentified_spatial.csv",
                           check.names = FALSE)
         }
         
