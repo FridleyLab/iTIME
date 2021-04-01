@@ -63,15 +63,15 @@ Marcon's $M$ Interpretation: If value is larger than 1, than there is evidence o
 
 ### Summary File
 
-![Summary File Example](figures/summary-file.png)
+![Summary File Example](GettingStarted_images/example_summary_data_format.png)
 
 ### Clinical File
 
-![Clinical File Example](figures/clinical-file.png)
+![Clinical File Example](GettingStarted_images/example_clinical_data_format.png)
 
 ### Spatial File
 
-![Spatial File Example](figures/spatial-file.png)
+![Spatial File Example](GettingStarted_images/example_spatial_data_format.png)
 
 ### Help
 
