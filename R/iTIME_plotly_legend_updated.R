@@ -45,7 +45,7 @@ scatter_plotly_old = function(data = data, markers = markers, new_names = new_na
     add_trace(data = data[data$marks == 'Negative',], x = ~x, y = ~y, 
               type="scatter",
               mode="markers",
-              symbol = ~`Classifier Label`,
+              symbol = ~Classifier.Label,
               symbols = c('3', 'o'),
               legendgroup="Classifier Label",
               marker=list(size=3,
