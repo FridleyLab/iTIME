@@ -200,12 +200,12 @@ ui = dashboardPage(
             tabItem(tabName = 'help',
                     h1("Getting Started", align="center"),
                     fluidRow(
-                        box(width = 12, status = "primary",
+                        box(width = 9, status = "primary",
                             uiOutput('gettingstarted'),
                         ),
                         
                         box(title = "Development Team",
-                            width = 4, status = "primary",
+                            width = 3, status = "primary",
                             
                             p("- Brooke Fridley"),
                             p("- Alex Soupir"),
