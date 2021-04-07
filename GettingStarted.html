@@ -14,6 +14,7 @@
 
 <title>Getting Started</title>
 
+<script src="GettingStarted_files/header-attrs-2.7/header-attrs.js"></script>
 <script src="GettingStarted_files/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="GettingStarted_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -32,8 +33,6 @@
 <script src="GettingStarted_files/navigation-1.1/tabsets.js"></script>
 <link href="GettingStarted_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="GettingStarted_files/highlightjs-9.12.0/highlight.js"></script>
-<script src="GettingStarted_files/kePrint-0.0.1/kePrint.js"></script>
-<link href="GettingStarted_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -193,85 +192,65 @@ pre code {
 <p>The spatial page plots the individual cells by positivity for the markers and plots Ripley’s K estimates over a range of r values using default 100 simulated point patterns.</p>
 <p>The bottom panel is a plot of a selected measure of spatial clustering. Ripley’s K, Besag’s L, and Marcon’s M quantify the of the degree of spatial clustering for a particular cell type. These quantities assume that the point process of interest follows complete spatial randomness (CSR) that is that the location of the cells do not form clusters nor do they occur in a regular pattern. Each measure is computed by counting the number of neighboring cells for each cell, where two cells are said to be neighboring if they are within a specified distance, r as seen in the x-axis of ‘Plot of Spatial Clustering Estimator’, of each other.</p>
 <p>Edge corrections are needed for these methods to account for the fact that these cell types are assumed occur outside of the TMA at the same rate. The edge corrections inflate the number of neighboring cells based on their proximity to the edge. Two popular methods edge corrections are isotropic and translational. Translation edge correction translates the region of interest based on the distance between two points and then measures the area of the intersection of the original region and translated region. An isotropic edge correction weights each pair of points based on how much of the circumference of a circle centered around one point and going through the other is outside of the region of interest.</p>
-<p><span class="math display">\[
-\hat{K}\left(r\right) = (n(n-1))^{-1}A \sum^{n}_{i=1} \sum_{j\neq 1}w_{ij}|(x_j:d(x_i,x_j)\lt r)|,
+<p>Ripley’s <span class="math inline">\(K\)</span> is the basis for Besag’s <span class="math inline">\(L\)</span> and Marcon’s <span class="math inline">\(M\)</span> and is computed by <span class="math display">\[
+\hat{K}\left(r\right) = (n(n-1))^{-1}A \sum^{n}_{i=1} \sum_{j\neq i}w_{ij}|(x_j:d(x_i,x_j)\lt r)|,
 \]</span></p>
-<p>where <span class="math inline">\(n\)</span> is the number of cells, <span class="math inline">\(A\)</span> is the area of the TMA, <span class="math inline">\(d(x_i,x_j)\)</span> is the distance between the <span class="math inline">\(i^{th}\)</span> and <span class="math inline">\(j^{th}\)</span> cell, and <span class="math inline">\(w_{ij}\)</span> is weighting factor from the edge correction. The expected value of <span class="math inline">\(K\)</span> under the csr is <span class="math inline">\(\pi r^2\)</span>. Both Besag’s L and Marcon’s <span class="math inline">\(M\)</span> are slight modifications to Ripley’s <span class="math inline">\(K\)</span> and both more easily interpretale than Ripley’s <span class="math inline">\(K\)</span>.</p>
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-Metric
-</th>
-<th style="text-align:center;">
-Formula
-</th>
-<th style="text-align:center;">
-Expected Value
-</th>
-<th style="text-align:center;">
-Formula Displayed in Plot
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-Besag’s L
-</td>
-<td style="text-align:center;">
-<span class="math inline">\(L\left(r\right) = \sqrt{K\left(r\right)/\pi}\)</span>
-</td>
-<td style="text-align:center;">
-<span class="math inline">\(r\)</span>
-</td>
-<td style="text-align:center;">
-<span class="math inline">\(L\left(r\right) - r\)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Marcon’s M
-</td>
-<td style="text-align:center;">
-<span class="math inline">\(M\left(r\right) = K\left(r\right)/(\pi r^2)\)</span>
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-<span class="math inline">\(M\left(r\right)\)</span>
-</td>
-</tr>
-</tbody>
-</table>
-<p><br/> Besag’s <span class="math inline">\(L\)</span> Interpretation: If value is larger than 0, than there is evidence of spatial clustering.</p>
+<p>where <span class="math inline">\(n\)</span> is the number of cells, <span class="math inline">\(A\)</span> is the area of the TMA, <span class="math inline">\(d(x_i,x_j)\)</span> is the distance between the <span class="math inline">\(i^{th}\)</span> and <span class="math inline">\(j^{th}\)</span> cell, and <span class="math inline">\(w_{ij}\)</span> is weighting factor from the edge correction. The expected value of <span class="math inline">\(K\)</span> under the CSR is <span class="math inline">\(\pi r^2\)</span>. Both Besag’s L and Marcon’s <span class="math inline">\(M\)</span> are different standardizations to Ripley’s <span class="math inline">\(K\)</span>, which are computed by:</p>
+<ul>
+<li><span class="math inline">\(L\left(r\right) = \sqrt{K\left(r\right)/\pi}\)</span> and has
+<ul>
+<li>Expected value of <span class="math inline">\(L(r)\)</span> of <span class="math inline">\(r\)</span>. Note that the expected value of <span class="math inline">\(L\)</span> grows proportionally with <span class="math inline">\(r\)</span>.</li>
+</ul></li>
+<li><span class="math inline">\(M\left(r\right) = K\left(r\right)/(\pi r^2)\)</span>
+<ul>
+<li>Expected value of <span class="math inline">\(M(r)\)</span> is 1. Note that the expected value not a function of <span class="math inline">\(r\)</span>.</li>
+</ul></li>
+</ul>
+<p>Neither Ripley’s <span class="math inline">\(K\)</span> nor Besag’s <span class="math inline">\(L\)</span> involve a comparison to the null case of complete spatial randomness. By subtracting their respective expected values i.e. <span class="math inline">\(H(r) = K(r)-\pi r^2\)</span> and <span class="math inline">\(H^* = (r)L(r) - r\)</span>, <span class="math inline">\(H(r)\)</span> and <span class="math inline">\(H^*(r)\)</span> can both be interpreted as a measure of the degree of spatial clustering. Notice that <span class="math inline">\(M(r)\)</span> is a measure of the degree of spatial clusetering since it is the ratio Ripley’s K and it’s expected value.</p>
+<!-- ```{r, modified_ripleys, echo=F, fig.align='center'} -->
+<!-- tbl = data.frame("Metric" = c("Besag's L","Marcon's M"), -->
+<!--                  "Formula" = c("$L\\left(r\\right) = \\sqrt{K\\left(r\\right)/\\pi}$", "$M\\left(r\\right) = K\\left(r\\right)/(\\pi r^2)$"), -->
+<!--                  "Expected Value" = c("$r$", "1"), -->
+<!--                  "Formula Displayed in Plot" = c("$L\\left(r\\right) - r$","$M\\left(r\\right)$")) -->
+<!-- colnames(tbl) = c("Metric","Formula","Expected Value","Formula Displayed in Plot") -->
+<!-- knitr::kable( tbl, escape = F, align = 'c', format = 'html')  %>% -->
+<!--   kableExtra::kable_styling(position = "center", protect_latex = FALSE, latex_options = 'basic') -->
+<!-- ``` -->
+<p><br/> <span class="math inline">\(H(r)\)</span> and <span class="math inline">\(H^*(r)\)</span> Interpretation: If value is larger than 0, than there is evidence of spatial clustering.</p>
 <p>Marcon’s <span class="math inline">\(M\)</span> Interpretation: If value is larger than 1, than there is evidence of spatial clustering. Additionally, <span class="math inline">\(M(r)\)</span> is 1.50 at some chosen radius means you’re observing 50% more clustering than Poisson distribution would predict.</p>
 </div>
 <div id="summary-file" class="section level3">
 <h3>Summary File</h3>
 <div class="figure">
-<img src="figures/summary-file.png" alt="Summary File Example" />
+<img src="GettingStarted_images/example_summary_data_format.png" alt="" />
 <p class="caption">Summary File Example</p>
 </div>
 </div>
 <div id="clinical-file" class="section level3">
 <h3>Clinical File</h3>
 <div class="figure">
-<img src="figures/clinical-file.png" alt="Clinical File Example" />
+<img src="GettingStarted_images/example_clinical_data_format.png" alt="" />
 <p class="caption">Clinical File Example</p>
 </div>
 </div>
 <div id="spatial-file" class="section level3">
 <h3>Spatial File</h3>
 <div class="figure">
-<img src="figures/spatial-file.png" alt="Spatial File Example" />
+<img src="GettingStarted_images/example_spatial_data_format.png" alt="" />
 <p class="caption">Spatial File Example</p>
 </div>
+</div>
+<div id="how-to-use" class="section level2">
+<h2>How to Use</h2>
+<p>Loading <strong>Example Data</strong> and selecting common column between <strong>Summary Data</strong> and <strong>Clinical Data</strong></p>
+<div class="figure">
+<img src="GettingStarted_images/load_data_help.png" alt="" />
+<p class="caption">Loading Data Help</p>
 </div>
 <div id="help" class="section level3">
 <h3>Help</h3>
 <p><strong>If you have any questions or comments, we would love to hear them. You can email us at <a href="mailto:Fridley.Lab@moffitt.org">Fridley.Lab@moffitt.org</a> or feel free to <a href="https://github.com/FridleyLab/iTIME/issues">open an issue</a> in our github page.</strong></p>
+</div>
 </div>
 
 

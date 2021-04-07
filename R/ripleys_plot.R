@@ -25,7 +25,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
     est2$value = est2$value - est2$r
     EL$lo = EL$lo - EL$r
     EL$hi = EL$hi - EL$r
-    ylabel = "Besag's K - r"
+    ylabel = expression(paste(H^"*","(r) = L(r) - r"))
     
   } else {
     est <- as.data.frame(Kest(po_pp)) %>% select(-border)
