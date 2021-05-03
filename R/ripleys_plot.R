@@ -48,6 +48,7 @@ Ripley <- function(data, cell_type, estimator, alpha=0.05, sims = 100)
     #+ # Add base_size
     p = p + scale_color_manual(name = "Estimate", ############### NEW
                              labels = c("Theoretical CSR", "Observed Isotropic","Observed Translational"),
+                             breaks = c("theo", "iso", "trans"),
                              values = c("theo" = 'black', "iso" = 'red', 
                                         "trans" = 'blue')) + 
     geom_ribbon(data = EL, aes(x= r, ymin=lo, ymax=hi), inherit.aes=FALSE, alpha=0.4, color=NA) + 
