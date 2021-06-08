@@ -120,23 +120,21 @@ ui = dashboardPage(
                             title="Contingency Table", status = "primary",
                             div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable'))
                             ),
-                        
-#                        box(width = 3, 
-#                            title="Frequency Table", status = "primary",
-#                            tableOutput("freqTable"),
-#                            style = "height:140px",
-#                            column(12,align="center")
-#                        ),
-                        
                         column(width = 8,
-                            
+                               
                             box(width = NULL,
                                 title="Summary Table", status = "primary",
                                 div(style = 'height:120px', tableOutput('summaryTable')) #for scroll in style "; overflow-x: scroll"
                                 )
                             )
-                        
-                        )
+                        ),
+                    fluidRow(
+                        box(width = 12,
+                            title="Cumulative Distribution Function (CDF) Plots", status = "primary",
+                            plotOutput("cdfplot"),
+                            downloadButton('download_cdfplot', 'Download Plot')
+                            )
+                    )
             ),
             tabItem(tabName='multivariate',
                     h1("Multivariate Summary and Visualization", align="center"),
