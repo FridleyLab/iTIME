@@ -1,5 +1,6 @@
-library(VGAM)
-
+#chris Wilsom
+#summary_data_merge
+#picked_marker
 CDF_plots = function(summary_data_merge = summary_data_merge, markers = markers){
 sample_stats = summary_data_merged %>% select(grep('Total', colnames(.)), markers) %>%
   pivot_longer(cols = 2:ncol(.), values_to = 'Count', names_to = 'Marker') %>%
@@ -79,12 +80,12 @@ final = ggpubr::ggarrange(plotlist = list(binomial_plot, poisson_plot))
 return(final)
 }
 
-clin_vars = 'status'
-summary_data = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
-clinical_data = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
-summary_data_merged = merge(clinical_data, summary_data)
-
-markers = summary_data_merged %>% select(grep('Cells' ,colnames(.))) %>% 
-  select(!grep('\\%',colnames(.))) %>% colnames()
-
-CDF_plots(summary_data_merged, markers[5])
+# 
+# summary_data = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
+# clinical_data = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
+# summary_data_merged = merge(clinical_data, summary_data)
+# 
+# markers = summary_data_merged %>% select(grep('Cells' ,colnames(.))) %>% 
+#   select(!grep('\\%',colnames(.))) %>% colnames()
+# 
+# CDF_plots(summary_data_merged, markers[5])

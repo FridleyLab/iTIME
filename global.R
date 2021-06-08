@@ -17,6 +17,7 @@ library(janitor)
 #library(ComplexHeatmap)
 library(shinyWidgets)
 library(colourvalues)
+library(VGAM)
 
 custom_blue <- {shinyDashboardThemeDIY(
   ### general
