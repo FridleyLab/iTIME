@@ -127,6 +127,8 @@ shinyServer(function(input, output) {
         return(df)
     })
     
+#univariate
+    
     cont_table = reactive({
         validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
         if(is.null(clinical_data()) | is.null(summary_data())){
@@ -144,6 +146,10 @@ shinyServer(function(input, output) {
         return(df)
     })
     
+    output$contTable = renderTable({
+        return(cont_table())
+    })
+    
     frequency_table = reactive({
         validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
         if(is.null(summary_data_merged())){
@@ -156,6 +162,10 @@ shinyServer(function(input, output) {
         df = freq_table_by_marker(data_table, markers = markers)
         
         return(df)
+    })
+    
+    output$freqTable = renderTable({
+        return(frequency_table())
     })
     
     sumTable = reactive({
@@ -190,14 +200,6 @@ shinyServer(function(input, output) {
         return(cbind(frequency_table(), temp))
     })
     
-    output$freqTable = renderTable({
-        return(frequency_table())
-    })
-    
-    output$contTable = renderTable({
-        return(cont_table())
-    })
-    
     univar_plots = reactive({
          validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
                  need(input$picked_clinical !="", ""),
@@ -217,9 +219,6 @@ shinyServer(function(input, output) {
             thres = sqrt(as.numeric(input$choose_cont_thresh))
         }
         
-        #assign("summary_table", data_table, envir = .GlobalEnv)
-        #assign("cell_var", cellvar, envir=.GlobalEnv)
-        
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
         
         plots[[as.integer(input$summaryPlotType)]]
@@ -236,6 +235,19 @@ shinyServer(function(input, output) {
             ggsave(file, plot = univar_plots(), device = "png",width = 12, height = 10, units = "in")
         }
     )
+    
+    cdf_plot_react = reactive({
+        validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
+                 need(input$picked_marker !="", "Please select a marker above....."))
+        
+        marker = input$picked_marker
+        CDF_plots(summary_data_merged, markers = substr(marker, 9, nchar(marker)))
+    })
+    
+    output$cdfplot = renderPlot({
+        cdf_plot_react()
+    })
+    #multivariate
     
     output$choose_heatmap_marker = renderUI({
         heatmap_names = colnames(summary_data())
