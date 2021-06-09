@@ -239,15 +239,20 @@ shinyServer(function(input, output) {
     cdf_plot_react = reactive({
         validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
                  need(input$picked_marker !="", "Please select a marker above....."))
+        if(is.null(summary_data_merged())){
+            return(NULL)
+        }
         
         marker = input$picked_marker
-        CDF_plots(summary_data_merged, markers = substr(marker, 9, nchar(marker)))
+        data_table = summary_data_merged()
+        CDF_plots(summary_data_merge = data_table, markers = substr(marker, 9, nchar(marker)))
     })
     
     output$cdfplot = renderPlot({
         cdf_plot_react()
     })
-    #multivariate
+
+#multivariate
     
     output$choose_heatmap_marker = renderUI({
         heatmap_names = colnames(summary_data())
@@ -255,10 +260,8 @@ shinyServer(function(input, output) {
         heatmap_names2 = heatmap_names[grep("^(?=Percent.*)",
                               heatmap_names,perl=TRUE,ignore.case = TRUE)]
         
-        awesomeCheckboxGroup("heatmap_selection",
-                           "Choose Cell Marker for Heatmap",
-                           choices = heatmap_names2,
-                           selected = heatmap_names2,
+        awesomeCheckboxGroup("heatmap_selection", "Choose Cell Marker for Heatmap",
+                           choices = heatmap_names2, selected = heatmap_names2,
                            status = "primary"
         )
     })
@@ -268,8 +271,7 @@ shinyServer(function(input, output) {
         clinical_heatmap_names = colnames(clinical_data())
         
         selectInput("picked_clinical_factor", "Choose Annotation for Heatmap",
-                    choices = clinical_heatmap_names,
-                    selected = clinical_heatmap_names[3])
+                    choices = clinical_heatmap_names, selected = clinical_heatmap_names[3])
         
     })
     
@@ -313,6 +315,35 @@ shinyServer(function(input, output) {
         }
     )
     
+    pca_plot = reactive({
+        validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
+                 need(input$heatmap_selection !="", "Please select a markers to use....."),
+                 need(input$picked_clinical_factor !="", "Please select a clinical variable....."))
+        
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        
+        return(pca_plot_function(summary_clinical_merged = summary_data_merged(), markers = input$heatmap_selection, clin_vars = input$picked_clinical_factor))
+        
+        
+    })
+    
+    output$pca = renderPlot({
+        pca_plot()
+    }#, height = 500
+    )
+    
+    output$download_pca = downloadHandler(
+        filename = function () {paste(Sys.Date(), '-pca.png', sep='')},
+        
+        content = function(file){
+            ggsave(file, plot = pca_plot(), device = "png",
+                   width = 7, height = 7, units = "in")
+        }
+    )
+    
+#spatial
     output$choosePlotlyMarkers = renderUI({
         ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
         

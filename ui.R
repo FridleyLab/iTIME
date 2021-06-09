@@ -161,6 +161,13 @@ ui = dashboardPage(
                             height = 607
                         )
                     ),
+                    fluidRow(
+                        box(title = "PCA Plot", 
+                            width = 4, status = "primary",
+                            plotOutput("pca"),
+                            downloadButton("download_pca", "Download PCA Plot")
+                            )
+                    ),
                 )
             ,
             tabItem(tabName = 'spatial',
