@@ -197,7 +197,7 @@ shinyServer(function(input, output) {
                           "N Subs" = length(unique(data_table[,sub_id])),
                           "N Samples" = length(data_table[,sub_id])
                           )
-        return(cbind(frequency_table(), temp))
+        return(temp)
     })
     
     univar_plots = reactive({
@@ -218,7 +218,8 @@ shinyServer(function(input, output) {
             data_table[,cellvar] = sqrt(data_table[,cellvar])
             thres = sqrt(as.numeric(input$choose_cont_thresh))
         }
-        
+        #assign("summary_data_merged", data_table, envir =  .GlobalEnv)
+        #assign("markers", cellvar, envir =  .GlobalEnv)
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
         
         plots[[as.integer(input$summaryPlotType)]]

@@ -46,7 +46,7 @@ cdfs = cdfs %>% mutate(family = ifelse(Distribution %in% c('Poisson', 'ZI Poisso
                        Distribution = factor(Distribution))
 
 
-binomial_plot = cdfs %>% filter(family == 'Binomial', Marker == markers) %>%
+binomial_plot = cdfs %>% 
   ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + geom_line(aes(color = 'Empirical'), color = 'black') + 
   geom_line(aes(x = Count, y = CDF, color = Distribution)) + theme_bw() + 
   theme(axis.text.x = element_blank(),
@@ -78,7 +78,7 @@ poisson_plot = cdfs %>% filter(family == 'Poisson', Marker == markers) %>%
 
 final = ggpubr::ggarrange(plotlist = list(binomial_plot, poisson_plot))
 
-return(final)
+return(binomial_plot)
 }
 
 # 

@@ -34,6 +34,19 @@ ui = dashboardPage(
         )
     ),
     dashboardBody(
+        tags$head(tags$script(
+        'var dimension = [0, 0];
+              $(document).on("shiny:connected", function(e) {
+                  dimension[0] = window.innerWidth;
+                  dimension[1] = window.innerHeight;
+                  Shiny.onInputChange("dimension", dimension);
+              });
+              $(window).resize(function(e) {
+                  dimension[0] = window.innerWidth;
+                  dimension[1] = window.innerHeight;
+                  Shiny.onInputChange("dimension", dimension);
+              });'
+    )),
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
@@ -78,39 +91,41 @@ ui = dashboardPage(
             tabItem(tabName = 'univariate',
                     h1("Univariate Summary and Visualization", align="center"),
                     fluidRow(
-                        
-                        box(title = "Selection Variables", status = "primary",
-                            width = 4,
-                            uiOutput("choose_marker"),
-                            selectInput("choose_cont_thresh", "Select Contingency Threshold",
-                                        choices = c("1%" = 1, 
-                                                    "2%" = 2, 
-                                                    "3%" = 3,
-                                                    "4%" = 4,
-                                                    "5%" = 5),
-                                        selected = 1),
-                            uiOutput("choose_clinical"),
-                            selectInput("summaryPlotType", "Select Plot Type",
-                                        choices = c("Boxplot" = 1,
-                                                    "Violin Plot" = 2, 
-                                                    "Histogram" = 3,
-                                                    "Scatter Plot" = 4),
-                                        selected = 1),
-                            selectInput("summaryPlotColors", "Select Color Scheme",
-                                        choices = c("Magma" = "magma", 
-                                                    "Viridis" = "viridis", 
-                                                    "Plasma" = "plasma", 
-                                                    "Inferno" = "inferno"),
-                                        selected = "viridis"),
-                            awesomeCheckbox("sqrt_transform", "Square Root Transformation",
-                                          value = FALSE),
-                        style = "height:575px"
-                            ),
-                        
-                        box(width = 8, 
-                            title = "Summary Plot", status = "primary",
-                            plotOutput("boxplot", height = 520),
-                        downloadButton('download_boxplot', "Download Plot")
+                        box(status = "primary", width = 12,
+                            column(h2("Select Variables",align="center", style = "font-size:14pt"), status = "primary",
+                                width = 3,
+                                uiOutput("choose_marker"),
+                                selectInput("choose_cont_thresh", "Select Contingency Threshold",
+                                            choices = c("1%" = 1, 
+                                                        "2%" = 2, 
+                                                        "3%" = 3,
+                                                        "4%" = 4,
+                                                        "5%" = 5),
+                                            selected = 1),
+                                uiOutput("choose_clinical"),
+                                selectInput("summaryPlotType", "Select Plot Type",
+                                            choices = c("Boxplot" = 1,
+                                                        "Violin Plot" = 2, 
+                                                        "Histogram" = 3,
+                                                        "Scatter Plot" = 4),
+                                            selected = 1),
+                                selectInput("summaryPlotColors", "Select Color Scheme",
+                                            choices = c("Magma" = "magma", 
+                                                        "Viridis" = "viridis", 
+                                                        "Plasma" = "plasma", 
+                                                        "Inferno" = "inferno"),
+                                            selected = "viridis"),
+                                awesomeCheckbox("sqrt_transform", "Square Root Transformation",
+                                              value = FALSE)
+                                ),
+                            
+                            column(width = 5, h2("Summary Plot",align="center", style = "font-size:14pt"),
+                                #"Summary Plot",# status = "primary",
+                                plotOutput("boxplot", height = 520),
+                                downloadButton('download_boxplot', "Download Plot")
+                                ),
+                            
+                            
                             )
                         )
                     ,
@@ -120,20 +135,23 @@ ui = dashboardPage(
                             title="Contingency Table", status = "primary",
                             div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable'))
                             ),
-                        column(width = 8,
+                        column(width = 4,
                                
                             box(width = NULL,
                                 title="Summary Table", status = "primary",
-                                div(style = 'height:120px', tableOutput('summaryTable')) #for scroll in style "; overflow-x: scroll"
+                                div(style = 'height:120px', tableOutput('summaryTable')) #for scroll in style "; overflow-x: scroll" #freqTable
                                 )
                             )
                         ),
                     fluidRow(
-                        box(width = 12,
-                            title="Cumulative Distribution Function (CDF) Plots", status = "primary",
-                            plotOutput("cdfplot"),
-                            downloadButton('download_cdfplot', 'Download Plot')
-                            )
+                        box(width = 12, status = 'primary', title = 'Modeling',
+                            column(width = 2, box("Test"), status = NULL),
+                            column(width = 10,
+                                title="Cumulative Distribution Function (CDF) Plots", status = "primary",
+                                plotOutput("cdfplot"),
+                                downloadButton('download_cdfplot', 'Download Plot')
+                                )
+                        )
                     )
             ),
             tabItem(tabName='multivariate',
