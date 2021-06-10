@@ -393,35 +393,21 @@ shinyServer(function(input, output) {
         
     })
     
-    output$ripleysPlot = renderPlot({
+    ripley_data = reactive({
         validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."))
         
         if(is.null(spatial_data()) | is.null(clinical_data())){
             return()
         }
         
-        progress = shiny::Progress$new()
-        on.exit(progress$close())
-        progress$set(message="Estimating Confidence Interval", 
-                     detail = "This will take some time...")
-        
-        progress$inc(1/5, message=paste("Assigning Clinical Data"))
-        clinical_sample_data = clinical_data()
-        
-        progress$inc(1/5, message=paste("Selecting Sample Data"))
-        #sampleInfo = Filter(function(x) !any(is.na(x)),
-        #                    clinical_sample_data[which(clinical_sample_data$image_tag ==
-        #                                                   tail(strsplit(spatial_data()[1,1],
-        #                                                                 "\\\\|[^[:print:]]")[[1]], n=1)),])
-        progress$inc(1/5, message=paste("Removing Clinical Merge ID"))
-        #sampleInfo = sampleInfo[,-which(names(sampleInfo) %in% input$clinical_merge)]
-        
-        progress$inc(1/5, message=paste("Running Ripley's Estimator"))
-        
         colorscheme <- input$summaryPlotColors
-        Ripley(spatial_data(), input$ripleys_selection, input$ripleysEstimator)
+        Ripley(spatial_data(), input$ripleys_selection)
+    })
+    
+    output$ripleysPlot = renderPlot({
         
-        #progress$inc(1/5, message=paste("Finished Estimating"))
+        Ripley_plot(ripley_data = ripley_data(), estimator = input$ripleysEstimator)
+        
     })
     
     output$gettingstarted <- renderUI({
@@ -430,15 +416,5 @@ shinyServer(function(input, output) {
             HTML(markdown::markdownToHTML(k, fragment.only = T))
         })
     })
-    
-    # summary_data_merged = reactive({
-    #     if(is.null(clinical_data()) | is.null(summary_data())){
-    #         return()
-    #     }
-    #     
-    #     df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
-    #     print(colnames(df))
-    #     return(df)
-    # })
 
 })
