@@ -48,7 +48,7 @@ cdfs = cdfs %>% mutate(family = ifelse(Distribution %in% c('Poisson', 'ZI Poisso
 
 binomial_plot = cdfs %>% 
   ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + geom_line(aes(color = 'Empirical'), color = 'black') + 
-  geom_line(aes(x = Count, y = CDF, color = Distribution)) + theme_bw() + 
+  geom_line(aes(x = Count, y = CDF, color = Distribution, linetype = family)) + theme_bw() + 
   theme(axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.title.x = element_blank(),
@@ -58,11 +58,11 @@ binomial_plot = cdfs %>%
         strip.text = element_text(size=16),
         legend.text = element_text(size = 16),
         legend.title = element_text(size = 16)) + 
-  labs(color = 'Distribution') + ggtitle('Binomial Family')
+  labs(color = 'Distribution') + scale_linetype_manual(values = c("solid", "longdash"))
 
 
 poisson_plot = cdfs %>% filter(family == 'Poisson', Marker == markers) %>%
-  ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + geom_line(, color = 'black') + 
+  ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + geom_line(aes(color = 'Empirical'),color = 'black') + 
   geom_line(aes(x = Count, y = CDF, color = Distribution)) + theme_bw() + 
   theme(axis.text.x = element_blank(),
         axis.ticks = element_blank(),
@@ -81,12 +81,12 @@ final = ggpubr::ggarrange(plotlist = list(binomial_plot, poisson_plot))
 return(binomial_plot)
 }
 
-# 
-# summary_data = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
-# clinical_data = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
-# summary_data_merged = merge(clinical_data, summary_data)
-# 
-# markers = summary_data_merged %>% select(grep('Cells' ,colnames(.))) %>% 
-#   select(!grep('\\%',colnames(.))) %>% colnames()
-# 
-# CDF_plots(summary_data_merged, markers[5])
+
+summary_data = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
+clinical_data = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
+summary_data_merged = merge(clinical_data, summary_data)
+
+markers = summary_data_merged %>% select(grep('Cells' ,colnames(.))) %>%
+  select(!grep('\\%',colnames(.))) %>% colnames()
+
+CDF_plots(summary_data_merged, markers[2])
