@@ -19,9 +19,9 @@ shinyServer(function(input, output) {
                 return()
             }
             
-            df = read.csv(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE, data.table = FALSE)
         } else {
-            df = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
+            df = fread("example_data/deidentified_summary.csv", check.names = FALSE, data.table = FALSE)
         }
         
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
@@ -35,9 +35,9 @@ shinyServer(function(input, output) {
             if(is.null(infile)){
                 return()
             }
-            df = read.csv(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE, data.table = FALSE)
         } else {
-            df = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
+            df = fread("example_data/deidentified_clinical.csv", check.names = FALSE, data.table = FALSE)
         }
         
         return(df)
@@ -49,13 +49,24 @@ shinyServer(function(input, output) {
             if(is.null(infile)){
                 return()
             }
-            df = read.csv(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("example_data/deidentified_spatial.csv",
-                          check.names = FALSE)
+            df = fread("example_data/deidentified_spatial.csv", check.names = FALSE, data.table = FALSE)
         }
         
         return(df)
+    })
+    
+    output$summary_preview = renderTable({
+        head(summary_data(), n = 15L)
+    })
+    
+    output$clinical_preview = renderTable({
+        head(clinical_data(), n = 15L)
+    })
+    
+    output$spatial_preview = renderTable({
+        head(spatial_data()[,-3], n = 15L)
     })
     
     output$choose_summary_merge = renderUI({
@@ -153,7 +164,7 @@ shinyServer(function(input, output) {
         suppressWarnings({
             df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
-                        choose_clinical_merge = input$clinical_merge) #update with model_checked_repeated
+                        choose_clinical_merge = input$clinical_merge)
         })
         return(df)
     })
@@ -331,7 +342,7 @@ shinyServer(function(input, output) {
     
     output$heatmap = renderPlot({
        heatmap_plot()
-    }, height = 500)
+    })
     
     output$download_heatmap = downloadHandler(
         filename = function() { paste(Sys.Date(), '-heatmap.png', sep='') },

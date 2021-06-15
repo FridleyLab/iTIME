@@ -33,38 +33,39 @@ ui = dashboardPage(
             tabItem(tabName = 'import',
                     h1("Import Data", align="center"),
                     fluidRow(
-                        box( status = "primary",
-                            fileInput("summaryData", "Choose a Summary File",
-                                      multiple = FALSE,
-                                      accept = c("csv",
-                                                 "HALO summary data file",
-                                                 c(".csv"))),
-                            uiOutput("choose_summary_merge")
-                        ),
-                        
-                        box( status = "primary",
-                            fileInput("clinicalData", "Choose a Clinical Data File",
-                                      multiple = FALSE,
-                                      accept = c("csv",
-                                                 "HALO summary data file",
-                                                 c(".csv"))),
-                            uiOutput("choose_clinical_merge")
-                        ),
-                        
-                        box( status = "primary",
-                            fileInput("spatialData", "Choose a Spatial Data File",
-                                      multiple = FALSE,
-                                      accept = c("csv",
-                                                 "HALO summary data file",
-                                                 c(".csv")))
-                        ),
-                        box( status = "primary",
-                            actionButton(
-                                inputId = "exampleData",
-                                label = "Load Example Data"
+                        box(width = 12, status = "primary",
+                            fluidRow(
+                                column(width = 6,
+                                       fileInput("summaryData", "Choose a Summary File",
+                                                 multiple = FALSE,
+                                                 accept = c("csv",
+                                                            "HALO summary data file",
+                                                            c(".csv"))),
+                                       uiOutput("choose_summary_merge"),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('summary_preview'))),
+                                column(width = 6,
+                                       fileInput("clinicalData", "Choose a Clinical Data File",
+                                                 multiple = FALSE,
+                                                 accept = c("csv",
+                                                            "HALO summary data file",
+                                                            c(".csv"))),
+                                       uiOutput("choose_clinical_merge"),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('clinical_preview')))),
+                            fluidRow(
+                                column(width = 6,# h2("Choose a Spatial Data File", style = "font-size:12pt;font-weight:bold"),
+                                       fileInput("spatialData", "Choose a Spatial Data File",
+                                                 multiple = FALSE,
+                                                 accept = c("csv",
+                                                            "HALO summary data file",
+                                                            c(".csv"))),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('spatial_preview'))),
+                                column(width = 6, h2("", style = "font-size:12pt;font-weight:bold;margin-bottom:1.55em"),
+                                       actionButton(
+                                           inputId = "exampleData",
+                                           label = "Load Example Data"
+                                       )),style = "height:118px"
+                                ),
                             ),
-                            style = "height:118px"
-                        )
                     ),
             ),
             
@@ -150,35 +151,41 @@ ui = dashboardPage(
             tabItem(tabName='multivariate',
                     h1("Multivariate Summary and Visualization", align="center"),
                     fluidRow(
-                        
-                        box(width = 4, status = "primary",
-                            uiOutput("choose_heatmap_clinical"),
-                            selectInput("heatmap_transform", "Select Transformation Method",
-                                        choices=c("None" = "none",
-                                                  "Square Root" = "square_root"),
-                                        selected="square_root"),
-                            awesomeCheckbox("cluster_heatmap_annotation", "Group Annotation",
-                                            value = TRUE),
-                            awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
-                                            value = TRUE),
-                            uiOutput("choose_heatmap_marker"),
-                            tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
-                        ),
-                        
-                        box(title = "Heatmap",
-                            width = 8, status = "primary",
-                            plotOutput("heatmap", height = 510),
-                            downloadButton('download_heatmap', "Download Heatmap"),
-                            height = 607
-                        )
+                        box(width = 12, status = "primary",
+                            column(width = 4,
+                                   uiOutput("choose_heatmap_clinical"),
+                                   selectInput("heatmap_transform", "Select Transformation Method",
+                                               choices=c("None" = "none",
+                                                         "Square Root" = "square_root"),
+                                               selected="square_root"),
+                                   awesomeCheckbox("cluster_heatmap_annotation", "Group Annotation",
+                                                   value = TRUE),
+                                   awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
+                                                   value = TRUE),
+                                   uiOutput("choose_heatmap_marker"),
+                                   tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
+                                   ),
+                            column(width = 4, h2("Heatmap", align="center", style = "font-size:14pt"),
+                                   plotOutput("heatmap", width="100%"),#height = 510
+                                   downloadButton('download_heatmap', "Download Heatmap"),
+                                   ),
+                            column(width = 4, h2("Pricipal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
+                                   plotOutput("pca", width="100%"),
+                                   downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
+                                   )
+                            
+                            ),
+                        # 
+                        # box(title = "Heatmap",
+                        #     width = 8, status = "primary",
+                        #     
+                        # )
                     ),
-                    fluidRow(
-                        box(title = "PCA Plot", 
-                            width = 4, status = "primary",
-                            plotOutput("pca"),
-                            downloadButton("download_pca", "Download PCA Plot")
-                            )
-                    ),
+                    # fluidRow(
+                    #     box(title = "PCA Plot", 
+                    #         
+                    #         )
+                    # ),
                 )
             ,
             tabItem(tabName = 'spatial',
