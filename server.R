@@ -164,7 +164,7 @@ shinyServer(function(input, output) {
         suppressWarnings({
             df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
-                        choose_clinical_merge = input$clinical_merge)
+                        choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
         return(df)
     })
@@ -200,9 +200,6 @@ shinyServer(function(input, output) {
         if(is.null(summary_data_merged())){
             return()
         }
-        data_table = 
-        
-        markers = 
         
         df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker)
         
@@ -369,8 +366,7 @@ shinyServer(function(input, output) {
     
     output$pca = renderPlot({
         pca_plot()
-    }#, height = 500
-    )
+    })
     
     output$download_pca = downloadHandler(
         filename = function () {paste(Sys.Date(), '-pca.png', sep='')},

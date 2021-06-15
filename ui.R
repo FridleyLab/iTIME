@@ -24,9 +24,11 @@ ui = dashboardPage(
                                      position = "absolute",
                                      bottom = "25px",
                                      width = "100px", 
-                                     height = "100px")))
-        )
-    ),
+                                     height = "100px")
+                            )
+                     )
+            )
+        ),
     dashboardBody(
         custom_blue,
         tabItems(
@@ -63,7 +65,8 @@ ui = dashboardPage(
                                        actionButton(
                                            inputId = "exampleData",
                                            label = "Load Example Data"
-                                       )),style = "height:118px"
+                                           )
+                                       ),style = "height:118px"
                                 ),
                             ),
                     ),
@@ -107,21 +110,20 @@ ui = dashboardPage(
                                 downloadButton('download_boxplot', "Download Plot"),
                             ),
                                 column(width = 5, align = "center", h2("Contingency Table",align="center", style = "font-size:14pt"),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('contTable')),#height:120px; 
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('contTable')),
                                        column(width = 12, align = "center", h2("Frequency Table",align="center", style = "font-size:14pt"),
-                                              div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('freqTable')),#height:120px; 
+                                              div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('freqTable')),
                                               column(width = 12, h2("Summary Table",align="center", style = "font-size:14pt"),
-                                                     div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('summaryTable'))#height:120px; 
-                                              )
-                                       ),
-                                )
-                                )
+                                                     div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('summaryTable'))
+                                                     )
+                                              ),
+                                       )
+                            ),
                             )
                         ),
                     
                     fluidRow(
                         box(width = 12, status = 'primary', title = 'Modeling',
-                            #add subject id selector
                             column(width = 4,
                                    column(width = 9, h2("Modeling Variables",align="center", style = "font-size:14pt"),
                                    uiOutput("choose_total_cells"),
@@ -173,53 +175,35 @@ ui = dashboardPage(
                                    plotOutput("pca", width="100%"),
                                    downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
                                    )
-                            
                             ),
-                        # 
-                        # box(title = "Heatmap",
-                        #     width = 8, status = "primary",
-                        #     
-                        # )
+                        ),
                     ),
-                    # fluidRow(
-                    #     box(title = "PCA Plot", 
-                    #         
-                    #         )
-                    # ),
-                )
-            ,
             tabItem(tabName = 'spatial',
                     h1("Spatial Summary", align="center"),
-                    box(title = "Spatial Plot Selections",
-                        width=4, status = "primary",
-                        uiOutput("choosePlotlyMarkers"),
-                        height = 607
-                    ),
-                    
-                    box(title = "Spatial Plot",
-                        width = 8, status = "primary",
-                        plotlyOutput("spatial_plotly", height = 545)
-                    ),
-                    
-                    box(title = "Spatial Clustering Estimator Selections",
-                        width=4, status = "primary",
-                        uiOutput("choose_ripley")
-                        ,selectInput("ripleysEstimator", "Select an Estimator",
-                                     choices = c("Ripley's K" = "K",
-                                                 "Besag's L" = "L",
-                                                 "Marcon's M" = "M"),
-                                     selected = "K"),
-                        height = 
-                    ),
-                    
-                    box(title = "Plot of Spatial Clustering Estimator",
-                        width = 8, status = "primary",
-                        plotOutput("ripleysPlot", height = 250)
-                    ),
-                    HTML('<footer>
+                    box(width = 12, status = "primary",
+                        column(width = 4, h2("Spatial Plot Selections", style = "font-size:14pt"),
+                               uiOutput("choosePlotlyMarkers")),
+                        column(width = 8, h2("Spatial Plot", style = "font-size:14pt"),
+                               plotlyOutput("spatial_plotly", width = "85%", height = "575")
+                               )
+                        ),
+                    box(width = 12, status = "primary",
+                        column(width = 4,
+                               uiOutput("choose_ripley")
+                               ,selectInput("ripleysEstimator", "Select an Estimator",
+                                            choices = c("Ripley's K" = "K",
+                                                        "Besag's L" = "L",
+                                                        "Marcon's M" = "M"),
+                                            selected = "K")
+                               ),
+                        column(width = 8,
+                               plotOutput("ripleysPlot", height = 350)
+                               )
+                        ),
+                        HTML('<footer>
                          In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
                          </footer>')
-                ),
+                    ),
             tabItem(tabName = 'help',
                     h1("Getting Started", align="center"),
                     fluidRow(
