@@ -151,8 +151,9 @@ shinyServer(function(input, output) {
                  need(input$picked_total_cells !="", "Please select column with total cell count....."),
                  need(input$picked_modeling_reference !="", "Select level for reference....."))
         suppressWarnings({
-            df = models(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
-                        Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference) #update with model_checked_repeated
+            df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
+                        Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
+                        choose_clinical_merge = input$clinical_merge) #update with model_checked_repeated
         })
         return(df)
     })

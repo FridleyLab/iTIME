@@ -50,12 +50,7 @@ if(class(model_fit_poisson) == "try-error"){
   AIC_poisson = NULL
 } else {
   aov_poisson = coefficients(summary(model_fit_poisson))
-<<<<<<< HEAD
-  AIC_poisson = AIC(model_fit_poisson)
-
-=======
   AIC_poisson = round4(AIC(model_fit_poisson))
->>>>>>> 20163c50504f96aacff298f13756b88a01b98b4e
 }
 
 #Fit Binomial Model
