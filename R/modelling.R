@@ -89,6 +89,9 @@ model_fit_zinegbinomial = try(vglm(tmp[[markers]] ~ tmp$clin_vars, zinegbinomial
 if(class(model_fit_zinegbinomial) == "try-error"){
   model_fit_zinegbinomial = NULL
   AIC_zinegbinomial = NULL
+} else if(is.infinite(model_fit_zinegbinomial@criterion$loglikelihood)){
+  model_fit_zinegbinomial = NULL
+  AIC_zinegbinomial = NULL
 } else {
   aov_zinegbinomial = coefficients(summary(model_fit_zinegbinomial))
   AIC_zinegbinomial = AIC(model_fit_zinegbinomial)
@@ -113,11 +116,11 @@ out$aic = data.frame(Distribution = c('Poisson', 'Negative Binomial', 'Zero Infl
                      Family = c(rep('Poisson', 3),"" , rep('Binomial', 3)), 
                      check.names = FALSE)
 
-out$models = list('Beta Binomial' = model_fit_bb, 'Binomial' = model_fit_binomial, 
-                  'Negative Binomial' = model_fit_negbinom,
-                  'Poisson' = model_fit_poisson, 
-                  'Zero Inflated Binomial' = model_fit_zibinomial, 
-                  'Zero Inflated Poisson' = model_fit_zipoisson)
+out$models = list('bb' = model_fit_bb, 'b' = model_fit_binomial, 
+                  'nb' = model_fit_negbinom,
+                  'p' = model_fit_poisson, 
+                  'zib' = model_fit_zibinomial, 
+                  'zip' = model_fit_zipoisson)
 
 return(out)
 } 
