@@ -25,7 +25,9 @@
 #              added try-catch for all other models too
 
 models = function(summary_data_merged, markers,
-                  Total, clin_vars, reference){
+                  Total, clin_vars, reference,digits=4){
+  
+  round4 = function(x){return(round(x,digits=digits))}
 markers = substr(markers, 9, nchar(markers))
 out = list()
 Percent = paste('%', markers)
@@ -43,7 +45,7 @@ if(class(model_fit_poisson) == "try-error"){
   AIC_poisson = NULL
 } else {
   aov_poisson = coefficients(summary(model_fit_poisson))
-  AIC_poisson = AIC(model_fit_poisson)
+  AIC_poisson = round4(AIC(model_fit_poisson))
 }
 
 model_fit_binomial = try(glm(cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]])~ tmp$clin_vars,
@@ -53,7 +55,7 @@ if(class(model_fit_binomial) == "try-error"){
   AIC_binomial = NULL
 } else {
   aov_binomial = coefficients(summary(model_fit_binomial))
-  AIC_binomial = AIC(model_fit_binomial)
+  AIC_binomial = round4(AIC(model_fit_binomial))
 }
 
 model_fit_negbinom = try(vglm(tmp[[markers]] ~ tmp$clin_vars, negbinomial), silent = TRUE)
@@ -62,7 +64,7 @@ if(class(model_fit_negbinom) == "try-error"){
   AIC_negbinom = NULL
 } else {
   aov_negbinom = coefficients(summary(model_fit_negbinom))
-  AIC_negbinom = AIC(model_fit_negbinom)
+  AIC_negbinom = round4(AIC(model_fit_negbinom))
 }
   
 model_fit_zibinomial <- try(vglm(cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ tmp$clin_vars, 
@@ -72,7 +74,7 @@ if(class(model_fit_zibinomial) == "try-error"){
   AIC_zibinomial = NULL
 } else {
   aov_zibinomial = coefficients(summary(model_fit_zibinomial))
-  AIC_zibinomial = AIC(model_fit_zibinomial)
+  AIC_zibinomial = round4(AIC(model_fit_zibinomial))
 }
 
 model_fit_zipoisson = try(vglm(tmp[[markers]] ~ tmp$clin_vars, zipoisson), silent = TRUE)
@@ -81,7 +83,7 @@ if(class(model_fit_zipoisson) == "try-error"){
   AIC_zipoisson = NULL
 } else {
   aov_zipoisson = coefficients(summary(model_fit_zipoisson))
-  AIC_zipoisson = AIC(model_fit_zipoisson)
+  AIC_zipoisson = round4(AIC(model_fit_zipoisson))
 }
 
 
@@ -94,7 +96,7 @@ if(class(model_fit_zinegbinomial) == "try-error"){
   AIC_zinegbinomial = NULL
 } else {
   aov_zinegbinomial = coefficients(summary(model_fit_zinegbinomial))
-  AIC_zinegbinomial = AIC(model_fit_zinegbinomial)
+  AIC_zinegbinomial = round4(AIC(model_fit_zinegbinomial))
 }
 
 
@@ -105,9 +107,8 @@ if(class(model_fit_bb) == "try-error"){
   AIC_bb = NULL
 } else {
   aov_bb = coefficients(summary(model_fit_bb))
-  AIC_bb = AIC(model_fit_bb)
+  AIC_bb = round4(AIC(model_fit_bb))
 }
-
 
 out$aic = data.frame(Distribution = c('Poisson', 'Negative Binomial', 'Zero Inflated Poisson', "",
                                       'Binomial', 'Beta Binomial', 'Zero Inflated Binomial'),

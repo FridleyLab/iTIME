@@ -8,7 +8,6 @@
 #
 # add for testing
 
-# Define UI for application that draws a histogram
 ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
@@ -26,11 +25,6 @@ ui = dashboardPage(
                                      bottom = "25px",
                                      width = "100px", 
                                      height = "100px")))
-            # tags$a(
-            #     href = "https://lab.moffitt.org/fridley/", 
-            #     target = "_blank", 
-            #     tags$div(class = "moffitt-logo")
-            # )
         )
     ),
     dashboardBody(
@@ -63,7 +57,6 @@ ui = dashboardPage(
                                       accept = c("csv",
                                                  "HALO summary data file",
                                                  c(".csv")))
-                            #,uiOutput("choose_spatial_merge")
                         ),
                         box( status = "primary",
                             actionButton(
@@ -79,8 +72,6 @@ ui = dashboardPage(
                     h1("Univariate Summary and Visualization", align="center"),
                     fluidRow(
                         box(status = "primary", width = 12,
-                            #add total cell selection
-                            #add reference base for the clinical variable to use for modeling
                             column(h2("Select Variables",align="center", style = "font-size:14pt"), status = "primary",
                                 width = 3,
                                 uiOutput("choose_marker"),
@@ -114,12 +105,12 @@ ui = dashboardPage(
                                 plotOutput("boxplot", height = 520),
                                 downloadButton('download_boxplot', "Download Plot"),
                             ),
-                                column(width = 5, h2("Contingency Table",align="center", style = "font-size:14pt"),
-                                       div(style = 'height:120px; overflow-x: scroll; overflow-y: scroll', tableOutput('contTable')),
-                                       column(width = 12, h2("Frequency Table",align="center", style = "font-size:14pt"),
-                                              div(style = 'height:120px; overflow-x: scroll; overflow-y: scroll', tableOutput('freqTable')),
+                                column(width = 5, align = "center", h2("Contingency Table",align="center", style = "font-size:14pt"),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('contTable')),#height:120px; 
+                                       column(width = 12, align = "center", h2("Frequency Table",align="center", style = "font-size:14pt"),
+                                              div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('freqTable')),#height:120px; 
                                               column(width = 12, h2("Summary Table",align="center", style = "font-size:14pt"),
-                                                     div(style = 'height:120px; overflow-x: scroll; overflow-y: scroll', tableOutput('summaryTable'))
+                                                     div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('summaryTable'))#height:120px; 
                                               )
                                        ),
                                 )
@@ -127,21 +118,11 @@ ui = dashboardPage(
                             )
                         ),
                     
-                    # box(width = 4, status = "primary",
-                    #     #column(width = 12, h2("Summary Table",align="center", style = "font-size:14pt"),
-                    #            tableOutput('summaryTable')#div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable')),
-                    #            #h2("Frequency Table",align="center", style = "font-size:14pt"),
-                    #            #tableOutput('freqTable'),#div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('freqTable')),
-                    #            #h2("Summary Table",align="center", style = "font-size:14pt"),
-                    #            #tableOutput('summaryTable')#div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('summaryTable'))
-                    #     )
-                    #     
-                    # ),
-                    
                     fluidRow(
                         box(width = 12, status = 'primary', title = 'Modeling',
-                            
-                            column(width = 3, h2("Modeling Variables",align="center", style = "font-size:14pt"),
+                            #add subject id selector
+                            column(width = 4,
+                                   column(width = 9, h2("Modeling Variables",align="center", style = "font-size:14pt"),
                                    uiOutput("choose_total_cells"),
                                    uiOutput("modeling_reference"),
                                    selectInput("selectedModel", "Select Desired Model",
@@ -149,15 +130,18 @@ ui = dashboardPage(
                                                            "Binomial" = "b", 
                                                            "Negative Binomial" = "nb", 
                                                            "Poisson" = "p", 
-                                                           "Zero Inflated Binomial" = "nib", 
-                                                           "Zero Inflated Poisson" = "nip"),
+                                                           "Zero Inflated Binomial" = "zib", 
+                                                           "Zero Inflated Poisson" = "zip"),
                                                selected = "viridis")),
+                                   column(width = 12, align = "center", h2("Model Fit",align="center", style = "font-size:14pt"),
+                                          uiOutput("model_stats"))
+                                   ),
                             column(width = 5,
-                                title="Cumulative Distribution Function (CDF) Plots", status = "primary",
+                                   h2("Binomial Family Plots", align="center", style = "font-size:14pt"), status = "primary",
                                 plotOutput("cdfplot"),
                                 downloadButton('download_cdfplot', 'Download Plot')
                                 ),
-                            column(width = 4,
+                            column(width = 3, align = "center",
                                    h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
                                    div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
                         )
