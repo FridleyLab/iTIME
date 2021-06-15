@@ -19,9 +19,9 @@ shinyServer(function(input, output) {
                 return()
             }
             
-            df = read.csv(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE, data.table = FALSE)
         } else {
-            df = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
+            df = fread("example_data/deidentified_summary.csv", check.names = FALSE, data.table = FALSE)
         }
         
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
@@ -35,9 +35,9 @@ shinyServer(function(input, output) {
             if(is.null(infile)){
                 return()
             }
-            df = read.csv(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE, data.table = FALSE)
         } else {
-            df = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
+            df = fread("example_data/deidentified_clinical.csv", check.names = FALSE, data.table = FALSE)
         }
         
         return(df)
@@ -49,13 +49,24 @@ shinyServer(function(input, output) {
             if(is.null(infile)){
                 return()
             }
-            df = read.csv(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE)
         } else {
-            df = read.csv("example_data/deidentified_spatial.csv",
-                          check.names = FALSE)
+            df = fread("example_data/deidentified_spatial.csv", check.names = FALSE, data.table = FALSE)
         }
         
         return(df)
+    })
+    
+    output$summary_preview = renderTable({
+        head(summary_data(), n = 15L)
+    })
+    
+    output$clinical_preview = renderTable({
+        head(clinical_data(), n = 15L)
+    })
+    
+    output$spatial_preview = renderTable({
+        head(spatial_data()[,-3], n = 15L)
     })
     
     output$choose_summary_merge = renderUI({
@@ -109,12 +120,13 @@ shinyServer(function(input, output) {
     })
     
     output$choose_clinical = renderUI({
-        
         summary_clinical_names = colnames(clinical_data())
-        
+        t = sapply(clinical_data(), function(x){return(length(unique(x)))})
+        good = t[t > 1 & t < 10]
+        print(good)
         selectInput("picked_clinical", "Choose Clinical Variable to Plot",
                     choices = summary_clinical_names,
-                    selected = summary_clinical_names[3])
+                    selected = names(good)[1]) #select a variable that has a decent amount of levels in order to perform the models
         
     })
     
@@ -129,19 +141,52 @@ shinyServer(function(input, output) {
     
 #univariate
     
+    output$choose_total_cells = renderUI({
+        summary_clinical_names = colnames(summary_data_merged())
+        
+        selectInput("picked_total_cells", "Choose Column Name for Total Number of Cells",
+                    choices = summary_clinical_names,
+                    selected = summary_clinical_names[grep("Total", summary_clinical_names)])
+    })
+    output$modeling_reference = renderUI({
+        model_references = unique(summary_data_merged()[input$picked_clinical])
+        selectInput("picked_modeling_reference", "Choose Clinical Reference",
+                    choices = model_references,
+                    selected = model_references[1])
+    })
+    
+    model_list = reactive({
+        validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
+                 need(summary_data_merged() !="", "Please upload clinical and summary data....."),
+                 need(input$picked_marker !="", "Please pick a marker....."),
+                 need(input$picked_total_cells !="", "Please select column with total cell count....."),
+                 need(input$picked_modeling_reference !="", "Select level for reference....."))
+        suppressWarnings({
+            df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
+                        Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
+                        choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
+        })
+        return(df)
+    })
+    
+    output$aic_table = renderTable({
+        models1 = model_list()
+        return(data.frame(models1$aic))
+    }, digits = 4)
+    
+    output$model_stats = renderTable({
+        validate(need(model_list(), "Please wait while things finish loading....."))
+        models1 = model_list()
+        df = models1$models[[input$selectedModel]] %>% summary() %>% coefficients()
+        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
+                         df, check.names = F)
+        return(df1)
+    }, digits = 4)
+    
     cont_table = reactive({
         validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
         
-        data_table = summary_data_merged()
-        
-        markers = input$picked_marker
-        clinvar <- input$picked_clinical
-        
-        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
-        
+        df = contingency_table(summary_data_merged(), markers = input$picked_marker, clin_vars = input$picked_clinical, percent_threshold = input$choose_cont_thresh)
         
         return(df)
     })
@@ -155,11 +200,8 @@ shinyServer(function(input, output) {
         if(is.null(summary_data_merged())){
             return()
         }
-        data_table = summary_data_merged()
         
-        markers = input$picked_marker
-        
-        df = freq_table_by_marker(data_table, markers = markers)
+        df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker)
         
         return(df)
     })
@@ -188,10 +230,8 @@ shinyServer(function(input, output) {
         sub_id = input$clinical_merge
         
         temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-                          #"Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
                           "Median" = median(data_table[,cellvar], na.rm = TRUE),
                           "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-                          #"Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
                           "Max" = max(data_table[,cellvar], na.rm=TRUE),
                           "SD" = sd(data_table[,cellvar], na.rm=TRUE),
                           "N Subs" = length(unique(data_table[,sub_id])),
@@ -218,8 +258,6 @@ shinyServer(function(input, output) {
             data_table[,cellvar] = sqrt(data_table[,cellvar])
             thres = sqrt(as.numeric(input$choose_cont_thresh))
         }
-        #assign("summary_data_merged", data_table, envir =  .GlobalEnv)
-        #assign("markers", cellvar, envir =  .GlobalEnv)
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
         
         plots[[as.integer(input$summaryPlotType)]]
@@ -297,15 +335,11 @@ shinyServer(function(input, output) {
                  colorscheme = input$summaryPlotColors,
                  anno_clust = input$cluster_heatmap_annotation,
                  mark_clust = input$cluster_heatmap_Marker)
-        # heat_map(summary_clinical_merge = heatmap_data,
-        #          markers = input$heatmap_selection,
-        #          clin_vars = input$picked_clinical_factor,
-        #          colorscheme = input$summaryPlotColors)
     })
     
     output$heatmap = renderPlot({
        heatmap_plot()
-    }, height = 500)
+    })
     
     output$download_heatmap = downloadHandler(
         filename = function() { paste(Sys.Date(), '-heatmap.png', sep='') },
@@ -332,8 +366,7 @@ shinyServer(function(input, output) {
     
     output$pca = renderPlot({
         pca_plot()
-    }#, height = 500
-    )
+    })
     
     output$download_pca = downloadHandler(
         filename = function () {paste(Sys.Date(), '-pca.png', sep='')},

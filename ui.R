@@ -8,7 +8,6 @@
 #
 # add for testing
 
-# Define UI for application that draws a histogram
 ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
@@ -25,66 +24,51 @@ ui = dashboardPage(
                                      position = "absolute",
                                      bottom = "25px",
                                      width = "100px", 
-                                     height = "100px")))
-            # tags$a(
-            #     href = "https://lab.moffitt.org/fridley/", 
-            #     target = "_blank", 
-            #     tags$div(class = "moffitt-logo")
-            # )
-        )
-    ),
+                                     height = "100px")
+                            )
+                     )
+            )
+        ),
     dashboardBody(
-        tags$head(tags$script(
-        'var dimension = [0, 0];
-              $(document).on("shiny:connected", function(e) {
-                  dimension[0] = window.innerWidth;
-                  dimension[1] = window.innerHeight;
-                  Shiny.onInputChange("dimension", dimension);
-              });
-              $(window).resize(function(e) {
-                  dimension[0] = window.innerWidth;
-                  dimension[1] = window.innerHeight;
-                  Shiny.onInputChange("dimension", dimension);
-              });'
-    )),
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
                     h1("Import Data", align="center"),
                     fluidRow(
-                        box( status = "primary",
-                            fileInput("summaryData", "Choose a Summary File",
-                                      multiple = FALSE,
-                                      accept = c("csv",
-                                                 "HALO summary data file",
-                                                 c(".csv"))),
-                            uiOutput("choose_summary_merge")
-                        ),
-                        
-                        box( status = "primary",
-                            fileInput("clinicalData", "Choose a Clinical Data File",
-                                      multiple = FALSE,
-                                      accept = c("csv",
-                                                 "HALO summary data file",
-                                                 c(".csv"))),
-                            uiOutput("choose_clinical_merge")
-                        ),
-                        
-                        box( status = "primary",
-                            fileInput("spatialData", "Choose a Spatial Data File",
-                                      multiple = FALSE,
-                                      accept = c("csv",
-                                                 "HALO summary data file",
-                                                 c(".csv")))
-                            #,uiOutput("choose_spatial_merge")
-                        ),
-                        box( status = "primary",
-                            actionButton(
-                                inputId = "exampleData",
-                                label = "Load Example Data"
+                        box(width = 12, status = "primary",
+                            fluidRow(
+                                column(width = 6,
+                                       fileInput("summaryData", "Choose a Summary File",
+                                                 multiple = FALSE,
+                                                 accept = c("csv",
+                                                            "HALO summary data file",
+                                                            c(".csv"))),
+                                       uiOutput("choose_summary_merge"),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('summary_preview'))),
+                                column(width = 6,
+                                       fileInput("clinicalData", "Choose a Clinical Data File",
+                                                 multiple = FALSE,
+                                                 accept = c("csv",
+                                                            "HALO summary data file",
+                                                            c(".csv"))),
+                                       uiOutput("choose_clinical_merge"),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('clinical_preview')))),
+                            fluidRow(
+                                column(width = 6,# h2("Choose a Spatial Data File", style = "font-size:12pt;font-weight:bold"),
+                                       fileInput("spatialData", "Choose a Spatial Data File",
+                                                 multiple = FALSE,
+                                                 accept = c("csv",
+                                                            "HALO summary data file",
+                                                            c(".csv"))),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('spatial_preview'))),
+                                column(width = 6, h2("", style = "font-size:12pt;font-weight:bold;margin-bottom:1.55em"),
+                                       actionButton(
+                                           inputId = "exampleData",
+                                           label = "Load Example Data"
+                                           )
+                                       ),style = "height:118px"
+                                ),
                             ),
-                            style = "height:118px"
-                        )
                     ),
             ),
             
@@ -119,107 +103,109 @@ ui = dashboardPage(
                                               value = FALSE)
                                 ),
                             
-                            column(width = 5, h2("Summary Plot",align="center", style = "font-size:14pt"),
-                                #"Summary Plot",# status = "primary",
+                            column(width = 9,
+                                   column(width = 7,h2("Summary Plot",align="center", style = "font-size:14pt"),
                                 plotOutput("boxplot", height = 520),
-                                downloadButton('download_boxplot', "Download Plot")
-                                ),
-                            
-                            
-                            )
-                        )
-                    ,
-                    
-                    fluidRow(
-                        box(width = 4, 
-                            title="Contingency Table", status = "primary",
-                            div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable'))
+                                downloadButton('download_boxplot', "Download Plot"),
                             ),
-                        column(width = 4,
-                               
-                            box(width = NULL,
-                                title="Summary Table", status = "primary",
-                                div(style = 'height:120px', tableOutput('summaryTable')) #for scroll in style "; overflow-x: scroll" #freqTable
-                                )
+                                column(width = 5, align = "center", h2("Contingency Table",align="center", style = "font-size:14pt"),
+                                       div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('contTable')),
+                                       column(width = 12, align = "center", h2("Frequency Table",align="center", style = "font-size:14pt"),
+                                              div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('freqTable')),
+                                              column(width = 12, h2("Summary Table",align="center", style = "font-size:14pt"),
+                                                     div(style = 'overflow-x: scroll; overflow-y: scroll', tableOutput('summaryTable'))
+                                                     )
+                                              ),
+                                       )
+                            ),
                             )
                         ),
+                    
                     fluidRow(
                         box(width = 12, status = 'primary', title = 'Modeling',
-                            column(width = 2, box("Test"), status = NULL),
-                            column(width = 10,
-                                title="Cumulative Distribution Function (CDF) Plots", status = "primary",
+                            column(width = 4,
+                                   column(width = 9, h2("Modeling Variables",align="center", style = "font-size:14pt"),
+                                   uiOutput("choose_total_cells"),
+                                   uiOutput("modeling_reference"),
+                                   selectInput("selectedModel", "Select Desired Model",
+                                               choices = c("Poisson" = "p", 
+                                                           "Negative Binomial" = "nb", 
+                                                           "Zero Inflated Binomial" = "zib", 
+                                                           "Binomial" = "b", 
+                                                           "Beta Binomial" = "bb", 
+                                                           "Zero Inflated Poisson" = "zip"),
+                                               selected = "bb")),
+                                   column(width = 12, align = "center", h2("Model Fit",align="center", style = "font-size:14pt"),
+                                          div(style = 'overflow-x: scroll', tableOutput('model_stats')))
+                                   ),
+                            column(width = 5,
+                                   h2("Binomial Family Plots", align="center", style = "font-size:14pt"), status = "primary",
                                 plotOutput("cdfplot"),
                                 downloadButton('download_cdfplot', 'Download Plot')
-                                )
+                                ),
+                            column(width = 3, align = "center",
+                                   h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
+                                   div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
                         )
                     )
             ),
             tabItem(tabName='multivariate',
                     h1("Multivariate Summary and Visualization", align="center"),
                     fluidRow(
-                        
-                        box(width = 4, status = "primary",
-                            uiOutput("choose_heatmap_clinical"),
-                            selectInput("heatmap_transform", "Select Transformation Method",
-                                        choices=c("None" = "none",
-                                                  "Square Root" = "square_root"),
-                                        selected="square_root"),
-                            awesomeCheckbox("cluster_heatmap_annotation", "Group Annotation",
-                                            value = TRUE),
-                            awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
-                                            value = TRUE),
-                            uiOutput("choose_heatmap_marker"),
-                            tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
+                        box(width = 12, status = "primary",
+                            column(width = 3,
+                                   uiOutput("choose_heatmap_clinical"),
+                                   selectInput("heatmap_transform", "Select Transformation Method",
+                                               choices=c("None" = "none",
+                                                         "Square Root" = "square_root"),
+                                               selected="square_root"),
+                                   awesomeCheckbox("cluster_heatmap_annotation", "Group Annotation",
+                                                   value = TRUE),
+                                   awesomeCheckbox("cluster_heatmap_Marker", "Cluster by Marker",
+                                                   value = TRUE),
+                                   uiOutput("choose_heatmap_marker"),
+                                   tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
+                                   ),
+                            column(width = 9,
+                                   column(width = 6, h2("Heatmap", align="center", style = "font-size:14pt"),
+                                          plotOutput("heatmap", width="100%"),#height = 510
+                                          downloadButton('download_heatmap', "Download Heatmap"),
+                                          ),
+                                   column(width = 6, h2("Pricipal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
+                                          plotOutput("pca", width="100%"),
+                                          downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
+                                          )
+                                   )
+                            
+                            ),
                         ),
-                        
-                        box(title = "Heatmap",
-                            width = 8, status = "primary",
-                            plotOutput("heatmap", height = 510),
-                            downloadButton('download_heatmap', "Download Heatmap"),
-                            height = 607
-                        )
                     ),
-                    fluidRow(
-                        box(title = "PCA Plot", 
-                            width = 4, status = "primary",
-                            plotOutput("pca"),
-                            downloadButton("download_pca", "Download PCA Plot")
-                            )
-                    ),
-                )
-            ,
             tabItem(tabName = 'spatial',
                     h1("Spatial Summary", align="center"),
-                    box(title = "Spatial Plot Selections",
-                        width=4, status = "primary",
-                        uiOutput("choosePlotlyMarkers"),
-                        height = 607
-                    ),
-                    
-                    box(title = "Spatial Plot",
-                        width = 8, status = "primary",
-                        plotlyOutput("spatial_plotly", height = 545)
-                    ),
-                    
-                    box(title = "Spatial Clustering Estimator Selections",
-                        width=4, status = "primary",
-                        uiOutput("choose_ripley")
-                        ,selectInput("ripleysEstimator", "Select an Estimator",
-                                     choices = c("Ripley's K" = "K",
-                                                 "Besag's L" = "L",
-                                                 "Marcon's M" = "M"),
-                                     selected = "K"),
-                        height = 
-                    ),
-                    
-                    box(title = "Plot of Spatial Clustering Estimator",
-                        width = 8, status = "primary",
-                        plotOutput("ripleysPlot", height = 250)
-                    ),
-                    HTML('<footer>
+                    box(width = 12, status = "primary",
+                        column(width = 4, h2("Spatial Plot Selections", style = "font-size:14pt"),
+                               uiOutput("choosePlotlyMarkers")),
+                        column(width = 8, h2("Spatial Plot", align="center",style = "font-size:14pt"),
+                               plotlyOutput("spatial_plotly", width = "85%", height = "575")
+                               )
+                        ),
+                    box(width = 12, status = "primary",
+                        column(width = 4, h2("Ripley's K Plot Selections", style = "font-size:14pt"),
+                               uiOutput("choose_ripley")
+                               ,selectInput("ripleysEstimator", "Select an Estimator",
+                                            choices = c("Ripley's K" = "K",
+                                                        "Besag's L" = "L",
+                                                        "Marcon's M" = "M"),
+                                            selected = "K")
+                               ),
+                        column(width = 8, h2("Ripley's K Plot", align="center", style = "font-size:14pt"),
+                               plotOutput("ripleysPlot", height = 350)
+                               )
+                        ),
+                        HTML('<footer>
                          In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
                          </footer>')
-                ),
+                    ),
             tabItem(tabName = 'help',
                     h1("Getting Started", align="center"),
                     fluidRow(
