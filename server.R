@@ -109,12 +109,13 @@ shinyServer(function(input, output) {
     })
     
     output$choose_clinical = renderUI({
-        
         summary_clinical_names = colnames(clinical_data())
-        
+        t = sapply(clinical_data(), function(x){return(length(unique(x)))})
+        good = t[t > 1 & t < 10]
+        print(good)
         selectInput("picked_clinical", "Choose Clinical Variable to Plot",
                     choices = summary_clinical_names,
-                    selected = summary_clinical_names[3])
+                    selected = names(good)[1]) #select a variable that has a decent amount of levels in order to perform the models
         
     })
     
@@ -138,7 +139,6 @@ shinyServer(function(input, output) {
     })
     output$modeling_reference = renderUI({
         model_references = unique(summary_data_merged()[input$picked_clinical])
-        print(model_references)
         selectInput("picked_modeling_reference", "Choose Clinical Reference",
                     choices = model_references,
                     selected = model_references[1])
@@ -146,35 +146,35 @@ shinyServer(function(input, output) {
     
     model_list = reactive({
         validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
-                 need(summary_data_merged() !="", "Please upload clinical and summary data....."))
-        if(is.null(summary_data_merged())){
-            return()
-        }
-        
-        df = models(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
-                    Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference)
+                 need(summary_data_merged() !="", "Please upload clinical and summary data....."),
+                 need(input$picked_marker !="", "Please pick a marker....."),
+                 need(input$picked_total_cells !="", "Please select column with total cell count....."),
+                 need(input$picked_modeling_reference !="", "Select level for reference....."))
+        suppressWarnings({
+            df = models(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
+                        Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference) #update with model_checked_repeated
+        })
         return(df)
     })
     
     output$aic_table = renderTable({
-        models = model_list()
-        validate(need(models !="", "Please wait while things finish loading....."))
-        return(models$aic)
-    })
+        models1 = model_list()
+        return(data.frame(models1$aic))
+    }, digits = 4)
+    
+    output$model_stats = renderTable({
+        validate(need(model_list(), "Please wait while things finish loading....."))
+        models1 = model_list()
+        df = models1$models[[input$selectedModel]] %>% summary() %>% coefficients()
+        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
+                         df, check.names = F)
+        return(df1)
+    }, digits = 4)
     
     cont_table = reactive({
         validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
         
-        data_table = summary_data_merged()
-        
-        markers = input$picked_marker
-        clinvar <- input$picked_clinical
-        
-        df = contingency_table(data_table, markers = markers, clin_vars = clinvar, percent_threshold = input$choose_cont_thresh)
-        
+        df = contingency_table(summary_data_merged(), markers = input$picked_marker, clin_vars = input$picked_clinical, percent_threshold = input$choose_cont_thresh)
         
         return(df)
     })
@@ -188,11 +188,11 @@ shinyServer(function(input, output) {
         if(is.null(summary_data_merged())){
             return()
         }
-        data_table = summary_data_merged()
+        data_table = 
         
-        markers = input$picked_marker
+        markers = 
         
-        df = freq_table_by_marker(data_table, markers = markers)
+        df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker)
         
         return(df)
     })
@@ -221,10 +221,8 @@ shinyServer(function(input, output) {
         sub_id = input$clinical_merge
         
         temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-                          #"Q1" = quantile(data_table[,cellvar], probs=0.25, na.rm=TRUE),
                           "Median" = median(data_table[,cellvar], na.rm = TRUE),
                           "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-                          #"Q3" = quantile(data_table[,cellvar], probs=0.75, na.rm=TRUE),
                           "Max" = max(data_table[,cellvar], na.rm=TRUE),
                           "SD" = sd(data_table[,cellvar], na.rm=TRUE),
                           "N Subs" = length(unique(data_table[,sub_id])),
@@ -251,8 +249,6 @@ shinyServer(function(input, output) {
             data_table[,cellvar] = sqrt(data_table[,cellvar])
             thres = sqrt(as.numeric(input$choose_cont_thresh))
         }
-        #assign("summary_data_merged", data_table, envir =  .GlobalEnv)
-        #assign("markers", cellvar, envir =  .GlobalEnv)
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
         
         plots[[as.integer(input$summaryPlotType)]]
@@ -330,10 +326,6 @@ shinyServer(function(input, output) {
                  colorscheme = input$summaryPlotColors,
                  anno_clust = input$cluster_heatmap_annotation,
                  mark_clust = input$cluster_heatmap_Marker)
-        # heat_map(summary_clinical_merge = heatmap_data,
-        #          markers = input$heatmap_selection,
-        #          clin_vars = input$picked_clinical_factor,
-        #          colorscheme = input$summaryPlotColors)
     })
     
     output$heatmap = renderPlot({
