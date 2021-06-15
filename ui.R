@@ -99,7 +99,6 @@ ui = dashboardPage(
                                                         "Plasma" = "plasma", 
                                                         "Inferno" = "inferno"),
                                             selected = "viridis"),
-                                #uiOutput("choose_total_cells"),
                                 awesomeCheckbox("sqrt_transform", "Square Root Transformation",
                                               value = FALSE)
                                 ),
@@ -129,13 +128,13 @@ ui = dashboardPage(
                                    uiOutput("choose_total_cells"),
                                    uiOutput("modeling_reference"),
                                    selectInput("selectedModel", "Select Desired Model",
-                                               choices = c("Beta Binomial" = "bb", 
-                                                           "Binomial" = "b", 
+                                               choices = c("Poisson" = "p", 
                                                            "Negative Binomial" = "nb", 
-                                                           "Poisson" = "p", 
                                                            "Zero Inflated Binomial" = "zib", 
+                                                           "Binomial" = "b", 
+                                                           "Beta Binomial" = "bb", 
                                                            "Zero Inflated Poisson" = "zip"),
-                                               selected = "viridis")),
+                                               selected = "bb")),
                                    column(width = 12, align = "center", h2("Model Fit",align="center", style = "font-size:14pt"),
                                           div(style = 'overflow-x: scroll', tableOutput('model_stats')))
                                    ),
@@ -154,7 +153,7 @@ ui = dashboardPage(
                     h1("Multivariate Summary and Visualization", align="center"),
                     fluidRow(
                         box(width = 12, status = "primary",
-                            column(width = 4,
+                            column(width = 3,
                                    uiOutput("choose_heatmap_clinical"),
                                    selectInput("heatmap_transform", "Select Transformation Method",
                                                choices=c("None" = "none",
@@ -167,14 +166,17 @@ ui = dashboardPage(
                                    uiOutput("choose_heatmap_marker"),
                                    tags$style("awesome-checkbox-group-custom {background-color: #2cdeeb;}"),
                                    ),
-                            column(width = 4, h2("Heatmap", align="center", style = "font-size:14pt"),
-                                   plotOutput("heatmap", width="100%"),#height = 510
-                                   downloadButton('download_heatmap', "Download Heatmap"),
-                                   ),
-                            column(width = 4, h2("Pricipal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
-                                   plotOutput("pca", width="100%"),
-                                   downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
+                            column(width = 9,
+                                   column(width = 6, h2("Heatmap", align="center", style = "font-size:14pt"),
+                                          plotOutput("heatmap", width="100%"),#height = 510
+                                          downloadButton('download_heatmap', "Download Heatmap"),
+                                          ),
+                                   column(width = 6, h2("Pricipal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
+                                          plotOutput("pca", width="100%"),
+                                          downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
+                                          )
                                    )
+                            
                             ),
                         ),
                     ),
@@ -183,12 +185,12 @@ ui = dashboardPage(
                     box(width = 12, status = "primary",
                         column(width = 4, h2("Spatial Plot Selections", style = "font-size:14pt"),
                                uiOutput("choosePlotlyMarkers")),
-                        column(width = 8, h2("Spatial Plot", style = "font-size:14pt"),
+                        column(width = 8, h2("Spatial Plot", align="center",style = "font-size:14pt"),
                                plotlyOutput("spatial_plotly", width = "85%", height = "575")
                                )
                         ),
                     box(width = 12, status = "primary",
-                        column(width = 4,
+                        column(width = 4, h2("Ripley's K Plot Selections", style = "font-size:14pt"),
                                uiOutput("choose_ripley")
                                ,selectInput("ripleysEstimator", "Select an Estimator",
                                             choices = c("Ripley's K" = "K",
@@ -196,7 +198,7 @@ ui = dashboardPage(
                                                         "Marcon's M" = "M"),
                                             selected = "K")
                                ),
-                        column(width = 8,
+                        column(width = 8, h2("Ripley's K Plot", align="center", style = "font-size:14pt"),
                                plotOutput("ripleysPlot", height = 350)
                                )
                         ),
