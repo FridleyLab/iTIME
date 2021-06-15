@@ -134,7 +134,7 @@ ui = dashboardPage(
                                                            "Zero Inflated Poisson" = "zip"),
                                                selected = "viridis")),
                                    column(width = 12, align = "center", h2("Model Fit",align="center", style = "font-size:14pt"),
-                                          uiOutput("model_stats"))
+                                          div(style = 'overflow-x: scroll', tableOutput('model_stats')))
                                    ),
                             column(width = 5,
                                    h2("Binomial Family Plots", align="center", style = "font-size:14pt"), status = "primary",

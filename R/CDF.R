@@ -52,7 +52,7 @@ binomial_plot = cdfs %>%
   theme(axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.title.x = element_blank(),
-        legend.position = 'bottom',
+        legend.position = c(0.8, 0.3),
         axis.title.y = element_text(size = 16),
         axis.text.y = element_text(size = 16),
         strip.text = element_text(size=16),
@@ -61,22 +61,22 @@ binomial_plot = cdfs %>%
   labs(color = 'Distribution') + scale_linetype_manual(values = c("solid", "longdash"))
 
 
-poisson_plot = cdfs %>% filter(family == 'Poisson', Marker == markers) %>%
-  ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + geom_line(aes(color = 'Empirical'),color = 'black') + 
-  geom_line(aes(x = Count, y = CDF, color = Distribution)) + theme_bw() + 
-  theme(axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title.x = element_blank(),
-        legend.position = 'bottom',
-        axis.title.y = element_text(size = 16),
-        axis.text.y = element_text(size = 16),
-        strip.text = element_text(size=16),
-        legend.text = element_text(size = 16),
-        legend.title = element_text(size = 16)) + 
-  labs(color = 'Distribution') + ggtitle('Poisson Family')
-
-
-final = ggpubr::ggarrange(plotlist = list(binomial_plot, poisson_plot))
+# poisson_plot = cdfs %>% filter(family == 'Poisson', Marker == markers) %>%
+#   ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + geom_line(aes(color = 'Empirical'),color = 'black') + 
+#   geom_line(aes(x = Count, y = CDF, color = Distribution)) + theme_bw() + 
+#   theme(axis.text.x = element_blank(),
+#         axis.ticks = element_blank(),
+#         axis.title.x = element_blank(),
+#         legend.position = "bottom",
+#         axis.title.y = element_text(size = 16),
+#         axis.text.y = element_text(size = 16),
+#         strip.text = element_text(size=16),
+#         legend.text = element_text(size = 16),
+#         legend.title = element_text(size = 16)) + 
+#   labs(color = 'Distribution') + ggtitle('Poisson Family')
+# 
+# 
+# final = ggpubr::ggarrange(plotlist = list(binomial_plot, poisson_plot))
 
 return(binomial_plot)
 }
