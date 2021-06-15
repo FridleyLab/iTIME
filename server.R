@@ -129,6 +129,39 @@ shinyServer(function(input, output) {
     
 #univariate
     
+    output$choose_total_cells = renderUI({
+        summary_clinical_names = colnames(summary_data_merged())
+        
+        selectInput("picked_total_cells", "Choose Column Name for Total Number of Cells",
+                    choices = summary_clinical_names,
+                    selected = summary_clinical_names[grep("Total", summary_clinical_names)])
+    })
+    output$modeling_reference = renderUI({
+        model_references = unique(summary_data_merged()[input$picked_clinical])
+        print(model_references)
+        selectInput("picked_modeling_reference", "Choose Clinical Reference",
+                    choices = model_references,
+                    selected = model_references[1])
+    })
+    
+    model_list = reactive({
+        validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
+                 need(summary_data_merged() !="", "Please upload clinical and summary data....."))
+        if(is.null(summary_data_merged())){
+            return()
+        }
+        
+        df = models(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
+                    Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference)
+        return(df)
+    })
+    
+    output$aic_table = renderTable({
+        models = model_list()
+        validate(need(models !="", "Please wait while things finish loading....."))
+        return(models$aic)
+    })
+    
     cont_table = reactive({
         validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
         if(is.null(clinical_data()) | is.null(summary_data())){

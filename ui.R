@@ -34,19 +34,6 @@ ui = dashboardPage(
         )
     ),
     dashboardBody(
-        tags$head(tags$script(
-        'var dimension = [0, 0];
-              $(document).on("shiny:connected", function(e) {
-                  dimension[0] = window.innerWidth;
-                  dimension[1] = window.innerHeight;
-                  Shiny.onInputChange("dimension", dimension);
-              });
-              $(window).resize(function(e) {
-                  dimension[0] = window.innerWidth;
-                  dimension[1] = window.innerHeight;
-                  Shiny.onInputChange("dimension", dimension);
-              });'
-    )),
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
@@ -92,6 +79,8 @@ ui = dashboardPage(
                     h1("Univariate Summary and Visualization", align="center"),
                     fluidRow(
                         box(status = "primary", width = 12,
+                            #add total cell selection
+                            #add reference base for the clinical variable to use for modeling
                             column(h2("Select Variables",align="center", style = "font-size:14pt"), status = "primary",
                                 width = 3,
                                 uiOutput("choose_marker"),
@@ -115,42 +104,62 @@ ui = dashboardPage(
                                                         "Plasma" = "plasma", 
                                                         "Inferno" = "inferno"),
                                             selected = "viridis"),
+                                #uiOutput("choose_total_cells"),
                                 awesomeCheckbox("sqrt_transform", "Square Root Transformation",
                                               value = FALSE)
                                 ),
                             
-                            column(width = 5, h2("Summary Plot",align="center", style = "font-size:14pt"),
-                                #"Summary Plot",# status = "primary",
+                            column(width = 9,
+                                   column(width = 7,h2("Summary Plot",align="center", style = "font-size:14pt"),
                                 plotOutput("boxplot", height = 520),
-                                downloadButton('download_boxplot', "Download Plot")
-                                ),
-                            
-                            
-                            )
-                        )
-                    ,
-                    
-                    fluidRow(
-                        box(width = 4, 
-                            title="Contingency Table", status = "primary",
-                            div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable'))
+                                downloadButton('download_boxplot', "Download Plot"),
                             ),
-                        column(width = 4,
-                               
-                            box(width = NULL,
-                                title="Summary Table", status = "primary",
-                                div(style = 'height:120px', tableOutput('summaryTable')) #for scroll in style "; overflow-x: scroll" #freqTable
+                                column(width = 5, h2("Contingency Table",align="center", style = "font-size:14pt"),
+                                       div(style = 'height:120px; overflow-x: scroll; overflow-y: scroll', tableOutput('contTable')),
+                                       column(width = 12, h2("Frequency Table",align="center", style = "font-size:14pt"),
+                                              div(style = 'height:120px; overflow-x: scroll; overflow-y: scroll', tableOutput('freqTable')),
+                                              column(width = 12, h2("Summary Table",align="center", style = "font-size:14pt"),
+                                                     div(style = 'height:120px; overflow-x: scroll; overflow-y: scroll', tableOutput('summaryTable'))
+                                              )
+                                       ),
+                                )
                                 )
                             )
                         ),
+                    
+                    # box(width = 4, status = "primary",
+                    #     #column(width = 12, h2("Summary Table",align="center", style = "font-size:14pt"),
+                    #            tableOutput('summaryTable')#div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('contTable')),
+                    #            #h2("Frequency Table",align="center", style = "font-size:14pt"),
+                    #            #tableOutput('freqTable'),#div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('freqTable')),
+                    #            #h2("Summary Table",align="center", style = "font-size:14pt"),
+                    #            #tableOutput('summaryTable')#div(style = 'height:120px; overflow-x: hidden; overflow-y: scroll', tableOutput('summaryTable'))
+                    #     )
+                    #     
+                    # ),
+                    
                     fluidRow(
                         box(width = 12, status = 'primary', title = 'Modeling',
-                            column(width = 2, box("Test"), status = NULL),
-                            column(width = 10,
+                            
+                            column(width = 3, h2("Modeling Variables",align="center", style = "font-size:14pt"),
+                                   uiOutput("choose_total_cells"),
+                                   uiOutput("modeling_reference"),
+                                   selectInput("selectedModel", "Select Desired Model",
+                                               choices = c("Beta Binomial" = "bb", 
+                                                           "Binomial" = "b", 
+                                                           "Negative Binomial" = "nb", 
+                                                           "Poisson" = "p", 
+                                                           "Zero Inflated Binomial" = "nib", 
+                                                           "Zero Inflated Poisson" = "nip"),
+                                               selected = "viridis")),
+                            column(width = 5,
                                 title="Cumulative Distribution Function (CDF) Plots", status = "primary",
                                 plotOutput("cdfplot"),
                                 downloadButton('download_cdfplot', 'Download Plot')
-                                )
+                                ),
+                            column(width = 4,
+                                   h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
+                                   div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
                         )
                     )
             ),
