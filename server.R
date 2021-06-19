@@ -124,7 +124,7 @@ shinyServer(function(input, output) {
         t = sapply(clinical_data(), function(x){return(length(unique(x)))})
         good = t[t > 1 & t < 10]
         print(good)
-        selectInput("picked_clinical", "Choose Clinical Variable to Plot",
+        selectInput("picked_clinical", "Choose Clinical Variable to Plot and Test",
                     choices = summary_clinical_names,
                     selected = names(good)[1]) #select a variable that has a decent amount of levels in order to perform the models
         
@@ -290,6 +290,32 @@ shinyServer(function(input, output) {
     output$cdfplot = renderPlot({
         cdf_plot_react()
     })
+    
+    output$univariate_report <- downloadHandler(
+        filename <-  "univariate_report.pdf",
+        content = function(file) {
+            tempReport <- file.path(tempdir(), "volanoes_report.Rmd")
+            file.copy("../report_templates/univariate_report.Rmd", tempReport, overwrite = TRUE)
+            params <- list(selected_marker = input$picked_marker,
+                           contingency_threshold = input$choose_cont_thresh,
+                           picked_clinical = input$picked_clinical,
+                           boxplot = boxplot(),
+                           contingency_Table = contTable(),
+                           frequency_table = freqTable(),
+                           summary_table = summaryTable(),
+                           total_cell_column = input$picked_total_cells,
+                           modeling_reference = input$picked_modeling_reference,
+                           selected_univariate_model = input$selectedModel,
+                           chosen_model_stats = model_stats(),
+                           cdf_plot = cdfplot(),
+                           model_aic_table = aic_table()
+                           )
+            rmarkdown::render(tempReport, output_file = file,
+                              params = params,
+                              envir = new.env(parent = globalenv())
+            )
+        }
+    )
 
 #multivariate
     

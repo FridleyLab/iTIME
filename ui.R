@@ -8,6 +8,9 @@
 #
 # add for testing
 
+#Melanoma was sox10 in the study for tumor stroma
+#nicks plotly sort
+
 ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
@@ -123,7 +126,7 @@ ui = dashboardPage(
                     
                     fluidRow(
                         box(width = 12, status = 'primary', title = 'Modeling',
-                            column(width = 4,
+                            column(width = 3,
                                    column(width = 9, h2("Modeling Variables",align="center", style = "font-size:14pt"),
                                    uiOutput("choose_total_cells"),
                                    uiOutput("modeling_reference"),
@@ -139,13 +142,20 @@ ui = dashboardPage(
                                           div(style = 'overflow-x: scroll', tableOutput('model_stats')))
                                    ),
                             column(width = 5,
-                                   h2("Binomial Family Plots", align="center", style = "font-size:14pt"), status = "primary",
+                                   h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), status = "primary",
                                 plotOutput("cdfplot"),
                                 downloadButton('download_cdfplot', 'Download Plot')
                                 ),
-                            column(width = 3, align = "center",
+                            column(width = 4, align = "center",
                                    h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
+                                   h2("Lower indicates a better model fit...",align="center", style = "font-size:10pt"),
                                    div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
+                        )
+                    ),
+                    fluidRow(
+                        downloadButton(
+                            outputId = "univariate_report",
+                            label = "Download Univariate Report"
                         )
                     )
             ),
@@ -171,7 +181,7 @@ ui = dashboardPage(
                                           plotOutput("heatmap", width="100%"),#height = 510
                                           downloadButton('download_heatmap', "Download Heatmap"),
                                           ),
-                                   column(width = 6, h2("Pricipal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
+                                   column(width = 6, h2("Principal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
                                           plotOutput("pca", width="100%"),
                                           downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
                                           )
