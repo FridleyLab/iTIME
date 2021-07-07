@@ -281,10 +281,10 @@ shinyServer(function(input, output) {
     })
     
     output$download_boxplot = downloadHandler(
-        filename = function() { paste(Sys.Date(), '-summary_plot.png', sep='') },
+        filename = function() { paste(Sys.Date(), '-summary_plot.pdf', sep='') },
         
         content = function(file) {
-            ggsave(file, plot = univar_plots(), device = "png",width = 12, height = 10, units = "in")
+            ggsave(file, plot = univar_plots(), device = "pdf",width = 12, height = 10, units = "in")
         }
     )
     
@@ -381,10 +381,10 @@ shinyServer(function(input, output) {
     })
     
     output$download_heatmap = downloadHandler(
-        filename = function() { paste(Sys.Date(), '-heatmap.png', sep='') },
+        filename = function() { paste(Sys.Date(), '-heatmap.pdf', sep='') },
         
         content = function(file) {
-            ggsave(file, plot = heatmap_plot(), device = "png",
+            ggsave(file, plot = heatmap_plot(), device = "pdf",
                    width = 10, height = 7, units = 'in')
         }
     )
@@ -408,10 +408,10 @@ shinyServer(function(input, output) {
     })
     
     output$download_pca = downloadHandler(
-        filename = function () {paste(Sys.Date(), '-pca.png', sep='')},
+        filename = function () {paste(Sys.Date(), '-pca.pdf', sep='')},
         
         content = function(file){
-            ggsave(file, plot = pca_plot(), device = "png",
+            ggsave(file, plot = pca_plot(), device = "pdf",
                    width = 7, height = 7, units = "in")
         }
     )
