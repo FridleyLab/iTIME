@@ -255,14 +255,21 @@ shinyServer(function(input, output) {
         cellvar <-  input$picked_marker
         clinvar <- input$picked_clinical
         colorscheme <- input$summaryPlotColors
+        data_table = summary_data_merged()
         
-        if(input$sqrt_transform == FALSE){
-            data_table = summary_data_merged()
+        if(input$uni_transformation == "none"){
             thres = input$choose_cont_thresh
-        }else{
-            data_table = summary_data_merged()
+        } else if(input$uni_transformation == "sqrt_transform"){
             data_table[,cellvar] = sqrt(data_table[,cellvar])
             thres = sqrt(as.numeric(input$choose_cont_thresh))
+        } else if(input$uni_transformation == "log2_transform"){
+            data_table[,cellvar] = log2(data_table[,cellvar]+0.0001)
+            thres = log2(as.numeric(input$choose_cont_thresh)+0.0001)
+        } else if(input$uni_transformation == "logit_transform"){
+            p = (data_table[,cellvar]/100)+0.0001
+            data_table[,cellvar] = log10(p/(1-p))
+            tmp = (as.numeric(input$choose_cont_thresh)/100) + 0.0001
+            thres = log10(tmp/(1-tmp))
         }
         plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
         

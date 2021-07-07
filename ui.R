@@ -102,8 +102,11 @@ ui = dashboardPage(
                                                         "Plasma" = "plasma", 
                                                         "Inferno" = "inferno"),
                                             selected = "viridis"),
-                                awesomeCheckbox("sqrt_transform", "Square Root Transformation",
-                                              value = FALSE)
+                                selectInput("uni_transformation", "Select Transformation",
+                                            choices = c("None" = "none",
+                                                        "Square Root" = "sqrt_transform",
+                                                        "Log 2 Tranformation (0.0001)" = "log2_transform",
+                                                        "Logit Tranformation (0.0001)" = "logit_transform"))
                                 ),
                             
                             column(width = 9,
