@@ -54,6 +54,8 @@ shinyServer(function(input, output) {
             df = fread("example_data/deidentified_spatial.csv", check.names = FALSE, data.table = FALSE)
         }
         
+        assign("spatial", df, envir = globalenv())
+        
         return(df)
     })
     
@@ -189,6 +191,10 @@ shinyServer(function(input, output) {
         df = contingency_table(summary_data_merged(), markers = input$picked_marker, clin_vars = input$picked_clinical, percent_threshold = input$choose_cont_thresh)
         
         return(df)
+    })
+    
+    output$selectedModelName = renderText({
+        paste("Statistical Modeling of the", input$picked_marker)
     })
     
     output$contTable = renderTable({
@@ -405,12 +411,13 @@ shinyServer(function(input, output) {
     
 #spatial
     output$choosePlotlyMarkers = renderUI({
-        ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
+        data = spatial_data()
+        ripleys_spatial_names = colnames(Filter(is.numeric, data))
         
         whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
                          ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
         tmp = ripleys_spatial_names[whichcols]
-        acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
+        acceptable_ripleys_names =  tmp[sapply(data[,tmp],sum)>0]
         
         awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
                     choices = rev(acceptable_ripleys_names),
@@ -426,11 +433,11 @@ shinyServer(function(input, output) {
         
         markers = input$plotly_selection
         new_names = markers
-        colorscheme = input$summaryPlotColors
-        colorscheme = viridis::viridis_pal(option = colorscheme)(length(markers))
+        #colorscheme = input$summaryPlotColors
+        colorscheme = viridis::viridis_pal(option = "D")(length(markers))
         
         scatter_plotly_old(data = spatial_data(), markers = markers, 
-                           new_names = new_names, colorscheme = colorscheme)
+                           new_names = new_names, colorscheme = colorscheme) #
     })
     
     output$spatial_plotly = renderPlotly({
@@ -459,7 +466,6 @@ shinyServer(function(input, output) {
             return()
         }
         
-        colorscheme <- input$summaryPlotColors
         Ripley(spatial_data(), input$ripleys_selection)
     })
     
@@ -468,6 +474,8 @@ shinyServer(function(input, output) {
         Ripley_plot(ripley_data = ripley_data(), estimator = input$ripleysEstimator)
         
     })
+    
+#Getting started RMD rendering
     
     output$gettingstarted <- renderUI({
         withMathJax({

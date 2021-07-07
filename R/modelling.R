@@ -125,11 +125,11 @@ out$aic = data.frame(Distribution = c('Poisson', 'Negative Binomial', 'Zero Infl
                      Family = c(rep('Poisson', 3),"" , rep('Binomial', 3)), 
                      check.names = FALSE)
 
-out$models = list('bb' = model_fit_bb, 'b' = model_fit_binomial, 
-                  'nb' = model_fit_negbinom,
-                  'p' = model_fit_poisson, 
-                  'zib' = model_fit_zibinomial, 
-                  'zip' = model_fit_zipoisson)
+out$models = list('Beta Binomial' = model_fit_bb, 'Binomial' = model_fit_binomial, 
+                  'Negative Binomial' = model_fit_negbinom,
+                  'Poisson' = model_fit_poisson, 
+                  'Zero Inflated Binomial' = model_fit_zibinomial, 
+                  'Zero Inflated Poisson' = model_fit_zipoisson)
 
 return(out)
 } 
