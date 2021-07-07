@@ -49,7 +49,7 @@ shinyServer(function(input, output) {
             if(is.null(infile)){
                 return()
             }
-            df = fread(infile$datapath, check.names = FALSE)
+            df = fread(infile$datapath, check.names = FALSE, data.table = FALSE)
         } else {
             df = fread("example_data/deidentified_spatial.csv", check.names = FALSE, data.table = FALSE)
         }
@@ -411,13 +411,18 @@ shinyServer(function(input, output) {
     
 #spatial
     output$choosePlotlyMarkers = renderUI({
-        data = spatial_data()
-        ripleys_spatial_names = colnames(Filter(is.numeric, data))
+        validate(need(spatial_data() !="", "Please wait while spatial data is loaded....."))
+        if(is.null(spatial_data())){
+            return()
+        }
+        
+        ripleys_spatial_names = colnames(Filter(is.numeric, spatial_data()))
         
         whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
                          ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
         tmp = ripleys_spatial_names[whichcols]
-        acceptable_ripleys_names =  tmp[sapply(data[,tmp],sum)>0]
+        print(class(spatial_data()))
+        acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
         
         awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
                     choices = rev(acceptable_ripleys_names),
@@ -461,10 +466,6 @@ shinyServer(function(input, output) {
     
     ripley_data = reactive({
         validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."))
-        
-        if(is.null(spatial_data()) | is.null(clinical_data())){
-            return()
-        }
         
         Ripley(spatial_data(), input$ripleys_selection)
     })
