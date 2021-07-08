@@ -237,20 +237,22 @@ shinyServer(function(input, output) {
         validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
                  need(input$picked_marker !="", "Please wait while things finish loading....."),
                  need(input$clinical_merge !="", "Please wait while things finish loading....."))
-
-        data_table = summary_data_merged()
-        cellvar <-  input$picked_marker
-        sub_id = input$clinical_merge
         
-        temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-                          "Median" = median(data_table[,cellvar], na.rm = TRUE),
-                          "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-                          "Max" = max(data_table[,cellvar], na.rm=TRUE),
-                          "SD" = sd(data_table[,cellvar], na.rm=TRUE),
-                          "N Subs" = length(unique(data_table[,sub_id])),
-                          "N Samples" = length(data_table[,sub_id])
-                          )
-        return(temp)
+        return(summary_table(summary_data_merged(), marker = input$picked_marker, clinical = input$picked_clinical, merged = input$clinical_merge))
+
+        # data_table = summary_data_merged()
+        # cellvar <-  input$picked_marker
+        # sub_id = input$clinical_merge
+        # 
+        # temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
+        #                   "Median" = median(data_table[,cellvar], na.rm = TRUE),
+        #                   "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
+        #                   "Max" = max(data_table[,cellvar], na.rm=TRUE),
+        #                   "SD" = sd(data_table[,cellvar], na.rm=TRUE),
+        #                   "N Subs" = length(unique(data_table[,sub_id])),
+        #                   "N Samples" = length(data_table[,sub_id])
+        #                   )
+        # return(temp)
     })
     
     univar_plots = reactive({

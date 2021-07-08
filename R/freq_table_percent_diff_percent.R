@@ -19,6 +19,7 @@
 
 #Chris's function
 #removed percent
+#alex edit to group by clinical variable
 freq_table_by_marker <-
   function(summary_clinical_merge,
            clinical = clinical,
