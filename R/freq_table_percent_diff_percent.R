@@ -21,9 +21,10 @@
 #removed percent
 freq_table_by_marker <-
   function(summary_clinical_merge,
+           clinical = clinical,
            markers = markers) {
     cells <-
-      summary_clinical_merge %>% select(any_of(paste( markers)))
+      summary_clinical_merge %>% select(paste(clinical),any_of(paste( markers)))
     
     table <-
       cells %>% 
@@ -32,9 +33,10 @@ freq_table_by_marker <-
              `> 3%` = .[[paste( markers)]]>3,
              `> 4%` = .[[paste( markers)]]>4,
              `> 5%` = .[[paste( markers)]]>5) %>% 
+      group_by(.[[paste(clinical)]]) %>%
       select(`> 1%`,`> 2%`,`> 3%`,`> 4%`,`> 5%`) %>%
       summarize_all( ~ sum(.))
-    rownames(table) = markers
+    colnames(table)[1] = clinical
     
     return(table)
   }

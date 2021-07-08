@@ -122,10 +122,11 @@ shinyServer(function(input, output) {
     })
     
     output$choose_clinical = renderUI({
+        validate(need(clinical_data() !="", "Loading Clinical Data....."))
         summary_clinical_names = colnames(clinical_data())
         t = sapply(clinical_data(), function(x){return(length(unique(x)))})
         good = t[t > 1 & t < 10]
-        print(good)
+        #print(good)
         selectInput("picked_clinical", "Choose Clinical Variable to Plot and Test",
                     choices = summary_clinical_names,
                     selected = names(good)[1]) #select a variable that has a decent amount of levels in order to perform the models
@@ -151,6 +152,11 @@ shinyServer(function(input, output) {
                     selected = summary_clinical_names[grep("Total", summary_clinical_names)])
     })
     output$modeling_reference = renderUI({
+        validate(need(summary_data_merged() !="", "Please wait while Summary and Clinical Data are merged....."),
+                 need(input$picked_clinical !="", "Please select a clinical variable for comparison....."))
+        if(is.na(summary_data_merged())){
+            return()
+        }
         model_references = unique(summary_data_merged()[input$picked_clinical])
         selectInput("picked_modeling_reference", "Choose Clinical Reference",
                     choices = model_references,
@@ -178,8 +184,9 @@ shinyServer(function(input, output) {
     
     output$model_stats = renderTable({
         validate(need(model_list(), "Please wait while things finish loading....."))
+        
         models1 = model_list()
-        df = models1$models[[input$selectedModel]] %>% summary() %>% coefficients()
+        df = models1$models[["Beta Binomial"]] %>% summary() %>% coefficients()#input$selectedModel
         df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
                          df, check.names = F)
         return(df1)
@@ -207,7 +214,7 @@ shinyServer(function(input, output) {
             return()
         }
         
-        df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker)
+        df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker, clinical = input$picked_clinical)
         
         return(df)
     })

@@ -134,27 +134,28 @@ ui = dashboardPage(
                                           h2("Modeling Variables",align="center", style = "font-size:14pt"),
                                           uiOutput("choose_total_cells"),
                                           uiOutput("modeling_reference"),
-                                          selectInput("selectedModel", "Select Desired Model",
-                                                      choices = c("Poisson", 
-                                                                  "Negative Binomial", 
-                                                                  "Zero Inflated Binomial", 
-                                                                  "Binomial", 
-                                                                  "Beta Binomial", 
-                                                                  "Zero Inflated Poisson"),
-                                                      selected = "Beta Binomial"))
+                                          # selectInput("selectedModel", "Select Desired Model",
+                                          #             choices = c("Poisson",
+                                          #                         "Negative Binomial",
+                                          #                         "Zero Inflated Binomial",
+                                          #                         "Binomial",
+                                          #                         "Beta Binomial",
+                                          #                         "Zero Inflated Poisson"),
+                                          #             selected = "Beta Binomial")
+                                          )
                                    ),
                             column(width = 5,
                                    column(width = 12, h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), 
                                           status = "primary",
                                           plotOutput("cdfplot"),
                                           downloadButton('download_cdfplot', 'Download Plot')),
-                                   column(width = 12, align = "center", h2("Model Fit",align="center", style = "font-size:14pt"),
+                                   column(width = 12, align = "center", h2("Beta Binomial Model Statistics",align="center", style = "font-size:14pt"),
                                           div(style = 'overflow-x: scroll', tableOutput('model_stats')))
                                 ),
-                            column(width = 4, align = "center",
-                                   h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
-                                   h2("Lower indicates a better model fit...",align="center", style = "font-size:10pt"),
-                                   div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
+                            # column(width = 4, align = "center",
+                            #        h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
+                            #        h2("Lower indicates a better model fit...",align="center", style = "font-size:10pt"),
+                            #        div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
                         )
                     ),
                     fluidRow(
