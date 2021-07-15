@@ -159,10 +159,18 @@ ui = dashboardPage(
                         )
                     ),
                     fluidRow(
-                        downloadButton(
-                            outputId = "univariate_report",
-                            label = "Download Univariate Report"
+                        box(width = 12, status = "primary",
+                            downloadButton(
+                                outputId = "univariate_report",
+                                label = "Download Univariate Report"
+                            ),
+                            checkboxInput(
+                                "printFunctions", 
+                                "Print Functions in Report?",
+                                value=F
+                            )
                         )
+                        
                     )
             ),
             tabItem(tabName='multivariate',
