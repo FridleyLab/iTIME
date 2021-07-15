@@ -101,6 +101,17 @@ shinyServer(function(input, output) {
         
     })
     
+    summary_data_merged = reactive({
+        if(is.null(clinical_data()) | is.null(summary_data())){
+            return()
+        }
+        
+        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+        return(df)
+    })
+    
+#univariate
+    
     output$choose_cont_marker = renderUI({
         
         summary_marker_names = colnames(summary_data_merged())[grepl(") Positive", colnames(summary_data_merged()))]
@@ -131,128 +142,6 @@ shinyServer(function(input, output) {
                     choices = summary_clinical_names,
                     selected = names(good)[1]) #select a variable that has a decent amount of levels in order to perform the models
         
-    })
-    
-    summary_data_merged = reactive({
-        if(is.null(clinical_data()) | is.null(summary_data())){
-            return()
-        }
-        
-        df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
-        return(df)
-    })
-    
-#univariate
-    
-    output$choose_total_cells = renderUI({
-        summary_clinical_names = colnames(summary_data_merged())
-        
-        selectInput("picked_total_cells", "Choose Column Name for Total Number of Cells",
-                    choices = summary_clinical_names,
-                    selected = summary_clinical_names[grep("Total", summary_clinical_names)])
-    })
-    output$modeling_reference = renderUI({
-        validate(need(summary_data_merged() !="", "Please wait while Summary and Clinical Data are merged....."),
-                 need(input$picked_clinical !="", "Please select a clinical variable for comparison....."))
-        if(is.na(summary_data_merged())){
-            return()
-        }
-        model_references = unique(summary_data_merged()[input$picked_clinical])
-        selectInput("picked_modeling_reference", "Choose Clinical Reference",
-                    choices = model_references,
-                    selected = model_references[1])
-    })
-    
-    model_list = reactive({
-        validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
-                 need(summary_data_merged() !="", "Please upload clinical and summary data....."),
-                 need(input$picked_marker !="", "Please pick a marker....."),
-                 need(input$picked_total_cells !="", "Please select column with total cell count....."),
-                 need(input$picked_modeling_reference !="", "Select level for reference....."))
-        suppressWarnings({
-            df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
-                        Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
-                        choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
-        })
-        return(df)
-    })
-    
-    output$aic_table = renderTable({
-        models1 = model_list()
-        return(data.frame(models1$aic))
-    }, digits = 4)
-    
-    output$model_stats = renderTable({
-        validate(need(model_list(), "Please wait while things finish loading....."))
-        
-        models1 = model_list()
-        df = models1$models[["Beta Binomial"]] %>% summary() %>% coefficients()#input$selectedModel
-        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
-                         df, check.names = F)
-        return(df1)
-    }, digits = 4)
-    
-    cont_table = reactive({
-        validate(need(input$picked_clinical !="", "Please wait while things finish loading....."))
-        
-        df = contingency_table(summary_data_merged(), markers = input$picked_marker, clin_vars = input$picked_clinical, percent_threshold = input$choose_cont_thresh)
-        
-        return(df)
-    })
-    
-    output$selectedModelName = renderText({
-        paste("Statistical Modeling of the", input$picked_marker)
-    })
-    
-    output$contTable = renderTable({
-        return(cont_table())
-    })
-    
-    frequency_table = reactive({
-        validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
-        if(is.null(summary_data_merged())){
-            return()
-        }
-        
-        df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker, clinical = input$picked_clinical)
-        
-        return(df)
-    })
-    
-    output$freqTable = renderTable({
-        return(frequency_table())
-    })
-    
-    sumTable = reactive({
-        validate(need(summary_data() !="", "Please wait while things finish loading....."))
-        if(is.null(summary_data())){
-            return()
-        }
-        
-        return(summary_data())
-        
-    })
-    
-    output$summaryTable = renderTable({
-        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
-                 need(input$picked_marker !="", "Please wait while things finish loading....."),
-                 need(input$clinical_merge !="", "Please wait while things finish loading....."))
-        
-        return(summary_table(summary_data_merged(), marker = input$picked_marker, clinical = input$picked_clinical, merged = input$clinical_merge))
-
-        # data_table = summary_data_merged()
-        # cellvar <-  input$picked_marker
-        # sub_id = input$clinical_merge
-        # 
-        # temp = data.frame("Min" = min(data_table[,cellvar], na.rm=TRUE),
-        #                   "Median" = median(data_table[,cellvar], na.rm = TRUE),
-        #                   "Mean" = mean(data_table[,cellvar], na.rm=TRUE),
-        #                   "Max" = max(data_table[,cellvar], na.rm=TRUE),
-        #                   "SD" = sd(data_table[,cellvar], na.rm=TRUE),
-        #                   "N Subs" = length(unique(data_table[,sub_id])),
-        #                   "N Samples" = length(data_table[,sub_id])
-        #                   )
-        # return(temp)
     })
     
     univar_plots = reactive({
@@ -289,6 +178,49 @@ shinyServer(function(input, output) {
         univar_plots()
     })
     
+    cont_table = reactive({
+        validate(need(input$picked_clinical !="", "Please wait while things finish loading....."),
+                 need(summary_data_merged() != "", ""),
+                 need(input$picked_marker != "", ""),
+                 need(input$choose_cont_thresh != "", ""))
+        
+        df = contingency_table(summary_data_merged(), markers = input$picked_marker, clin_vars = input$picked_clinical, percent_threshold = input$choose_cont_thresh)
+        
+        return(df)
+    })
+    
+    output$contTable = renderTable({
+        return(cont_table())
+    })
+    
+    frequency_table = reactive({
+        validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
+        
+        df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker, clinical = input$picked_clinical)
+        
+        return(df)
+    })
+    
+    output$freqTable = renderTable({
+        return(frequency_table())
+    })
+    
+    output$selectedModelName = renderText({
+        paste("Statistical Modeling of the", input$picked_marker)
+    })
+    
+    sum_table = reactive({
+        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
+                 need(input$picked_marker !="", "Please wait while things finish loading....."),
+                 need(input$clinical_merge !="", "Please wait while things finish loading....."))
+        
+        return(summary_table(summary_data_merged(), marker = input$picked_marker, clinical = input$picked_clinical, merged = input$clinical_merge))
+    })
+    
+    output$summaryTable = renderTable({
+        sum_table()
+    })
+    
     output$download_boxplot = downloadHandler(
         filename = function() { paste(Sys.Date(), '-summary_plot.pdf', sep='') },
         
@@ -296,6 +228,58 @@ shinyServer(function(input, output) {
             ggsave(file, plot = univar_plots(), device = "pdf",width = 12, height = 10, units = "in")
         }
     )
+    
+    output$choose_total_cells = renderUI({
+        summary_clinical_names = colnames(summary_data_merged())
+        
+        selectInput("picked_total_cells", "Choose Column Name for Total Number of Cells",
+                    choices = summary_clinical_names,
+                    selected = summary_clinical_names[grep("Total", summary_clinical_names)])
+    })
+    output$modeling_reference = renderUI({
+        validate(need(summary_data_merged() !="", "Please wait while Summary and Clinical Data are merged....."),
+                 need(input$picked_clinical !="", "Please select a clinical variable for comparison....."))
+        model_references = unique(summary_data_merged()[input$picked_clinical])
+        selectInput("picked_modeling_reference", "Choose Clinical Reference",
+                    choices = model_references,
+                    selected = model_references[1])
+    })
+    
+    model_list = reactive({
+        validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
+                 need(summary_data_merged() !="", "Please upload clinical and summary data....."),
+                 need(input$picked_marker !="", "Please pick a marker....."),
+                 need(input$picked_total_cells !="", "Please select column with total cell count....."),
+                 need(input$picked_modeling_reference !="", "Please wait while statistics are computed....."))
+        suppressWarnings({
+            df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
+                                        Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
+                                        choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
+        })
+        return(df)
+    })
+    
+    # output$aic_table = renderTable({
+    #     aic_table_react()
+    # }, digits = 4)
+    
+    aic_table_react = reactive({
+        models1 = model_list()
+        return(data.frame(models$aic))
+    })
+    
+    chosen_model_stats = reactive({
+        validate(need(model_list(), "Please wait while things finish loading....."))
+        models1 = model_list()
+        df = models1$models[["Beta Binomial"]] %>% summary() %>% coefficients()#input$selectedModel
+        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
+                         df, check.names = F)
+        return(df1)
+    })
+    
+    output$model_stats = renderTable({
+        chosen_model_stats()
+    }, digits = 4)
     
     cdf_plot_react = reactive({
         validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
@@ -317,20 +301,21 @@ shinyServer(function(input, output) {
         filename <-  "univariate_report.pdf",
         content = function(file) {
             tempReport <- file.path(tempdir(), "volanoes_report.Rmd")
-            file.copy("../report_templates/univariate_report.Rmd", tempReport, overwrite = TRUE)
-            params <- list(selected_marker = input$picked_marker,
+            file.copy("report_templates/univariate_report.Rmd", tempReport, overwrite = TRUE)
+            params <- list(include_functions = input$printFunctions,
+                           selected_marker = input$picked_marker,
                            contingency_threshold = input$choose_cont_thresh,
                            picked_clinical = input$picked_clinical,
-                           boxplot = boxplot(),
-                           contingency_Table = contTable(),
-                           frequency_table = freqTable(),
-                           summary_table = summaryTable(),
+                           boxplots = univar_plots(),
+                           contingency_table = cont_table(),
+                           frequency_table = frequency_table(),
+                           summary_table = sum_table(),
                            total_cell_column = input$picked_total_cells,
                            modeling_reference = input$picked_modeling_reference,
-                           selected_univariate_model = input$selectedModel,
-                           chosen_model_stats = model_stats(),
-                           cdf_plot = cdfplot(),
-                           model_aic_table = aic_table()
+                           #selected_univariate_model = input$selectedModel,
+                           #chosen_model_stats_rmd = chosen_model_stats(),
+                           cdf_plot = cdf_plot_react()#, #good
+                           #model_aic_table = aic_table_react()
                            )
             rmarkdown::render(tempReport, output_file = file,
                               params = params,
