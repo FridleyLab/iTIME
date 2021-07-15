@@ -137,7 +137,7 @@ shinyServer(function(input, output) {
         summary_clinical_names = colnames(clinical_data())
         t = sapply(clinical_data(), function(x){return(length(unique(x)))})
         good = t[t > 1 & t < 10]
-        #print(good)
+        
         selectInput("picked_clinical", "Choose Clinical Variable to Plot and Test",
                     choices = summary_clinical_names,
                     selected = names(good)[1]) #select a variable that has a decent amount of levels in order to perform the models
@@ -149,7 +149,7 @@ shinyServer(function(input, output) {
                  need(input$picked_clinical !="", ""),
                  need(input$summaryPlotColors !="", ""),
                  need(summary_data_merged() !="", ""))
-        # generate bins based on input$bins from ui.R
+        
         cellvar <-  input$picked_marker
         clinvar <- input$picked_clinical
         colorscheme <- input$summaryPlotColors
@@ -284,9 +284,6 @@ shinyServer(function(input, output) {
     cdf_plot_react = reactive({
         validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
                  need(input$picked_marker !="", "Please select a marker above....."))
-        if(is.null(summary_data_merged())){
-            return(NULL)
-        }
         
         marker = input$picked_marker
         data_table = summary_data_merged()
@@ -315,7 +312,7 @@ shinyServer(function(input, output) {
                            #selected_univariate_model = input$selectedModel,
                            #chosen_model_stats_rmd = chosen_model_stats(),
                            cdf_plot = cdf_plot_react()#, #good
-                           #model_aic_table = aic_table_react()
+                           #model_aic_table = aic_table_react(),
                            )
             rmarkdown::render(tempReport, output_file = file,
                               params = params,

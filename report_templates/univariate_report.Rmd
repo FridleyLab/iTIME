@@ -1,44 +1,342 @@
 ---
-title: "Univariate_Report"
+title: "Univariate Report"
 author: "iTIME Dev Team"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: pdf_document
+output:
+  pdf_document:
+    fig_caption: yes
+header-includes:
+  \usepackage{booktabs}
 params:
-  selected_marker: NULL # = input$picked_marker
-  contingency_threshold: NULL # = input$choose_cont_thresh
-  picked_clinical: NULL # = input$picked_clinical
-  boxplot: NULL # = boxplot()
-  contingency_Table: NULL # = contTable()
-  frequency_table: NULL # = freqTable()
-  summary_table: NULL # = summaryTable()
-  total_cell_column: NULL # = input$picked_total_cells
-  modeling_reference: NULL # = input$picked_modeling_reference
-  selected_univariate_model: NULL # = input$selectedModel
-  chosen_model_stats: NULL # = model_stats()
-  cdf_plot: NULL # = cdfplot()
-  model_aic_table: NULL # = aic_table()
+  include_functions: NA # = input$printFunctions
+  selected_marker: NA # = input$picked_marker
+  picked_clinical: NA # = input$picked_clinical
+  contingency_threshold: NA # = input$choose_cont_thresh
+  total_cell_column: NA # = input$picked_total_cells
+  modeling_reference: NA # = input$picked_modeling_reference
+  boxplots: NA # = boxplot()
+  contingency_table: NA # = contTable()
+  frequency_table: NA # = freqTable()
+  summary_table: NA # = summaryTable()
+  chosen_model_stats_rmd: NA # = model_stats()
+  cdf_plot: NA # = cdfplot()
+  selected_univariate_model: NA # = input$selectedModel
+  model_aic_table: NA # = aic_table()
 ---
+
+<!--
+install.packages(tinytex)
+tinytex::install_tinytex()
+
+\textcolor{display words}{color}
+-->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(eval.after = "fig.cap")
+library(kableExtra)
+echo = params$include_functions
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r variable_table_chunk, echo=F}
+variable_table = data.frame("Variable" = c("Include functions?",
+                                           "Cell marker selected",
+                                           "Clinical variable selected",
+                                           "Threshold",
+                                           "Column heading of total cell counts",
+                                           "Clinical variable baseline"),
+                            "Selection" = c(params$include_functions,
+                                            params$selected_marker,
+                                            params$picked_clinical,
+                                            params$contingency_threshold,
+                                            params$total_cell_column,
+                                            params$modeling_reference),
+                            "Held as on Server" = c("input$printFunctions",
+                                                    "input$picked_marker",
+                                                    "input$picked_clinical",
+                                                    "input$choose_cont_thresh",
+                                                    "input$picked_total_cells",
+                                                    "input$picked_modeling_reference"), check.names = F)
+kbl(variable_table,
+    caption = paste("Variables selected in iTIME.Moffitt.org Univariate Summary."),
+    booktabs=T) %>%
+  kable_styling(position="left", latex_options = c("hold_position"))
 ```
 
-## Including Plots
+```{r contingency_table_code, echo=echo, eval=F, size = "tiny"}
+#Function to produce Contingency Table
+contingency_table <- function(summary_clinical_merge, markers = markers,
+                              clin_vars = clin_vars, percent_threshold = percent_threshold){
+  #Maybe provide an error for multiple columns
+  cells <- summary_clinical_merge %>% select(any_of(paste(markers)))
+  assign("percent_threshold", percent_threshold, envir = .GlobalEnv)
 
-You can also embed plots, for example:
+  above <- function(x, percent_threshold){ifelse(x > percent_threshold,
+                                                 paste0('Greater than ', percent_threshold, '%'),
+                                                 paste0('Less than ', percent_threshold, '%'))}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+  table <- cells %>% 
+    mutate_all( ~ above(x = ., percent_threshold = as.numeric(percent_threshold))) %>%
+    bind_cols(.,summary_clinical_merge %>% select(clin_vars)) %>%
+    group_by(.[[paste(markers)]],.[[clin_vars]]) %>%
+    summarize(n = n()) %>%
+    pivot_wider(names_from = `.[[clin_vars]]`, values_from = n) %>%
+    mutate_all(~replace_na(.,0))
+  colnames(table)[1] = markers
+  return(table)
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r contingency_table_chunk, echo=F}
+kbl(params$contingency_table,
+    caption = paste("Contingency table of", params$selected_marker, "above and below the threshold of", params$contingency_threshold, " percent."),
+    booktabs = TRUE) %>%
+  kable_styling(position = "center", latex_options = c("hold_position"))
+```
+
+```{r frequency_table_code, echo=echo, eval = F, size = "tiny"}
+#Function use to produce the frequency table
+freq_table_by_marker <-
+  function(summary_clinical_merge,
+           clinical = clinical,
+           markers = markers) {
+    cells <-
+      summary_clinical_merge %>% select(paste(clinical),any_of(paste( markers)))
+    
+    table <-
+      cells %>% 
+      mutate(`> 1%` = .[[paste( markers)]]>1,
+             `> 2%` = .[[paste( markers)]]>2,
+             `> 3%` = .[[paste( markers)]]>3,
+             `> 4%` = .[[paste( markers)]]>4,
+             `> 5%` = .[[paste( markers)]]>5) %>% 
+      group_by(.[[paste(clinical)]]) %>%
+      select(`> 1%`,`> 2%`,`> 3%`,`> 4%`,`> 5%`) %>%
+      summarize_all( ~ sum(.))
+    colnames(table)[1] = clinical
+    
+    return(table)
+}
+```
+
+```{r frequency_table_chunk, echo=F}
+kbl(params$frequency_table,
+    caption = paste("Frequency table of", params$selected_marker, "by", params$picked_clinical, "."),
+    booktabs = TRUE) %>%
+  kable_styling(position = "center", latex_options = c("hold_position"))
+```
+
+```{r summary_table_code, echo = echo, eval=F, size = "tiny"}
+#Function used to produce the summary table
+summary_table = function(summary_clinical_merged,
+                         marker,
+                         clinical,
+                         merged){
+  data = summary_clinical_merged %>% 
+    select(paste(clinical), paste(merged), any_of(paste(marker)))
+  colnames(data) = c("clinical","merged_var","marker")
+  table = 
+    data %>% 
+    group_by(clinical) %>% 
+    summarise(Min = min(marker),
+              Median = median(marker),
+              Mean = mean(marker),
+              Max = max(marker),
+              SD = sd(marker),
+              Subjects = length(unique(merged_var)),
+              Samples = length(marker))
+  
+  colnames(table)[1] = clinical
+  return(table)
+}
+
+```
+
+```{r summary_table_chunk, echo=F} 
+kbl(params$summary_table,
+    caption = paste("Summary table of", params$selected_marker, "by", params$picked_clinical, "showing the minimum, median, mean, max, and standard deviation as well as the number of unique subject and unique samples in the clinical and summary data frames."),
+    booktabs = TRUE) %>%
+  kable_styling(position = "center", latex_options = c("hold_position"))
+```
+
+### Univariate Summary Plot
+
+```{r univar_code, echo = echo, eval = F, size = "tiny"}
+#Code within the server
+message("Code within the server:")
+cellvar <-  input$picked_marker
+clinvar <- input$picked_clinical
+colorscheme <- input$summaryPlotColors
+data_table = summary_data_merged()
+
+if(input$uni_transformation == "none"){
+    thres = input$choose_cont_thresh
+} else if(input$uni_transformation == "sqrt_transform"){
+    data_table[,cellvar] = sqrt(data_table[,cellvar])
+    thres = sqrt(as.numeric(input$choose_cont_thresh))
+} else if(input$uni_transformation == "log2_transform"){
+    data_table[,cellvar] = log2(data_table[,cellvar]+0.0001)
+    thres = log2(as.numeric(input$choose_cont_thresh)+0.0001)
+} else if(input$uni_transformation == "logit_transform"){
+    p = (data_table[,cellvar]/100)+0.0001
+    data_table[,cellvar] = log10(p/(1-p))
+    tmp = (as.numeric(input$choose_cont_thresh)/100) + 0.0001
+    thres = log10(tmp/(1-tmp))
+}
+plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
+plots[[as.integer(input$summaryPlotType)]]
+
+#Function to produce all of the summary plots
+summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold){
+  box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+    geom_boxplot() +
+    xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+    labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+    viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE) + 
+    geom_hline(yintercept = as.numeric(threshold), size = 1.25, 
+               linetype = "twodash", color = 'red') + 
+    theme(legend.position = 'none')
+  
+  violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+    geom_violin() +
+    xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+    labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+    viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE) + 
+    geom_hline(yintercept = as.numeric(threshold), size = 1.25, 
+               linetype = "twodash", color = 'red') + 
+    theme(legend.position = 'none')
+  
+  hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
+    geom_histogram(position='stack', fill = 'white') + facet_wrap(get(clinvar)~., nrow = 1) +   
+    xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
+    labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+    viridis::scale_color_viridis(option = colorscheme, discrete = TRUE) + 
+    theme(legend.position = 'none') + 
+    geom_vline(xintercept = as.numeric(threshold), 
+               size = 1.25, linetype = "twodash", color = 'red')
+  
+  if(is.character(datatable[[clinvar]])){
+    scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
+      geom_point() +
+      xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+      viridis::scale_color_viridis(option = colorscheme, discrete=TRUE)
+  }
+  else{
+    scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
+      geom_point() +
+      xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
+      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+      viridis::scale_color_viridis(option = colorscheme, discrete=FALSE)    
+  }
+  
+  summ_plots <- list(box_p, violin_p, hist_p, scatter_p)
+  
+  return(summ_plots)
+}
+```
+
+```{r boxplot_chunk, echo=F, fig.height=4, fig.width=8, fig.cap = paste("Summary plot of ", params$selected_marker, " separated by ", params$picked_clinical,". The red line is at the threshold level in Table 1.", sep="")}
+params$boxplots
+```
+
+### Cumulative Distribution Function Plot
+
+```{r cdf_plot_code, echo = echo, eval = F, size = "tiny"}
+#Code within the server
+marker = input$picked_marker
+data_table = summary_data_merged()
+CDF_plots(summary_data_merge = data_table, markers = substr(marker, 9, nchar(marker)))
+
+#Function used to produce the CDF plot
+CDF_plots = function(summary_data_merged = summary_data_merged, markers = markers){
+  sample_stats = summary_data_merged %>% select(grep('Total', colnames(.)), markers) %>%
+    pivot_longer(cols = 2:ncol(.), values_to = 'Count', names_to = 'Marker') %>%
+    group_by(Marker) %>%
+    summarize(prob0 = mean(Count == 0, na.rm = TRUE),
+              Avg_p = mean(Count/`Total Cells`, na.rm = TRUE),
+              Avg_Count = mean(Count, na.rm = TRUE),
+              Avg_Total = round(mean(`Total Cells`, na.rm = TRUE)))
+   
+  cdfs = summary_data_merged %>%  select(grep('Total', colnames(.)), markers) %>% 
+    pivot_longer(cols = 2:ncol(.), names_to = 'Marker', values_to = 'Count') %>%
+    mutate(ecdf = ecdf(Count)(Count)) %>%
+    mutate(Poisson =  ppois(q = Count, 
+                            lambda = sample_stats$Avg_Count),
+           Binomial = pbinom(q = Count, 
+                             size = round(sample_stats$Avg_Total),
+                             prob = sample_stats$Avg_p,
+           ),
+           `ZI Poisson` =  pzipois(q = Count, 
+                                   lambda = sample_stats$Avg_Count,
+                                   pstr0 = sample_stats$prob0
+           ),
+           `ZI Binomial` = pzibinom(q = Count, 
+                                    size = round(sample_stats$Avg_Total),
+                                    prob = sample_stats$Avg_p,
+                                    pstr0 = sample_stats$prob0
+           ),
+           `Negative Binomial` =  pnbinom(q = Count, 
+                                          size = round(sample_stats$Avg_Count),
+                                          prob = 1 - sample_stats$prob0
+           ),
+           `Beta Binomial` =  pbetabinom(q = Count, 
+                                         size = round(sample_stats$Avg_Total),
+                                         prob = sample_stats$Avg_p,
+                                         rho = sample_stats$prob0)
+           
+    ) %>% 
+    pivot_longer(col = 5:ncol(.), values_to = 'CDF', names_to = 'Distribution')
+
+  cdfs = cdfs %>% 
+    mutate(family = ifelse(Distribution %in% c('Poisson', 'ZI Poisson', 'Negative Binomial'),
+                           'Poisson', 'Binomial'),
+           Distribution = factor(Distribution))
+
+  binomial_plot = cdfs %>% 
+    ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + 
+    geom_line(aes(color = 'Empirical'), color = 'black') + 
+    geom_line(aes(x = Count, y = CDF, color = Distribution, linetype = family)) + theme_bw() + 
+    theme(axis.text.x = element_blank(),
+          axis.ticks = element_blank(),
+          axis.title.x = element_blank(),
+          legend.position = "right", #c(0.8, 0.3),
+          axis.title.y = element_text(size = 16),
+          axis.text.y = element_text(size = 16),
+          strip.text = element_text(size=16),
+          legend.text = element_text(size = 16),
+          legend.title = element_text(size = 16)) + 
+    labs(color = 'Distribution') + scale_linetype_manual(values = c("solid", "longdash"))
+
+  return(binomial_plot)
+}
+```
+
+```{r cdf_plot_chunk, echo=F, fig.height=4, fig.width=8, fig.cap = paste("Cumulative distribution functions for both the binomial and Poisson families for ", params$selected_marker, ". The default model selected in iTIME.Moffitt.org is the negative binomial model.", sep="")}
+params$cdf_plot
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

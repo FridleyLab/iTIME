@@ -40,7 +40,7 @@ freq_table_by_marker <-
     colnames(table)[1] = clinical
     
     return(table)
-  }
+}
 # 
 # for(i in markers_all){
 #   print(freq_table(summary_clinical_merge,

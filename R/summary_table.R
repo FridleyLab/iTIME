@@ -1,3 +1,5 @@
+#Alex Soupir
+#iTIME
 summary_table = function(summary_clinical_merged,
                          marker,
                          clinical,

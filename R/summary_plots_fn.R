@@ -48,7 +48,6 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
   summ_plots <- list(box_p, violin_p, hist_p, scatter_p)
   
   return(summ_plots)
-  
 }
 
 
