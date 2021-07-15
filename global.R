@@ -20,6 +20,7 @@ library(janitor)
 library(shinyWidgets)
 library(colourvalues)
 library(VGAM)
+library(kableExtra)
 
 custom_blue <- {shinyDashboardThemeDIY(
   ### general
