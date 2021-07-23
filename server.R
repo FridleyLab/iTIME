@@ -274,7 +274,8 @@ shinyServer(function(input, output) {
         df = models1$models[["Beta Binomial"]] %>% summary() %>% coefficients()#input$selectedModel
         df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
                          df, check.names = F)
-        return(df1)
+        #assign("df1", df1, envir = .GlobalEnv)
+        return(df1[-2,])
     })
     
     output$model_stats = renderTable({

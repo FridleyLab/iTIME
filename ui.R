@@ -8,6 +8,8 @@
 #
 # add for testing
 
+#
+
 #Melanoma was sox10 in the study for tumor stroma
 #nicks plotly sort
 
@@ -214,7 +216,7 @@ ui = dashboardPage(
                                )
                         ),
                     box(width = 12, status = "primary",
-                        column(width = 4, h2("Ripley's K Plot Selections", style = "font-size:14pt"),
+                        column(width = 4, h2("Spatial  Plot Selections", style = "font-size:14pt"),
                                uiOutput("choose_ripley")
                                ,selectInput("ripleysEstimator", "Select an Estimator",
                                             choices = c("Ripley's K" = "K",
@@ -222,7 +224,7 @@ ui = dashboardPage(
                                                         "Marcon's M" = "M"),
                                             selected = "K")
                                ),
-                        column(width = 8, h2("Ripley's K Plot", align="center", style = "font-size:14pt"),
+                        column(width = 8, h2("Spatial Plot", align="center", style = "font-size:14pt"),
                                plotOutput("ripleysPlot", height = 350)
                                )
                         ),
