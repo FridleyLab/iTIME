@@ -10,6 +10,7 @@ pheat_map <- function(summary_clinical_merge,
   
   tmp <- summary_clinical_merge %>% select(any_of(markers),all_of(clin_vars)) %>%
     group_by(.[[clin_vars]]) %>% arrange(.[[clin_vars]]) %>% 
+    mutate_at(clin_vars,as.factor) %>%
     data.frame(check.names = FALSE)
   cells <- tmp %>% select(any_of(markers))
   cells <- as.matrix(cells)
