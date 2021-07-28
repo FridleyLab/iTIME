@@ -240,12 +240,13 @@ shinyServer(function(input, output) {
                  need(input$picked_marker !="", "Please pick a marker....."),
                  need(input$picked_total_cells !="", "Please select column with total cell count....."),
                  need(input$picked_modeling_reference !="", "Please wait while statistics are computed....."))
+        assign("summary_data_merged", summary_data_merged(), envir=.GlobalEnv)
         suppressWarnings({
             df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
                                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
                                         choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
-        assign("df", df, envir = .GlobalEnv)
+        #assign("df", df, envir = .GlobalEnv)
         return(df)
     })
     
@@ -262,10 +263,11 @@ shinyServer(function(input, output) {
         validate(need(model_list(), "Please wait while things finish loading....."))
         models1 = model_list()
         df = models1$models[["Beta Binomial"]]
+        #assign("df", df, envir = .GlobalEnv)
         if(class(df)=="character"){
             df1 = data.frame(df)
         } else {
-            df %>% summary() %>% coefficients()#input$selectedModel
+            df = df %>% summary() %>% coefficients()#input$selectedModel
             df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
                              df, check.names = F)
             df1 = df1[-2,]
