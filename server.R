@@ -245,7 +245,6 @@ shinyServer(function(input, output) {
                                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
                                         choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
-        #assign("df", df, envir = .GlobalEnv)
         return(df)
     })
     
@@ -262,7 +261,6 @@ shinyServer(function(input, output) {
         validate(need(model_list(), "Please wait while things finish loading....."))
         models1 = model_list()
         df = models1$models[["Beta Binomial"]]
-        #assign("df", df, envir = .GlobalEnv)
         if(class(df)=="character"){
             df1 = data.frame(df)
         } else {
@@ -272,7 +270,6 @@ shinyServer(function(input, output) {
             df1 = df1[-2,]
         }
         
-        #assign("df1", df1, envir = .GlobalEnv)
         return(df1)
     })
     
