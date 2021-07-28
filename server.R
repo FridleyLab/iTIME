@@ -25,6 +25,7 @@ shinyServer(function(input, output) {
         }
         
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
+        df[is.na(df)] = "Missing"
         print("summary imported")
         return(df)
         
@@ -41,6 +42,7 @@ shinyServer(function(input, output) {
             df = fread("example_data/deidentified_clinical.csv", check.names = FALSE, data.table = FALSE)
         }
         
+        df[is.na(df)] = "Missing"
         print("clinical imported")
         return(df)
     })
@@ -56,7 +58,7 @@ shinyServer(function(input, output) {
             df = fread("example_data/deidentified_spatial.csv", check.names = FALSE, data.table = FALSE)
         }
         
-        #assign("spatial", df, envir = globalenv())
+        df[is.na(df)] = "NA"
         print("spatial imported")
         return(df)
     })
@@ -143,6 +145,7 @@ shinyServer(function(input, output) {
                  need(input$summaryPlotType != "", "have to wait for plot type options to load"))
         
         data_table = summary_data_merged()
+        cellvar = input$picked_marker
         if(input$uni_transformation == "none"){
             thres = input$choose_cont_thresh
         } else if(input$uni_transformation == "sqrt_transform"){
@@ -158,7 +161,7 @@ shinyServer(function(input, output) {
             thres = log10(tmp/(1-tmp))
         }
         plots = summary_plots_fn(data_table, clinvar = input$picked_clinical,
-                                 cellvar = input$picked_marker, colorscheme <- input$summaryPlotColors, thres)
+                                 cellvar = cellvar, colorscheme <- input$summaryPlotColors, thres)
         
         plots[[as.integer(input$summaryPlotType)]]
     })
@@ -240,12 +243,13 @@ shinyServer(function(input, output) {
                  need(input$picked_marker !="", "Please pick a marker....."),
                  need(input$picked_total_cells !="", "Please select column with total cell count....."),
                  need(input$picked_modeling_reference !="", "Please wait while statistics are computed....."))
+        #assign("summary_data_merged", summary_data_merged(), envir=.GlobalEnv)
         suppressWarnings({
             df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
                                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
                                         choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
-        assign("df", df, envir = .GlobalEnv)
+        #assign("df", df, envir = .GlobalEnv)
         return(df)
     })
     
@@ -262,10 +266,11 @@ shinyServer(function(input, output) {
         validate(need(model_list(), "Please wait while things finish loading....."))
         models1 = model_list()
         df = models1$models[["Beta Binomial"]]
+        #assign("df", df, envir = .GlobalEnv)
         if(class(df)=="character"){
             df1 = data.frame(df)
         } else {
-            df %>% summary() %>% coefficients()#input$selectedModel
+            df = df %>% summary() %>% coefficients()#input$selectedModel
             df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
                              df, check.names = F)
             df1 = df1[-2,]
@@ -358,7 +363,6 @@ shinyServer(function(input, output) {
         pheat_map(summary_clinical_merge = heatmap_data,
                  markers = input$heatmap_selection,
                  clin_vars = input$picked_clinical_factor,
-                 colorscheme = input$summaryPlotColors,
                  anno_clust = input$cluster_heatmap_annotation,
                  mark_clust = input$cluster_heatmap_Marker)
     })

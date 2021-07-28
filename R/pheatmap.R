@@ -2,9 +2,11 @@
 #https://stackoverflow.com/questions/59445092/how-to-plot-heatmap-with-r-shiny
 #removed forced sqrt of cells' value
 
-pheat_map <- function(summary_clinical_merge, markers = markers,
-                      clin_vars = clin_vars, colorscheme, 
-                      anno_clust = anno_clust, mark_clust = mark_clust){
+pheat_map <- function(summary_clinical_merge,
+                      markers = markers,
+                      clin_vars = clin_vars,
+                      anno_clust = anno_clust, 
+                      mark_clust = mark_clust){
   
   tmp <- summary_clinical_merge %>% select(any_of(markers),all_of(clin_vars)) %>%
     group_by(.[[clin_vars]]) %>% arrange(.[[clin_vars]]) %>% 
