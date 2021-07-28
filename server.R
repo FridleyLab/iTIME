@@ -326,17 +326,22 @@ shinyServer(function(input, output) {
                               heatmap_names,perl=TRUE,ignore.case = TRUE)]
         
         awesomeCheckboxGroup("heatmap_selection", "Choose Cell Marker for Heatmap",
-                           choices = heatmap_names2, selected = heatmap_names2,
+                           choices = heatmap_names2, selected = heatmap_names2[grepl("Opal", heatmap_names2)],
                            status = "primary"
         )
     })
     
     output$choose_heatmap_clinical = renderUI({
+        validate(need(ncol(clinical_data()) > 0, "Loading Clinical Data....."),
+                 need(ncol(summary_data_merged()) > 0, "Waiting on merging clinical and summary data....."))
         
-        clinical_heatmap_names = colnames(clinical_data())
+        clinical_heatmap_names = colnames(summary_data_merged())[(colnames(summary_data_merged()) %in% colnames(clinical_data()))]
+        t = sapply(summary_data_merged() %>% select(all_of(clinical_heatmap_names)), function(x){return(length(unique(x)))})
+        good = t[t > 1 & t < 10]
         
         selectInput("picked_clinical_factor", "Choose Annotation for Heatmap",
-                    choices = clinical_heatmap_names, selected = clinical_heatmap_names[3])
+                    choices = clinical_heatmap_names, 
+                    selected = names(good)[1])
         
     })
     

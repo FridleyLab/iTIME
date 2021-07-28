@@ -5,6 +5,7 @@
 #input$summaryPlotColors
 
 pca_plot_function = function(summary_clinical_merged, markers = markers, clin_vars = clin_vars){
+  summary_clinical_merged = summary_clinical_merged %>% mutate_at(clin_vars, as.factor)
   
   pca = prcomp(summary_clinical_merged %>% select(markers))
   

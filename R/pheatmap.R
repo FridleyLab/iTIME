@@ -22,6 +22,9 @@ pheat_map <- function(summary_clinical_merge,
   annotation <- tmp %>% select(all_of(clin_vars)) %>%
     data.frame(check.names = FALSE)
   rownames(annotation) = 1:nrow(cells)
+  if(anno_clust==F){
+    cutree_cols = length(levels(tmp[[clin_vars]]))
+  }
   pheatmap::pheatmap(t(cells), 
                      show_rownames = T, 
                      cluster_rows = mark_clust, 
@@ -29,6 +32,7 @@ pheat_map <- function(summary_clinical_merge,
                      show_colnames = F, 
                      treeheight_col = 0, 
                      treeheight_row = 0, 
-                     annotation_col = annotation)
+                     annotation_col = annotation,
+                     cutree_cols = cutree_cols)
   
 }
