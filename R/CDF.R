@@ -82,11 +82,11 @@ CDF_plots = function(summary_data_merged = summary_data_merged, markers = marker
 # 
 # final = ggpubr::ggarrange(plotlist = list(binomial_plot, poisson_plot))
 
-summary_data = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
-clinical_data = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
-summary_data_merged = merge(clinical_data, summary_data)
-
-markers = summary_data_merged %>% select(grep('Cells' ,colnames(.))) %>%
-  select(!grep('\\%',colnames(.))) %>% colnames()
-
-CDF_plots(summary_data_merged, markers[2])
+# summary_data = read.csv("example_data/deidentified_summary.csv", check.names = FALSE)
+# clinical_data = read.csv("example_data/deidentified_clinical.csv", check.names = FALSE)
+# summary_data_merged = merge(clinical_data, summary_data)
+# 
+# markers = summary_data_merged %>% select(grep('Cells' ,colnames(.))) %>%
+#   select(!grep('\\%',colnames(.))) %>% colnames()
+# 
+# CDF_plots(summary_data_merged, markers[2])

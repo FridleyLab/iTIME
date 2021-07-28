@@ -73,6 +73,10 @@ ui = dashboardPage(
                                            )
                                        ),style = "height:118px"
                                 ),
+                            fluidRow(
+                                column(width = 5,
+                                       div(style = "verflow-x: scroll; overflow-y: scroll; height:200px", tableOutput('merged_preview')))
+                            )
                             ),
                     ),
             ),
