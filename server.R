@@ -25,6 +25,7 @@ shinyServer(function(input, output) {
         }
         
         colnames(df) <- gsub("\\%", 'Percent', colnames(df))
+        print("summary imported")
         return(df)
         
     })
@@ -40,6 +41,7 @@ shinyServer(function(input, output) {
             df = fread("example_data/deidentified_clinical.csv", check.names = FALSE, data.table = FALSE)
         }
         
+        print("clinical imported")
         return(df)
     })
     
@@ -54,8 +56,8 @@ shinyServer(function(input, output) {
             df = fread("example_data/deidentified_spatial.csv", check.names = FALSE, data.table = FALSE)
         }
         
-        assign("spatial", df, envir = globalenv())
-        
+        #assign("spatial", df, envir = globalenv())
+        print("spatial imported")
         return(df)
     })
     
@@ -71,6 +73,10 @@ shinyServer(function(input, output) {
         head(spatial_data()[,-3], n = 15L)
     })
     
+    output$merged_preview = renderTable({
+        head(summary_data_merged(), n=15L)
+    })
+    
     output$choose_summary_merge = renderUI({
         
         summary_column_names = colnames(summary_data())
@@ -79,6 +85,7 @@ shinyServer(function(input, output) {
                     choices = summary_column_names,
                     selected = summary_column_names[1])
         
+        #print("summary merge variable selected")
     })
     
     output$choose_clinical_merge = renderUI({
@@ -89,15 +96,7 @@ shinyServer(function(input, output) {
                     choices = clinical_column_names,
                     selected = clinical_column_names[1])
         
-    })
-    
-    output$choose_spatial_merge = renderUI({
-        
-        spatial_column_names = colnames(spatial_data())
-        
-        selectInput("spatial_merge", "Choose Spatial Merge Variable",
-                    choices = spatial_column_names,
-                    selected = spatial_column_names[1])
+        #print('clinical merge variable selected')
         
     })
     
@@ -112,16 +111,6 @@ shinyServer(function(input, output) {
     
 #univariate
     
-    output$choose_cont_marker = renderUI({
-        
-        summary_marker_names = colnames(summary_data_merged())[grepl(") Positive", colnames(summary_data_merged()))]
-        
-        selectInput("picked_cont_marker", "Choose Cell Marker for Contingency Table",
-                    choices = summary_marker_names,
-                    selected = summary_marker_names[1])
-        
-    })
-    
     output$choose_marker = renderUI({
         
         summary_marker_names = colnames(summary_data_merged())[grepl("^Percent", colnames(summary_data_merged()))]
@@ -133,9 +122,10 @@ shinyServer(function(input, output) {
     })
     
     output$choose_clinical = renderUI({
-        validate(need(clinical_data() !="", "Loading Clinical Data....."))
-        summary_clinical_names = colnames(clinical_data())
-        t = sapply(clinical_data(), function(x){return(length(unique(x)))})
+        validate(need(ncol(clinical_data()) > 0, "Loading Clinical Data....."),
+                 need(ncol(summary_data_merged()) > 0, "Waiting on merging clinical and summary data....."))
+        summary_clinical_names = colnames(summary_data_merged())[(colnames(summary_data_merged()) %in% colnames(clinical_data()))]
+        t = sapply(summary_data_merged() %>% select(all_of(summary_clinical_names)), function(x){return(length(unique(x)))})
         good = t[t > 1 & t < 10]
         
         selectInput("picked_clinical", "Choose Clinical Variable to Plot and Test",
@@ -146,15 +136,13 @@ shinyServer(function(input, output) {
     
     univar_plots = reactive({
          validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
-                 need(input$picked_clinical !="", ""),
-                 need(input$summaryPlotColors !="", ""),
-                 need(summary_data_merged() !="", ""))
+                 need(input$picked_clinical !="", "Waiting to pick a clinical variable"),
+                 need(input$summaryPlotColors !="", "waiting on plot colors"),
+                 need(ncol(summary_data_merged()) > 0, "waiting on merging data"),
+                 need(input$uni_transformation != "", "have to wait for tranformation options to load"),
+                 need(input$summaryPlotType != "", "have to wait for plot type options to load"))
         
-        cellvar <-  input$picked_marker
-        clinvar <- input$picked_clinical
-        colorscheme <- input$summaryPlotColors
         data_table = summary_data_merged()
-        
         if(input$uni_transformation == "none"){
             thres = input$choose_cont_thresh
         } else if(input$uni_transformation == "sqrt_transform"){
@@ -169,7 +157,8 @@ shinyServer(function(input, output) {
             tmp = (as.numeric(input$choose_cont_thresh)/100) + 0.0001
             thres = log10(tmp/(1-tmp))
         }
-        plots = summary_plots_fn(data_table, clinvar, cellvar, colorscheme, thres)
+        plots = summary_plots_fn(data_table, clinvar = input$picked_clinical,
+                                 cellvar = input$picked_marker, colorscheme <- input$summaryPlotColors, thres)
         
         plots[[as.integer(input$summaryPlotType)]]
     })
@@ -180,7 +169,7 @@ shinyServer(function(input, output) {
     
     cont_table = reactive({
         validate(need(input$picked_clinical !="", "Please wait while things finish loading....."),
-                 need(summary_data_merged() != "", ""),
+                 need(ncol(summary_data_merged()) > 0, ""),
                  need(input$picked_marker != "", ""),
                  need(input$choose_cont_thresh != "", ""))
         
@@ -210,7 +199,7 @@ shinyServer(function(input, output) {
     })
     
     sum_table = reactive({
-        validate(need(summary_data_merged() !="", "Please wait while things finish loading....."),
+        validate(need(ncol(summary_data_merged()) > 0, "Please wait while things finish loading....."),
                  need(input$picked_marker !="", "Please wait while things finish loading....."),
                  need(input$clinical_merge !="", "Please wait while things finish loading....."))
         
@@ -237,7 +226,7 @@ shinyServer(function(input, output) {
                     selected = summary_clinical_names[grep("Total", summary_clinical_names)])
     })
     output$modeling_reference = renderUI({
-        validate(need(summary_data_merged() !="", "Please wait while Summary and Clinical Data are merged....."),
+        validate(need(ncol(summary_data_merged()) > 0, "Please wait while Summary and Clinical Data are merged....."),
                  need(input$picked_clinical !="", "Please select a clinical variable for comparison....."))
         model_references = unique(summary_data_merged()[input$picked_clinical])
         selectInput("picked_modeling_reference", "Choose Clinical Reference",
@@ -247,7 +236,7 @@ shinyServer(function(input, output) {
     
     model_list = reactive({
         validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
-                 need(summary_data_merged() !="", "Please upload clinical and summary data....."),
+                 need(ncol(summary_data_merged()) > 0, "Please upload clinical and summary data....."),
                  need(input$picked_marker !="", "Please pick a marker....."),
                  need(input$picked_total_cells !="", "Please select column with total cell count....."),
                  need(input$picked_modeling_reference !="", "Please wait while statistics are computed....."))
@@ -256,6 +245,7 @@ shinyServer(function(input, output) {
                                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
                                         choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
+        assign("df", df, envir = .GlobalEnv)
         return(df)
     })
     
@@ -271,11 +261,18 @@ shinyServer(function(input, output) {
     chosen_model_stats = reactive({
         validate(need(model_list(), "Please wait while things finish loading....."))
         models1 = model_list()
-        df = models1$models[["Beta Binomial"]] %>% summary() %>% coefficients()#input$selectedModel
-        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
-                         df, check.names = F)
+        df = models1$models[["Beta Binomial"]]
+        if(class(df)=="character"){
+            df1 = data.frame(df)
+        } else {
+            df %>% summary() %>% coefficients()#input$selectedModel
+            df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
+                             df, check.names = F)
+            df1 = df1[-2,]
+        }
+        
         #assign("df1", df1, envir = .GlobalEnv)
-        return(df1[-2,])
+        return(df1)
     })
     
     output$model_stats = renderTable({
@@ -283,7 +280,7 @@ shinyServer(function(input, output) {
     }, digits = 4)
     
     cdf_plot_react = reactive({
-        validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
+        validate(need(ncol(summary_data_merged()) > 0, "Please upload Summary and Clinical files....."),
                  need(input$picked_marker !="", "Please select a marker above....."))
         
         marker = input$picked_marker
@@ -346,10 +343,8 @@ shinyServer(function(input, output) {
     })
     
     heatmap_plot = reactive({
-         validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."))
-        if(is.null(summary_data_merged())){
-            return()
-        }
+         validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."),
+                  need(ncol(summary_data_merged()) > 1, "wait for magic"))
         
         if(input$heatmap_transform == "none"){
             heatmap_data = summary_data_merged()
@@ -382,7 +377,7 @@ shinyServer(function(input, output) {
     )
     
     pca_plot = reactive({
-        validate(need(summary_data_merged() !="", "Please upload Summary and Clinical files....."),
+        validate(need(ncol(summary_data_merged()) > 0, "Please upload Summary and Clinical files....."),
                  need(input$heatmap_selection !="", "Please select a markers to use....."),
                  need(input$picked_clinical_factor !="", "Please select a clinical variable....."))
         
@@ -410,7 +405,7 @@ shinyServer(function(input, output) {
     
 #spatial
     output$choosePlotlyMarkers = renderUI({
-        validate(need(spatial_data() !="", "Please wait while spatial data is loaded....."))
+        validate(need(ncol(spatial_data()) > 0, "Please wait while spatial data is loaded....."))
         if(is.null(spatial_data())){
             return()
         }
