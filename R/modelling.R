@@ -146,7 +146,9 @@ models_repeated_measures = function(summary_data_merged, markers,
     mutate(clin_vars = factor(.[[clin_vars]], 
                               levels = c(reference,
                                          levels[levels != reference]
-                              )))
+                              )),
+           id = factor(.[[choose_clinical_merge]]))
+    
   
   # #Fit Poisson Model
   # model_fit_poisson = try(glm(tmp[[markers]] ~ tmp$clin_vars + (1|tmp[[choose_clinical_merge]]), 
@@ -213,15 +215,16 @@ models_repeated_measures = function(summary_data_merged, markers,
   # }
   ########
   #Fit Betabinomial model
-  model_fit_bb = try(VGAM::vglm(cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ tmp$clin_vars + (1|tmp[[choose_clinical_merge]]), 
-                                betabinomial(zero = 2), data = tmp), silent = TRUE)
+  model_fit_bb = try(GLMMadaptive::mixed_model(
+    fixed = cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ 
+      tmp$clin_vars, random = ~ 1|id, 
+    family = beta.binomial(), data = tmp), silent = TRUE)
   if(class(model_fit_bb) != 'try-error'){
-    aov_bb = coefficients(summary(model_fit_bb))
-    AIC_bb = AIC(model_fit_bb)
+    aov_negbinom = NULL
+    AIC_negbinom = NA
   }else{
-    aov_bb = NULL
-    AIC_bb = NA
-    model_fit_bb = model_fit_bb[1]
+    AIC_bb = AIC(model_fit_bb)
+    model_fit_bb = coefficients(summary(model_fit_bb))
   }
   
   # out$aic = data.frame(Distribution = c('Poisson', 'Negative Binomial', 'Zero Inflated Poisson', "",
