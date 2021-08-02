@@ -148,9 +148,9 @@ ui = dashboardPage(
                                           #                         "Beta Binomial",
                                           #                         "Zero Inflated Poisson"),
                                           #             selected = "Beta Binomial")
-                                          )
+                                          htmlOutput("modelingDescription"))
                                    ),
-                            column(width = 5,
+                            column(width = 8,
                                    column(width = 12, h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), 
                                           status = "primary",
                                           plotOutput("cdfplot"),

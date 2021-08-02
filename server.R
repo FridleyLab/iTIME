@@ -290,6 +290,23 @@ shinyServer(function(input, output) {
         cdf_plot_react()
     })
     
+    output$modelingDescription <- renderText({
+        validate(need(ncol(chosen_model_stats()) > 0, "Please wait while the model is fit....."))
+        model_statistics = chosen_model_stats()
+        coefficient_of_interest = model_statistics[2,]
+        
+        paste("The predictor of interest, <b>",
+              as.character(coefficient_of_interest$Terms),
+              "</b>, odds ratio on abundance of the immune marker of interest, <b>",
+              input$picked_marker,
+              "</b>, is <b>",
+              round(exp(coefficient_of_interest$Estimate), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)]",
+              ". The p-value for the effect of the predictor of interest on the abundance is <b>",
+              round(coefficient_of_interest$`Pr(>|z|)`, digits = 4),
+              "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significance association of the predictor on immune abundance for the marker of interest.",
+              sep="")
+    })
+    
     output$univariate_report <- downloadHandler(
         filename <-  "univariate_report.pdf",
         content = function(file) {
