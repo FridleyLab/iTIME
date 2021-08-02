@@ -114,7 +114,7 @@ models = function(summary_data_merged, markers,
     aov_bb = coefficients(summary(model_fit_bb))
     AIC_bb = round4(AIC(model_fit_bb))
   }
-  
+  #####
   # out$aic = data.frame(Distribution = c('Poisson', 'Negative Binomial', 'Zero Inflated Poisson', "",
   #                                       'Binomial', 'Beta Binomial', 'Zero Inflated Binomial'),
   #                      AIC = c(AIC_poisson, AIC_negbinom, AIC_zipoisson, "", 
@@ -211,7 +211,7 @@ models_repeated_measures = function(summary_data_merged, markers,
   #   aov_zinegbinomial = NULL
   #   AIC_zinegbinomial = NA
   # }
-  
+  ########
   #Fit Betabinomial model
   model_fit_bb = try(VGAM::vglm(cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ tmp$clin_vars + (1|tmp[[choose_clinical_merge]]), 
                                 betabinomial(zero = 2), data = tmp), silent = TRUE)
