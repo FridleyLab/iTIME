@@ -260,10 +260,15 @@ shinyServer(function(input, output) {
     chosen_model_stats = reactive({
         validate(need(model_list(), "Please wait while things finish loading....."))
         models1 = model_list()
+        assign("models1", models1, envir = .GlobalEnv)
         df = models1$models[["Beta Binomial"]]
         if(class(df)=="character"){
             df1 = data.frame(df)
-        } else {
+        } else if(class(df)=="MixMod"){
+            df1 = summary(df)$coef_table
+            df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df1)),
+                             df1, check.names = F)
+        }else{
             df = df %>% summary() %>% coefficients()#input$selectedModel
             df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
                              df, check.names = F)
@@ -295,16 +300,18 @@ shinyServer(function(input, output) {
         model_statistics = chosen_model_stats()
         coefficient_of_interest = model_statistics[2,]
         
+        
         paste("The predictor of interest, <b>",
-              as.character(coefficient_of_interest$Terms),
-              "</b>, odds ratio on abundance of the immune marker of interest, <b>",
-              input$picked_marker,
-              "</b>, is <b>",
-              round(exp(coefficient_of_interest$Estimate), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)]",
-              ". The p-value for the effect of the predictor of interest on the abundance is <b>",
-              round(coefficient_of_interest$`Pr(>|z|)`, digits = 4),
-              "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significance association of the predictor on immune abundance for the marker of interest.",
-              sep="")
+          as.character(input$picked_clinical),
+          "</b>, odds ratio on abundance of the immune marker of interest, <b>",
+          input$picked_marker,
+          "</b>, is <b>",
+          round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)]",
+          ". The p-value for the effect of the predictor of interest on the abundance is <b>",
+          round(as.numeric(coefficient_of_interest$`Pr(>|z|)`, digits = 4)),
+          "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significance association of the predictor on immune abundance for the marker of interest.",
+          sep="")
+        
     })
     
     output$univariate_report <- downloadHandler(
