@@ -489,13 +489,20 @@ shinyServer(function(input, output) {
     
     ripley_data = reactive({
         validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."))
+        #print(input$ripleysEstimator %in% c("M", "K", "L"))
+        ripley = Ripley(spatial_data(), input$ripleys_selection)
+        g = NN_G(spatial_data(), input$ripleys_selection)
+        return(list(ripley, g))
         
-        Ripley(spatial_data(), input$ripleys_selection)
     })
     
     output$ripleysPlot = renderPlot({
-        
-        Ripley_plot(ripley_data = ripley_data(), estimator = input$ripleysEstimator)
+        validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."))
+        if(input$ripleysEstimator %in% c("M", "K", "L")){
+            Ripley_plot(ripley_data = ripley_data()[[1]], estimator = input$ripleysEstimator)
+        } else if(input$ripleysEstimator == "G"){
+            G_plot(G_data = ripley_data()[[2]])
+        }
         
     })
     

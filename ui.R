@@ -228,7 +228,8 @@ ui = dashboardPage(
                                ,selectInput("ripleysEstimator", "Select an Estimator",
                                             choices = c("Ripley's K" = "K",
                                                         "Besag's L" = "L",
-                                                        "Marcon's M" = "M"),
+                                                        "Marcon's M" = "M",
+                                                        "Nearest Neighbor G" = "G"),
                                             selected = "K")
                                ),
                         column(width = 8, h2("Spatial Plot", align="center", style = "font-size:14pt"),
