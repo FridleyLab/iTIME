@@ -240,8 +240,11 @@ shinyServer(function(input, output) {
                  need(input$picked_marker !="", "Please pick a marker....."),
                  need(input$picked_total_cells !="", "Please select column with total cell count....."),
                  need(input$picked_modeling_reference !="", "Please wait while statistics are computed....."))
+        marker = input$picked_marker
+        marker = substr(marker, 9, nchar(marker))
+        marker = c(marker, gsub("\\ Positive\\ ", "\\ ", marker))
         suppressWarnings({
-            df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = input$picked_marker,
+            df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = marker,
                                         Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
                                         choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
@@ -287,8 +290,13 @@ shinyServer(function(input, output) {
                  need(input$picked_marker !="", "Please select a marker above....."))
         
         marker = input$picked_marker
+        marker = substr(marker, 9, nchar(marker))
+        marker = c(marker, gsub("\\ Positive\\ ", "\\ ", marker))
         data_table = summary_data_merged()
-        CDF_plots(summary_data_merge = data_table, markers = substr(marker, 9, nchar(marker)))
+        #assign("data_table", data_table, envir=.GlobalEnv)
+        #assign("marker", marker, envir=.GlobalEnv)
+        
+        CDF_plots(summary_data_merge = data_table, markers = marker)
     })
     
     output$cdfplot = renderPlot({
@@ -308,7 +316,7 @@ shinyServer(function(input, output) {
           "</b>, is <b>",
           round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)]",
           ". The p-value for the effect of the predictor of interest on the abundance is <b>",
-          round(as.numeric(coefficient_of_interest$`Pr(>|z|)`, digits = 4)),
+          round(as.numeric(coefficient_of_interest$`Pr(>|z|)`), digits = 4),
           "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significance association of the predictor on immune abundance for the marker of interest.",
           sep="")
         
@@ -498,7 +506,14 @@ shinyServer(function(input, output) {
     
 #Getting started RMD rendering
     
-    output$gettingstarted <- renderUI({
+    output$aboutitime <- renderUI({
+        withMathJax({
+            k = knitr::knit(input = "AboutiTIME.Rmd", quiet = T)
+            HTML(markdown::markdownToHTML(k, fragment.only = T))
+        })
+    })
+    
+    output$getting_started <- renderUI({
         withMathJax({
             k = knitr::knit(input = "GettingStarted.Rmd", quiet = T)
             HTML(markdown::markdownToHTML(k, fragment.only = T))

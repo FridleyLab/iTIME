@@ -252,7 +252,7 @@ model_checked_repeated = function(summary_data_merged,markers,
                                   Total, clin_vars, reference,
                                   choose_clinical_merge, digits=4){
   round4 = function(x){return(round(x,digits=digits))}
-  markers = substr(markers, 9, nchar(markers))
+  markers = markers[markers %in% colnames(summary_data_merged)]
   #Check whether or not any subject has multiple samples
   #Maybe we print a message saying whether repeated measures were detected?
   if(any(table(summary_data_merged[[choose_clinical_merge]])>1)){

@@ -3,6 +3,7 @@
 #picked_marker
 #alex edit
 CDF_plots = function(summary_data_merged = summary_data_merged, markers = markers){
+  markers = markers[markers %in% colnames(summary_data_merged)]
   sample_stats = summary_data_merged %>% select(grep('Total', colnames(.)), markers) %>%
     pivot_longer(cols = 2:ncol(.), values_to = 'Count', names_to = 'Marker') %>%
     group_by(Marker) %>%
