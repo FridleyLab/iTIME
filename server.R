@@ -157,6 +157,7 @@ shinyServer(function(input, output) {
             tmp = (as.numeric(input$choose_cont_thresh)/100) + 0.0001
             thres = log10(tmp/(1-tmp))
         }
+        
         plots = summary_plots_fn(data_table, clinvar = input$picked_clinical,
                                  cellvar = cellvar, colorscheme <- input$summaryPlotColors, thres)
         
@@ -315,8 +316,9 @@ shinyServer(function(input, output) {
           "</b>, is <b>",
           round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)]",
           ". The p-value for the effect of the predictor of interest on the abundance is <b>",
-          round(as.numeric(coefficient_of_interest$`Pr(>|z|)`), digits = 4),
-          "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significant association of the predictor on immune abundance for the marker of interest.",
+          round(as.numeric(coefficient_of_interest[,ncol(coefficient_of_interest)]), digits = 4),
+          "</b>. A small p-value (less than 0.05, for example) indicates the association is unlikely to occur by chance and indicates a significant association of the predictor on immune abundance for <b>",
+          input$picked_marker, "</b>.",
           sep="")
         
     })
