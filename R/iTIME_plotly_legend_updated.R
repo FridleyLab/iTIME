@@ -1,13 +1,16 @@
 #nicks function
 #editing plotting format
-scatter_plotly_old = function(data = data, markers = markers, new_names = new_names, colorscheme = colorscheme){
+spatial_plotly = function(data = data, markers = NULL){
   data$x <- (data$XMin + data$XMax) / 2
   data$y <- (data$YMin + data$YMax) / 2
-  num_cells = c()
-  for(a in 1:length(markers)){
-    num_cells = append(num_cells,sum(data[[markers[a]]]==1))
-    data$marks[data[[markers[a]]]==1] = new_names[a]
+  if(is.null(markers)){
+    data$marks = NA
+  } else {
+    for(a in 1:length(markers)){
+      data$marks[data[[markers[a]]]==1] = markers[a]
+    }
   }
+  
   
   data$marks[is.na(data$marks)]  = 'Negative' 
   data$marks = as.factor(data$marks)
@@ -41,26 +44,23 @@ scatter_plotly_old = function(data = data, markers = markers, new_names = new_na
   )
   
   
-  plot = plot_ly() %>%
+  plot = plot_ly() %>% #
     add_trace(data = data[data$marks == 'Negative',], x = ~x, y = ~y, 
               type="scatter",
               mode="markers",
               symbol = ~Classifier.Label,
-              symbols = c('3', 'o'),
+              symbols = c('3', 'circle-open'),
               legendgroup="Classifier Label",
               marker=list(size=3,
-                          color = 'lightgrey'),
+                          color = 'black'),
               hovertemplate = ~text) %>%
     add_trace(data = data[data$marks != 'Negative',], x = ~x, y = ~y, 
               type="scatter",
               mode="markers",
               color = ~marks,
-              # colors = "Paired",
-              # colors = viridis::viridis_pal()(length(markers)),
-              colorscale=colorscheme,
               legendgroup="marks",
               marker=list(size=3,
-                          symbol = '200'),
+                          symbol = 'circle'),
               hovertemplate = ~text) %>%
     layout(xaxis = ax, yaxis = ax)%>%
     add_annotations( text="Tumor/Stroma Status:", xref="paper", yref="paper",

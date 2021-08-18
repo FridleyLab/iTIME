@@ -463,15 +463,9 @@ shinyServer(function(input, output) {
     })
     
     spatial_plot = reactive({
-        validate(need(input$plotly_selection !="", "Please wait while things finish loading....."))
+        validate(need(nrow(spatial_data()) > 0, "Please wait while things finish loading....."))
         
-        markers = input$plotly_selection
-        new_names = markers
-        #colorscheme = input$summaryPlotColors
-        colorscheme = viridis::viridis_pal(option = "D")(length(markers))
-        
-        scatter_plotly_old(data = spatial_data(), markers = markers, 
-                           new_names = new_names, colorscheme = colorscheme) #
+        spatial_plotly(data = spatial_data(), markers = input$plotly_selection) #
     })
     
     output$spatial_plotly = renderPlotly({
