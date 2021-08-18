@@ -264,7 +264,6 @@ shinyServer(function(input, output) {
     chosen_model_stats = reactive({
         validate(need(model_list(), "Please wait while things finish loading....."))
         models1 = model_list()
-        assign("models1", models1, envir = .GlobalEnv)
         df = models1$models[["Beta Binomial"]]
         if(class(df)=="character"){
             df1 = data.frame(df)
@@ -305,7 +304,6 @@ shinyServer(function(input, output) {
     output$modelingDescription <- renderText({
         validate(need(ncol(chosen_model_stats()) > 0, "Please wait while the model is fit....."))
         model_statistics = chosen_model_stats()
-        assign("model_statistics", model_statistics, envir=.GlobalEnv)
         coefficient_of_interest = model_statistics[2,]
         
         
@@ -450,7 +448,6 @@ shinyServer(function(input, output) {
         whichcols = grep("^(?!.*(nucle|max|min|cytoplasm|area|path|image|Analysis|Object))",
                          ripleys_spatial_names,perl=TRUE,ignore.case = TRUE)
         tmp = ripleys_spatial_names[whichcols]
-        print(class(spatial_data()))
         acceptable_ripleys_names =  tmp[sapply(spatial_data()[,tmp],sum)>0]
         
         awesomeCheckboxGroup("plotly_selection", "Choose Markers for Spatial Plot",
