@@ -21,7 +21,7 @@ ui = dashboardPage(
             menuItem("Univariate Summary", tabName = 'univariate', icon = icon('angle-right')),
             menuItem("Multivariate Summary", tabName = 'multivariate', icon = icon('angle-double-right')),
             menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
-            menuItem("Getting Started", tabName = 'help', icon = icon('glasses')),
+            menuItem("About", tabName = 'about', icon = icon('glasses')),
             tags$br(),
             fluidRow(column(12, align="center",
                             tags$br(),
@@ -38,45 +38,48 @@ ui = dashboardPage(
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
-                    h1("Import Data", align="center"),
+                    h1("iTIME", align="center"),
                     fluidRow(
                         box(width = 12, status = "primary",
                             fluidRow(
                                 column(width = 6,
+                                            uiOutput("getting_started")
+                                       ),
+                                column(width = 6,
+                                       fluidRow(
+                                           column(
+                                               width = 12,
+                                               div(style="float:right", actionButton("exampleData", "Load Example Data"))
+                                           )
+                                       ),
                                        fileInput("summaryData", "Choose a Summary File",
                                                  multiple = FALSE,
                                                  accept = c("csv",
                                                             "HALO summary data file",
                                                             c(".csv"))),
                                        uiOutput("choose_summary_merge"),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('summary_preview'))),
-                                column(width = 6,
+                                       #div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('summary_preview')),
                                        fileInput("clinicalData", "Choose a Clinical Data File",
                                                  multiple = FALSE,
                                                  accept = c("csv",
                                                             "HALO summary data file",
                                                             c(".csv"))),
                                        uiOutput("choose_clinical_merge"),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('clinical_preview')))),
-                            fluidRow(
-                                column(width = 6,# h2("Choose a Spatial Data File", style = "font-size:12pt;font-weight:bold"),
+                                       #div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('clinical_preview')),
                                        fileInput("spatialData", "Choose a Spatial Data File",
                                                  multiple = FALSE,
                                                  accept = c("csv",
                                                             "HALO summary data file",
                                                             c(".csv"))),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('spatial_preview'))),
-                                column(width = 6, h2("", style = "font-size:12pt;font-weight:bold;margin-bottom:1.55em"),
-                                       actionButton(
-                                           inputId = "exampleData",
-                                           label = "Load Example Data"
-                                           )
-                                       ),style = "height:118px"
+                                       #div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('spatial_preview'))
+                                       ),
                                 ),
                             fluidRow(
-                                column(width = 5,
-                                       div(style = "verflow-x: scroll; overflow-y: scroll; height:200px", tableOutput('merged_preview')))
-                            )
+                                column(width = 6),
+                                column(width = 6, h2("", style = "font-size:12pt;font-weight:bold;margin-bottom:1.55em"),
+                                       
+                                       ),style = "height:118px"
+                                ),
                             ),
                     ),
             ),
@@ -236,11 +239,11 @@ ui = dashboardPage(
                          In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
                          </footer>')
                     ),
-            tabItem(tabName = 'help',
-                    h1("Getting Started", align="center"),
+            tabItem(tabName = 'about',
+                    h1("About iTIME", align="center"),
                     fluidRow(
                         box(width = 9, status = "primary",
-                            uiOutput('gettingstarted'),
+                            uiOutput('aboutitime'),
                         ),
                         
                         box(title = "Development Team",
