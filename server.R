@@ -293,8 +293,6 @@ shinyServer(function(input, output) {
         marker = substr(marker, 9, nchar(marker))
         marker = c(marker, gsub("\\ Positive\\ ", "\\ ", marker))
         data_table = summary_data_merged()
-        #assign("data_table", data_table, envir=.GlobalEnv)
-        #assign("marker", marker, envir=.GlobalEnv)
         
         CDF_plots(summary_data_merge = data_table, markers = marker)
     })
@@ -317,7 +315,7 @@ shinyServer(function(input, output) {
           round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)]",
           ". The p-value for the effect of the predictor of interest on the abundance is <b>",
           round(as.numeric(coefficient_of_interest$`Pr(>|z|)`), digits = 4),
-          "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significance association of the predictor on immune abundance for the marker of interest.",
+          "</b>. A small (less than 0.05 for example) indicates the association is unlikely to occur by chance and indicates a significant association of the predictor on immune abundance for the marker of interest.",
           sep="")
         
     })
