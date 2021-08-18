@@ -304,6 +304,7 @@ shinyServer(function(input, output) {
     output$modelingDescription <- renderText({
         validate(need(ncol(chosen_model_stats()) > 0, "Please wait while the model is fit....."))
         model_statistics = chosen_model_stats()
+        assign("model_statistics", model_statistics, envir=.GlobalEnv)
         coefficient_of_interest = model_statistics[2,]
         
         
