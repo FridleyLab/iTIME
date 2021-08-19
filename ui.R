@@ -42,10 +42,10 @@ ui = dashboardPage(
                     fluidRow(
                         box(width = 12, status = "primary",
                             fluidRow(
-                                column(width = 6,
-                                            uiOutput("getting_started")
+                                column(width = 8,
+                                       uiOutput("getting_started"),
                                        ),
-                                column(width = 6,
+                                column(width = 4,
                                        fluidRow(
                                            column(
                                                width = 12,
