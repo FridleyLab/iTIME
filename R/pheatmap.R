@@ -31,7 +31,7 @@ pheat_map <- function(summary_clinical_merge,
                      cluster_cols = !anno_clust, 
                      show_colnames = F, 
                      treeheight_col = 0, 
-                     treeheight_row = 0, 
+                     treeheight_row = 5, 
                      annotation_col = annotation,
                      cutree_cols = cutree_cols)
   
