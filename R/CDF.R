@@ -50,9 +50,10 @@ CDF_plots = function(summary_data_merged = summary_data_merged, markers = marker
     ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + 
     geom_line(aes(color = 'Empirical'), color = 'black') + 
     geom_line(aes(x = Count, y = CDF, color = Distribution, linetype = family)) + theme_bw() + 
-    theme(axis.text.x = element_blank(),
-          axis.ticks = element_blank(),
-          axis.title.x = element_blank(),
+    theme(
+      #axis.text.x = element_blank(),
+       #   axis.ticks = element_blank(),
+        #  axis.title.x = element_blank(),
           legend.position = "right", #c(0.8, 0.3),
           axis.title.y = element_text(size = 16),
           axis.text.y = element_text(size = 16),
