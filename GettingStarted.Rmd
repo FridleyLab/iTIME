@@ -17,20 +17,29 @@ library(tidyverse)
 
 iTIME is an application that allows for the visualization and analysis of quantification data from HALO image analysis software designed by the [Fridley Lab](https://lab.moffitt.org/fridley/) at Moffitt Cancer Center in addition to other member as part of Moffitt's annual hackathon. See below for getting started using the application.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+### Input Files for **iTIME**
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+iTIME accepts 3 csv input files:
+- A *summary* file with information about cell markers on cores from a TMA, one row per core
+  - number of cells that were positive and the percent of cells that were positive for a cell marker
+- A *clinical* file that contains information about the patient and/or samples with an identifier to link the particular patient/sample in the summary file
+  - There may be multiple rows of the *summary* file for multiple cores from a single entry patient in the *clinical* file
+- A *spatial* file  that contains cells `X_Min`, `X_Max`, `Y_Min`, `Y_Max`, consecutive columns with cell markers and whether a cell was positive for that marker or not
 
-```{r cars}
-summary(cars)
-```
+In order to use the **Univariate** or **Multivariate** pages, <u>**BOTH**</u> *summary* and *clinical* files have to be uploaded. When the *summary* and *clinical* files are found through browsing or drag-and-dropping into the upload boxes, the drop-downs below will autopopulate with the column names in the respective files. In the drop-downs, select the column heading that is the linking column between the *summary* information and the *clinical* information. As an example, click "Load Example Data" above "Choose a Summary File" to see the drop-downs populate and select `deidentified_id` in the "Choose Clinical Merge Variable" drop-down. The *spatial* file is not needed to use the **Univariate** or **Multivariate** pages, and the *summary* and *clinical* information files are not required to use the **Spatial** page. To get the most out of iTIME it is recommended to work from **Univariate Summary** > **Multivariate Summary** > **Spatial**.
 
-## Including Plots
+### Univariate Summary
 
-You can also embed plots, for example:
+After uploading a *summary* and *clinical* file, an selecting the linking column name for each, the **Univariate** page can be used to visualize single cell marker - single clinical variable relationships. The left side of the top panel provides variable selection for the marker of interest which will be used in both the Summary Plot as well as the Statistical Modeling in the bottom panel. In the center of the top panel is a summary plot able to be switched between Boxplot, Violin Plot, Histogram, and Scatter Plot of the cell marker and clinical variable. The red dashed line indicates the Contingency Threshold which is used to split the cell marker into 2 groups, Greater than and Less than, for the clinical variable. This can be seen numerically in the Contingency Table on the right side. Also on the right side is a Frequency Table for all possible levels of the Contingency Threshold, as well as a Summary Table containing the summary statistics of the chosen clinical variable. ***NOTE: The selected transformation is only used for the visualization of the data in the Summary Plots.***
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+The lower panel of **Univariate Summary** provides statistical modeling of the cell marker and clinical variable selected on the top panel. To do this, there is a cumulative distribution function (CDF) plot showing how well each distribution would fit the data (black line). The CDF plot indicates the proportion of TMA cores (rows in the *summary* file) that contain at that many cells or fewer. For example, with the example data selecting "Percent CD8 (Opal 520) Positive Cells", about 90% of the TMAs in the *summary* file have 200 positive CD8 cells or fewer. Typically the beta binomial distribution will fit the true distribution (black line) best and has been set as the default model. Below the CDF plot are statistics about the beta binomial model using the drop-downs to the left of the CDF plot to determine the number of successes (positive cells) and the number of failures (negative) from the number of cells for each core on the TMA, as well as the selection of the reference level for the clinical variable.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+At the very bottom of the page is a download button to allow the user to download all of the plots to PDF (vector space) and retrieve all of the code used to produce the results.
+
+### Multivariate Summary
+
+On the **Multivariate** page there are 2 drop-downs to select the clinical variable that is of interest as well as the ability to plot raw data. ***NOTE: By default the square root transformation is selected to bring the data in from the high extreme.*** With the clinical variable selected, the user can choose to group by the clinical variable (annotation) and/or cluster by cell marker. The center of the page is a reactive heatmap for the percent of cells with the selected markers (square root transformed by default) with the selected clinical variable annotated at the top. To the right is a 2-dimensional reactive principal component plot (PCA) for the same selected markers colored by the clinical variable.
+
+### Spatial Summary
+
+The **Spatial** page has 2 elements: the top is a reactive Plotly of the uploaded *spatial* file, and the bottom is clustering metrics for a selected marker. The reactive Plotly by default has the cell markers with "Positive" in the name from HALO. In the example file there are also marker combinations that are not selected by default and when a marker down the list is selected and a cell contains multiple, the lower down marker will take priority for coloring. In the reactive plot, cells without a marker selected will have either a cross for stroma or open circle for tumor. When a cell has a marker it was determined positive for the cell will change to a filled in colored circle. At the bottom is a clustering/dispersion plot for the selected marker using the selected estimator. There is Ripley's K, Besag's L, Marcon's M, and Nearest Neighbor G. For more information about these metrics please visit the **About** documentation.
