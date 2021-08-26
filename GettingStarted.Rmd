@@ -15,7 +15,7 @@ library(tidyverse)
 
 ## <u>**i**</u>teractive <u>**T**</u>umor <u>**I**</u>mmune <u>**M**</u>icro<u>**E**</u>nvironment
 
-iTIME is an application that allows for the visualization and analysis of quantification data from HALO image analysis software designed by the [Fridley Lab](https://lab.moffitt.org/fridley/) at Moffitt Cancer Center in addition to other member as part of Moffitt's annual hackathon. See below for getting started using the application.
+iTIME is an application that allows for the visualization and analysis of quantification data from HALO image analysis software designed by the [Fridley Lab](https://lab.moffitt.org/fridley/) at Moffitt Cancer Center. See below for getting started using the application.
 
 ### Input Files for **iTIME**
 
@@ -25,6 +25,8 @@ iTIME accepts 3 csv input files:
 - A *clinical* file that contains information about the patient and/or samples with an identifier to link the particular patient/sample in the summary file
   - There may be multiple rows of the *summary* file for multiple cores from a single entry patient in the *clinical* file
 - A *spatial* file  that contains cells `X_Min`, `X_Max`, `Y_Min`, `Y_Max`, consecutive columns with cell markers and whether a cell was positive for that marker or not
+
+**For an idea of how these data tables look like, view the bottom section of the *About* page**
 
 In order to use the **Univariate** or **Multivariate** pages, <u>**BOTH**</u> *summary* and *clinical* files have to be uploaded. When the *summary* and *clinical* files are found through browsing or drag-and-dropping into the upload boxes, the drop-downs below will autopopulate with the column names in the respective files. In the drop-downs, select the column heading that is the linking column between the *summary* information and the *clinical* information. As an example, click "Load Example Data" above "Choose a Summary File" to see the drop-downs populate and select `deidentified_id` in the "Choose Clinical Merge Variable" drop-down. The *spatial* file is not needed to use the **Univariate** or **Multivariate** pages, and the *summary* and *clinical* information files are not required to use the **Spatial** page. To get the most out of iTIME it is recommended to work from **Univariate Summary** > **Multivariate Summary** > **Spatial**.
 

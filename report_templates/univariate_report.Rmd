@@ -1,5 +1,5 @@
 ---
-title: "Univariate Report"
+title: "interactive Immune MicroEnvironment - Univariate Report"
 author: "iTIME Dev Team"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -18,10 +18,11 @@ params:
   contingency_table: NA # = contTable()
   frequency_table: NA # = freqTable()
   summary_table: NA # = summaryTable()
-  chosen_model_stats_rmd: NA # = model_stats()
+  chosen_model_stats: NA # = chosen_model_stats()
   cdf_plot: NA # = cdfplot()
   selected_univariate_model: NA # = input$selectedModel
   model_aic_table: NA # = aic_table()
+  modelDescription: NA # = model_description()
 ---
 
 <!--
@@ -37,6 +38,10 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 library(kableExtra)
 echo = params$include_functions
 ```
+
+### Summary Table of Univariate Variables
+
+Below in **Table 1** are the variables that were selected on iTIME.moffitt.org from the *summary* file and the *clinical* file in order to generate the tables and plots within.
 
 ```{r variable_table_chunk, echo=F}
 variable_table = data.frame("Variable" = c("Include functions?",
@@ -58,10 +63,15 @@ variable_table = data.frame("Variable" = c("Include functions?",
                                                     "input$picked_total_cells",
                                                     "input$picked_modeling_reference"), check.names = F)
 kbl(variable_table,
-    caption = paste("Variables selected in iTIME.Moffitt.org Univariate Summary."),
+    caption = paste("Variables selected in iTIME.Moffitt.org - Univariate Summary."),
     booktabs=T) %>%
   kable_styling(position="left", latex_options = c("hold_position"))
 ```
+
+\clearpage
+\newpage
+
+### Contingency Table
 
 ```{r contingency_table_code, echo=echo, eval=F, size = "tiny"}
 #Function to produce Contingency Table
@@ -87,12 +97,14 @@ contingency_table <- function(summary_clinical_merge, markers = markers,
 }
 ```
 
-```{r contingency_table_chunk, echo=F}
+```{r contingency_table_output, echo=F}
 kbl(params$contingency_table,
     caption = paste("Contingency table of", params$selected_marker, "above and below the threshold of", params$contingency_threshold, " percent."),
     booktabs = TRUE) %>%
   kable_styling(position = "center", latex_options = c("hold_position"))
 ```
+
+### Frequency Table
 
 ```{r frequency_table_code, echo=echo, eval = F, size = "tiny"}
 #Function use to produce the frequency table
@@ -119,12 +131,14 @@ freq_table_by_marker <-
 }
 ```
 
-```{r frequency_table_chunk, echo=F}
+```{r frequency_table_output, echo=F}
 kbl(params$frequency_table,
     caption = paste("Frequency table of", params$selected_marker, "by", params$picked_clinical, "."),
     booktabs = TRUE) %>%
   kable_styling(position = "center", latex_options = c("hold_position"))
 ```
+
+### Summary Statistics Table
 
 ```{r summary_table_code, echo = echo, eval=F, size = "tiny"}
 #Function used to produce the summary table
@@ -152,16 +166,19 @@ summary_table = function(summary_clinical_merged,
 
 ```
 
-```{r summary_table_chunk, echo=F} 
+```{r summary_table_output, echo=F} 
 kbl(params$summary_table,
     caption = paste("Summary table of", params$selected_marker, "by", params$picked_clinical, "showing the minimum, median, mean, max, and standard deviation as well as the number of unique subject and unique samples in the clinical and summary data frames."),
     booktabs = TRUE) %>%
   kable_styling(position = "center", latex_options = c("hold_position"))
 ```
 
+\clearpage
+\newpage
+
 ### Univariate Summary Plot
 
-```{r univar_code, echo = echo, eval = F, size = "tiny"}
+```{r univariate_plot_code, echo = echo, eval = F, size = "tiny"}
 #Code within the server
 message("Code within the server:")
 cellvar <-  input$picked_marker
@@ -236,9 +253,12 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
 }
 ```
 
-```{r boxplot_chunk, echo=F, fig.height=4, fig.width=8, fig.cap = paste("Summary plot of ", params$selected_marker, " separated by ", params$picked_clinical,". The red line is at the threshold level in Table 1.", sep="")}
+```{r univariate_plot_output, echo=F, fig.height=4, fig.width=8, fig.cap = paste("Summary plot of ", params$selected_marker, " separated by ", params$picked_clinical,". The red line is at the threshold level in Table 1.", sep="")}
 params$boxplots
 ```
+
+\clearpage
+\newpage
 
 ### Cumulative Distribution Function Plot
 
@@ -312,12 +332,126 @@ CDF_plots = function(summary_data_merged = summary_data_merged, markers = marker
 }
 ```
 
-```{r cdf_plot_chunk, echo=F, fig.height=4, fig.width=8, fig.cap = paste("Cumulative distribution functions for both the binomial and Poisson families for ", params$selected_marker, ". The default model selected in iTIME.Moffitt.org is the negative binomial model.", sep="")}
+```{r cdf_plot_output, echo=F, fig.height=4, fig.width=8, fig.cap = paste("Cumulative distribution functions for both the binomial and Poisson families for ", params$selected_marker, ". The default model selected in iTIME.Moffitt.org is the negative binomial model.", sep="")}
 params$cdf_plot
 ```
 
+\pagebreak
 
+### Betabinomial Model Statistics
 
+```{r model_statistics_code, echo = echo, eval=F, size = "tiny"}
+#Function to determine if there are repeated measures for individuals
+model_checked_repeated = function(summary_data_merged,markers,
+                                  Total, clin_vars, reference,
+                                  choose_clinical_merge, digits=4){
+  round4 = function(x){return(round(x,digits=digits))}
+  markers = markers[markers %in% colnames(summary_data_merged)]
+  #Check whether or not any subject has multiple samples
+  if(any(table(summary_data_merged[[choose_clinical_merge]])>1)){
+    return(
+      models_repeated_measures(summary_data_merged, markers,
+                               Total, clin_vars, reference, 
+                               choose_clinical_merge, digits))
+  }else{
+    return(
+      models(summary_data_merged, markers,Total, clin_vars, reference, digits))
+  }
+}
+
+#function to model without repeated measures
+models = function(summary_data_merged, markers,
+                  Total, clin_vars, reference,digits=4){
+  out = list()
+  levels = unique(summary_data_merged[[clin_vars]])
+  tmp = summary_data_merged %>% select(Total, markers, clin_vars) %>%
+    mutate(clin_vars = factor(.[[clin_vars]], 
+                                   levels = c(reference,
+                                              levels[levels != reference]
+                                              )))
+  round4 = function(x){return(round(x,digits=digits))}
+
+  #Fit Betabinomial model
+  model_fit_bb = try(VGAM::vglm(cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ tmp$clin_vars, 
+                             betabinomial(zero = 2), data = tmp), silent = TRUE)
+  
+  out$models = list('Beta Binomial' = model_fit_bb
+  return(out)
+}
+
+#function to model with repeated measures of individuals
+models_repeated_measures = function(summary_data_merged, markers,
+                  Total, clin_vars, reference, choose_clinical_merge, digits = 4){
+  out = list()
+  round4 = function(x){return(round(x,digits=digits))}
+  levels = unique(summary_data_merged[[clin_vars]])
+  tmp = summary_data_merged %>% select(choose_clinical_merge, 
+                                       Total, markers, clin_vars) %>%
+    mutate(clin_vars = factor(.[[clin_vars]], 
+                              levels = c(reference,
+                                         levels[levels != reference]
+                              )),
+           id = factor(.[[choose_clinical_merge]]))
+  
+  #Fit Betabinomial model
+  model_fit_bb = try(GLMMadaptive::mixed_model(
+    fixed = cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ 
+      tmp$clin_vars, random = ~ 1|id, 
+    family = beta.binomial(), data = tmp), silent = TRUE)
+  
+  out$models = list('Beta Binomial' = model_fit_bb)
+  return(out)
+}
+
+#server code to run model
+model_list = reactive({
+    validate(need(input$picked_clinical !="", "Please select a clinical variable....."),
+             need(ncol(summary_data_merged()) > 0, "Please upload clinical and summary data....."),
+             need(input$picked_marker !="", "Please pick a marker....."),
+             need(input$picked_total_cells !="", "Please select column with total cell count....."),
+             need(input$picked_modeling_reference !="", "Please wait while statistics are computed....."))
+    marker = input$picked_marker
+    marker = substr(marker, 9, nchar(marker))
+    marker = c(marker, gsub("\\ Positive\\ ", "\\ ", marker))
+    suppressWarnings({
+        df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = marker,
+                                    Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
+                                    choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
+    })
+    return(df)
+})
+
+#server code to produce summary stats table
+chosen_model_stats = reactive({
+    validate(need(model_list(), "Please wait while things finish loading....."))
+    models1 = model_list()
+    df = models1$models[["Beta Binomial"]]
+    if(class(df)=="character"){
+        df1 = data.frame(df)
+    } else if(class(df)=="MixMod"){
+        df1 = summary(df)$coef_table
+        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df1)),
+                         df1, check.names = F)
+    }else{
+        df = df %>% summary() %>% coefficients()#input$selectedModel
+        df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
+                         df, check.names = F)
+        df1 = df1[-2,]
+    }
+    
+    return(df1)
+})
+```
+
+```{r model_statistics_output, echo=F}
+kbl(params$chosen_model_stats,
+    caption = paste("Summary table of betabinomial model fit for", params$selected_marker, "by", params$picked_clinical, "using", params$modeling_reference,
+                    "as the reference level of", params$picked_clinical, "."),
+    booktabs = TRUE) %>%
+  kable_styling(position = "center", latex_options = c("hold_position"))
+```
+
+`r params$modelDescription`
 
 
 

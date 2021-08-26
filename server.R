@@ -301,7 +301,7 @@ shinyServer(function(input, output) {
         cdf_plot_react()
     })
     
-    output$modelingDescription <- renderText({
+    model_description = reactive({
         validate(need(ncol(chosen_model_stats()) > 0, "Please wait while the model is fit....."))
         model_statistics = chosen_model_stats()
         coefficient_of_interest = model_statistics[2,]
@@ -318,7 +318,10 @@ shinyServer(function(input, output) {
           "</b>. A small p-value (less than 0.05, for example) indicates the association is unlikely to occur by chance and indicates a significant association of the predictor on immune abundance for <b>",
           input$picked_marker, "</b>.",
           sep="")
-        
+    })
+    
+    output$modelingDescription <- renderText({
+        model_description()
     })
     
     output$univariate_report <- downloadHandler(
@@ -334,11 +337,12 @@ shinyServer(function(input, output) {
                            contingency_table = cont_table(),
                            frequency_table = frequency_table(),
                            summary_table = sum_table(),
+                           cdf_plot = cdf_plot_react(),
                            total_cell_column = input$picked_total_cells,
                            modeling_reference = input$picked_modeling_reference,
+                           chosen_model_stats = chosen_model_stats(),
+                           modelDescription = model_description()
                            #selected_univariate_model = input$selectedModel,
-                           #chosen_model_stats_rmd = chosen_model_stats(),
-                           cdf_plot = cdf_plot_react()#, #good
                            #model_aic_table = aic_table_react(),
                            )
             rmarkdown::render(tempReport, output_file = file,

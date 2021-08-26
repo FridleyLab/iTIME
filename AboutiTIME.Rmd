@@ -15,19 +15,23 @@ library(tidyverse)
 
 ### Input Files
 
-iTIME accepts 3 files as input: a summary, clinical, and spatial file. All files should be csv files. The summary file should contain summary level statistics and should contain one row per sample, while the clinical data file should contain one row per patient. Both the clinical and summary files should contain a variable to link sample IDs and clinical IDs ('Merge Variable'), though the variables do not need to be named the same in both datasets. iTIME does not need to have a spatial data file if only univariate or multivariate summaries are of interest, however, for the spatial data tab clinical and summary data are needed.
+iTIME accepts 3 files as input: a summary, clinical, and spatial file. All files should be csv files. The summary file should contain summary level statistics and should contain one row per sample, while the clinical data file should contain one row per patient. Both the clinical and summary files should contain a variable to link sample IDs and clinical IDs ('Merge Variable'), though the variables do not need to be named the same in both datasets. iTIME does not need to have a spatial data file if only univariate or multivariate summaries are of interest, however, for the spatial data tab clinical and summary data are needed. 
 
 ### Summary Pages
 
 #### Univariate Summary
 
-This page provides a summary of the marker chosen from the dropdown menu below and allows users to plot a marker against clinical variables and select the appropriate plot type. Plot types available are boxplot, violin plot, histogram, and scatter plot, all of which have the clinical variable along the x-axis. The boxplot, violin plot, and histogram are only applicable for categorical clinical features, while the scatter plot is only applicable for continuous clinical features. The red dashed line in each of these plots correspond to the selected percent threshold. Two additional summary tables are provided: a contingency table threshold can be set to compute greater than or less than by the clinical variable selected, and a frequency table displaying the number of samples greater than various thresholds and without stratification.
+This page provides a summary of the marker chosen from the dropdown menu below and allows users to plot a marker against clinical variables and select the appropriate plot type. Plot types available are Boxplot, Violin plot, Histogram, and Scatter Plot, all of which have the clinical variable along the x-axis. The Boxplot, Violin plot, and Histogram are only applicable for categorical clinical features, while the scatter plot is only applicable for continuous clinical features. The red dashed line in each of these plots correspond to the selected percent threshold. Below the graph there is the ability to download the plot in PDF format for editing. Additional summary tables are provided: a Contingency Table threshold can be set to compute greater than or less than by the clinical variable selected, a Frequency Table displaying the number of samples greater than various thresholds and without stratification, and a Summary Table for all levels of the selected clinical variable.
 
-Currently, there is the ability to apply a **square root** transformation for the summary plots.
+The lower half of the page provides a beta binomial modeling for the above selected clinical variable and marker. The Cumulative Distribution Function (CDF) plot shows how well the beta binomial fits the selected data relying on the number of positive as the successes and the column "Total Cells". The CD plot shows how many rows in the *summary* file contain a specific number of cells or fewer. For example in the example data when selecting "Percent CD8 (Opal 520) Positive Cells" for the marker to plot and using race as the clinical variable, about 90% of the cores in the *summary* file contain 200 CD8 positive cells or fewer. The beta binomial will likely fit the true (solid black line) distribution best unless there are a high number of zeros in the data, in which case a more appropriate model would be a zero-inflated. In order to appropriately interpret the *Model Statistics*, the column of the summary file that contains the count of total cells per core must be selected. In addition, it's possible to select a reference level of the clinical variable to which the description below it will change.
+
+Currently, there is the ability to apply a **square root**, **Log2**, and **logit** transformations for the summary plots (**log2** and **logit** transformations contain a small addition to all values to prevent infinite values). The transformation is only applied to the data for visualization purposes and not when fitting the beta binomial model.
+
+At the bottom of the page is the ability to download the **Univariate** report in PDF format, which includes all of the information on the page, as well as the ability to add the R code that was used to produce each part of the report.
 
 #### Multivariate Summary
 
-The data are displayed as a heatmap of the selected markers (rows). These data rows have the ability to be clustered through the toggle, where the columns (clinical variable) has the ability to be grouped together based on clinical variable annotation. The order of the samples (columns) and markers (rows) of the heatmap are determined by hierarchical clustering which assigns clusters based on ‘complete’ dissimilarity. Complete dissimilarity refers to the distance of two clusters being determined by the largest distance between elements in either cluster.  The dataset will be sorted by the selected clinical variable to allow for a heatmap where the samples with the same class of a clinical variable are grouped together or appear in increasing order for continuous variables (such as age). Markers to include in the plot are selected through toggling the check-box next to the marker name.
+The data are displayed as a heatmap of the selected markers (rows). These data rows have the ability to be clustered through the toggle, where the columns (clinical variable) has the ability to be grouped together based on clinical variable annotation. The order of the samples (columns) and markers (rows) of the heatmap are determined by hierarchical clustering which assigns clusters based on ‘complete’ dissimilarity. Complete dissimilarity refers to the distance of two clusters being determined by the largest distance between elements in either cluster.  The dataset will be sorted by the selected clinical variable to allow for a heatmap where the samples with the same class of a clinical variable are grouped together or appear in increasing order for continuous variables (such as age). Markers to include in the plot are selected through toggling the check-box next to the marker name. In addition to the heatmap, a Principal Component Analysis (PCA) plot is also displayed for the selected clinical variable using the selected markers.
 
 ### Spatial Page
 
@@ -68,6 +72,8 @@ $H\left(r\right)$ and $H^*\left(r\right)$ Interpretation: If value is larger tha
 
 Marcon's $M$ Interpretation: If value is larger than 1, than there is evidence of spatial clustering. Additionally, $M\left(r\right)$ is 1.50 at some chosen radius means you're observing 50% more clustering than Poisson distribution would predict.
 
+Nearest neighbor function $G$ provides information about the cumulative distribution function with $G\left(r\right)$. This computes the probability that a cell is present at distance $r$ from an anchor cell by permuting the average number of cells at $r$. Two edge correction methods are applied: reduced sampling which is analogous to border correction of the Ripley's $K$ and Hanish which ignores cells whose $k^{th}$ nierest neighbor is not in the core. The interpretation of the degree of clustering is a proportion of cells are within $r$ distance from other cells, with the observed above theoretical CSR meaning that there is clustering while below theoretical CSR is means the selected cell type is characterized as dispersed at distance $r$. The nearest neighbor distance of $x$ is calculated by $d_i = min_{j \neq i} || x_j - x_i||$ for point pattern $\pmb x$.
+
 ### Summary File
 
 ![Summary File Example](GettingStarted_images/example_summary_data_format.png)
@@ -79,12 +85,6 @@ Marcon's $M$ Interpretation: If value is larger than 1, than there is evidence o
 ### Spatial File
 
 ![Spatial File Example](GettingStarted_images/example_spatial_data_format.png)
-
-## How to Use
-
-Loading **Example Data** and selecting common column between **Summary Data** and **Clinical Data**
-
-![Loading Data Help](GettingStarted_images/load_data_help.png)
 
 ### Help
 
