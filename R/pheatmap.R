@@ -2,12 +2,15 @@
 #https://stackoverflow.com/questions/59445092/how-to-plot-heatmap-with-r-shiny
 #removed forced sqrt of cells' value
 
-pheat_map <- function(summary_clinical_merge, markers = markers,
-                      clin_vars = clin_vars, colorscheme, 
-                      anno_clust = anno_clust, mark_clust = mark_clust){
+pheat_map <- function(summary_clinical_merge,
+                      markers = markers,
+                      clin_vars = clin_vars,
+                      anno_clust = anno_clust, 
+                      mark_clust = mark_clust){
   
   tmp <- summary_clinical_merge %>% select(any_of(markers),all_of(clin_vars)) %>%
     group_by(.[[clin_vars]]) %>% arrange(.[[clin_vars]]) %>% 
+    mutate_at(clin_vars,as.factor) %>%
     data.frame(check.names = FALSE)
   cells <- tmp %>% select(any_of(markers))
   cells <- as.matrix(cells)
@@ -19,13 +22,17 @@ pheat_map <- function(summary_clinical_merge, markers = markers,
   annotation <- tmp %>% select(all_of(clin_vars)) %>%
     data.frame(check.names = FALSE)
   rownames(annotation) = 1:nrow(cells)
+  if(anno_clust==F){
+    cutree_cols = length(levels(tmp[[clin_vars]]))
+  }
   pheatmap::pheatmap(t(cells), 
                      show_rownames = T, 
                      cluster_rows = mark_clust, 
                      cluster_cols = !anno_clust, 
                      show_colnames = F, 
                      treeheight_col = 0, 
-                     treeheight_row = 0, 
-                     annotation_col = annotation)
+                     treeheight_row = 5, 
+                     annotation_col = annotation,
+                     cutree_cols = cutree_cols)
   
 }

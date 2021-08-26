@@ -20,6 +20,8 @@ library(janitor)
 library(shinyWidgets)
 library(colourvalues)
 library(VGAM)
+library(kableExtra)
+library(GLMMadaptive)
 
 custom_blue <- {shinyDashboardThemeDIY(
   ### general

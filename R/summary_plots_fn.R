@@ -4,7 +4,7 @@
 # @return summ_plots a list with three ggplot object containing a boxplot, a violin plot, a scatter plot, and a histogram with the clinical variable as a factor.
 
 summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold){
-  box_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+  box_p <- ggplot(datatable, aes(x=as.factor(get(clinvar)), y=get(cellvar), fill=as.factor(get(clinvar)))) + 
     geom_boxplot() +
     xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
     labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
@@ -13,7 +13,7 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
                linetype = "twodash", color = 'red') + 
     theme(legend.position = 'none')
   
-  violin_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), fill=get(clinvar))) + 
+  violin_p <- ggplot(datatable, aes(x=as.factor(get(clinvar)), y=get(cellvar), fill=as.factor(get(clinvar)))) + 
     geom_violin() +
     xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
     labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
@@ -22,7 +22,7 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
                linetype = "twodash", color = 'red') + 
     theme(legend.position = 'none')
   
-  hist_p <- ggplot(datatable, aes(x=get(cellvar), color=get(clinvar))) + 
+  hist_p <- ggplot(datatable, aes(x=get(cellvar), color=as.factor(get(clinvar)))) + 
     geom_histogram(position='stack', fill = 'white') + facet_wrap(get(clinvar)~., nrow = 1) +   
     xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
     labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
@@ -34,21 +34,19 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
     scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
       geom_point() +
       xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) + 
       viridis::scale_color_viridis(option = colorscheme, discrete=TRUE)
-  }
-  else{
+  } else{
     scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
       geom_point() +
       xlab(str_to_title(clinvar)) + ylab(gsub("_", " ", str_to_title(cellvar))) +
-      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) +
+      labs(color=str_to_title(clinvar)) + theme_classic(base_size = 20) + 
       viridis::scale_color_viridis(option = colorscheme, discrete=FALSE)    
   }
   
   summ_plots <- list(box_p, violin_p, hist_p, scatter_p)
   
   return(summ_plots)
-  
 }
 
 

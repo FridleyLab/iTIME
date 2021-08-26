@@ -8,6 +8,11 @@
 #
 # add for testing
 
+#
+
+#Melanoma was sox10 in the study for tumor stroma
+#nicks plotly sort
+
 ui = dashboardPage(
     dashboardHeader(title = "iTIME"),
     dashboardSidebar(
@@ -16,7 +21,7 @@ ui = dashboardPage(
             menuItem("Univariate Summary", tabName = 'univariate', icon = icon('angle-right')),
             menuItem("Multivariate Summary", tabName = 'multivariate', icon = icon('angle-double-right')),
             menuItem("Spatial", tabName = 'spatial', icon = icon('braille')),
-            menuItem("Getting Started", tabName = 'help', icon = icon('glasses')),
+            menuItem("About", tabName = 'about', icon = icon('glasses')),
             tags$br(),
             fluidRow(column(12, align="center",
                             tags$br(),
@@ -33,39 +38,46 @@ ui = dashboardPage(
         custom_blue,
         tabItems(
             tabItem(tabName = 'import',
-                    h1("Import Data", align="center"),
+                    h1("iTIME", align="center"),
                     fluidRow(
                         box(width = 12, status = "primary",
                             fluidRow(
-                                column(width = 6,
+                                column(width = 8,
+                                       uiOutput("getting_started"),
+                                       ),
+                                column(width = 4,
+                                       fluidRow(
+                                           column(
+                                               width = 12,
+                                               div(style="float:right", actionButton("exampleData", "Load Example Data"))
+                                           )
+                                       ),
                                        fileInput("summaryData", "Choose a Summary File",
                                                  multiple = FALSE,
                                                  accept = c("csv",
                                                             "HALO summary data file",
                                                             c(".csv"))),
                                        uiOutput("choose_summary_merge"),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('summary_preview'))),
-                                column(width = 6,
+                                       #div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('summary_preview')),
                                        fileInput("clinicalData", "Choose a Clinical Data File",
                                                  multiple = FALSE,
                                                  accept = c("csv",
                                                             "HALO summary data file",
                                                             c(".csv"))),
                                        uiOutput("choose_clinical_merge"),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('clinical_preview')))),
-                            fluidRow(
-                                column(width = 6,# h2("Choose a Spatial Data File", style = "font-size:12pt;font-weight:bold"),
+                                       #div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('clinical_preview')),
                                        fileInput("spatialData", "Choose a Spatial Data File",
                                                  multiple = FALSE,
                                                  accept = c("csv",
                                                             "HALO summary data file",
                                                             c(".csv"))),
-                                       div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('spatial_preview'))),
+                                       #div(style = 'overflow-x: scroll; overflow-y: scroll; height:200px', tableOutput('spatial_preview'))
+                                       ),
+                                ),
+                            fluidRow(
+                                column(width = 6),
                                 column(width = 6, h2("", style = "font-size:12pt;font-weight:bold;margin-bottom:1.55em"),
-                                       actionButton(
-                                           inputId = "exampleData",
-                                           label = "Load Example Data"
-                                           )
+                                       
                                        ),style = "height:118px"
                                 ),
                             ),
@@ -99,8 +111,11 @@ ui = dashboardPage(
                                                         "Plasma" = "plasma", 
                                                         "Inferno" = "inferno"),
                                             selected = "viridis"),
-                                awesomeCheckbox("sqrt_transform", "Square Root Transformation",
-                                              value = FALSE)
+                                selectInput("uni_transformation", "Select Transformation",
+                                            choices = c("None" = "none",
+                                                        "Square Root" = "sqrt_transform",
+                                                        "Log 2 Tranformation (0.0001)" = "log2_transform",
+                                                        "Logit Tranformation (0.0001)" = "logit_transform"))
                                 ),
                             
                             column(width = 9,
@@ -122,31 +137,49 @@ ui = dashboardPage(
                         ),
                     
                     fluidRow(
-                        box(width = 12, status = 'primary', title = 'Modeling',
-                            column(width = 4,
-                                   column(width = 9, h2("Modeling Variables",align="center", style = "font-size:14pt"),
-                                   uiOutput("choose_total_cells"),
-                                   uiOutput("modeling_reference"),
-                                   selectInput("selectedModel", "Select Desired Model",
-                                               choices = c("Poisson" = "p", 
-                                                           "Negative Binomial" = "nb", 
-                                                           "Zero Inflated Binomial" = "zib", 
-                                                           "Binomial" = "b", 
-                                                           "Beta Binomial" = "bb", 
-                                                           "Zero Inflated Poisson" = "zip"),
-                                               selected = "bb")),
-                                   column(width = 12, align = "center", h2("Model Fit",align="center", style = "font-size:14pt"),
-                                          div(style = 'overflow-x: scroll', tableOutput('model_stats')))
+                        box(width = 12, status = 'primary', title = textOutput("selectedModelName"),
+                            column(width = 3,
+                                   column(width = 9, 
+                                          h2("Modeling Variables",align="center", style = "font-size:14pt"),
+                                          uiOutput("choose_total_cells"),
+                                          uiOutput("modeling_reference"),
+                                          # selectInput("selectedModel", "Select Desired Model",
+                                          #             choices = c("Poisson",
+                                          #                         "Negative Binomial",
+                                          #                         "Zero Inflated Binomial",
+                                          #                         "Binomial",
+                                          #                         "Beta Binomial",
+                                          #                         "Zero Inflated Poisson"),
+                                          #             selected = "Beta Binomial")
+                                          htmlOutput("modelingDescription"))
                                    ),
-                            column(width = 5,
-                                   h2("Binomial Family Plots", align="center", style = "font-size:14pt"), status = "primary",
-                                plotOutput("cdfplot"),
-                                downloadButton('download_cdfplot', 'Download Plot')
+                            column(width = 8,
+                                   column(width = 12, h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), 
+                                          status = "primary",
+                                          plotOutput("cdfplot"),
+                                          downloadButton('download_cdfplot', 'Download Plot')),
+                                   column(width = 12, align = "center", h2("Beta Binomial Model Statistics",align="center", style = "font-size:14pt"),
+                                          div(style = 'overflow-x: scroll', tableOutput('model_stats')))
                                 ),
-                            column(width = 3, align = "center",
-                                   h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
-                                   div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
+                            # column(width = 4, align = "center",
+                            #        h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
+                            #        h2("Lower indicates a better model fit...",align="center", style = "font-size:10pt"),
+                            #        div(style = 'overflow-x: scroll', tableOutput('aic_table')))#height:120px; ; overflow-y: scroll
                         )
+                    ),
+                    fluidRow(
+                        box(width = 12, status = "primary",
+                            downloadButton(
+                                outputId = "univariate_report",
+                                label = "Download Univariate Report"
+                            ),
+                            checkboxInput(
+                                "printFunctions", 
+                                "Print Functions in Report?",
+                                value=F
+                            )
+                        )
+                        
                     )
             ),
             tabItem(tabName='multivariate',
@@ -171,7 +204,7 @@ ui = dashboardPage(
                                           plotOutput("heatmap", width="100%"),#height = 510
                                           downloadButton('download_heatmap', "Download Heatmap"),
                                           ),
-                                   column(width = 6, h2("Pricipal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
+                                   column(width = 6, h2("Principal Component Analysis (PCA)", align="center", style = "font-size:14pt"),
                                           plotOutput("pca", width="100%"),
                                           downloadButton("download_pca", "Download PCA Plot", style = "margin-bottom:25px")
                                           )
@@ -190,15 +223,16 @@ ui = dashboardPage(
                                )
                         ),
                     box(width = 12, status = "primary",
-                        column(width = 4, h2("Ripley's K Plot Selections", style = "font-size:14pt"),
+                        column(width = 4, h2("Spatial  Plot Selections", style = "font-size:14pt"),
                                uiOutput("choose_ripley")
                                ,selectInput("ripleysEstimator", "Select an Estimator",
                                             choices = c("Ripley's K" = "K",
                                                         "Besag's L" = "L",
-                                                        "Marcon's M" = "M"),
+                                                        "Marcon's M" = "M",
+                                                        "Nearest Neighbor G" = "G"),
                                             selected = "K")
                                ),
-                        column(width = 8, h2("Ripley's K Plot", align="center", style = "font-size:14pt"),
+                        column(width = 8, h2("Spatial Plot", align="center", style = "font-size:14pt"),
                                plotOutput("ripleysPlot", height = 350)
                                )
                         ),
@@ -206,11 +240,11 @@ ui = dashboardPage(
                          In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
                          </footer>')
                     ),
-            tabItem(tabName = 'help',
-                    h1("Getting Started", align="center"),
+            tabItem(tabName = 'about',
+                    h1("About iTIME", align="center"),
                     fluidRow(
                         box(width = 9, status = "primary",
-                            uiOutput('gettingstarted'),
+                            uiOutput('aboutitime'),
                         ),
                         
                         box(title = "Development Team",

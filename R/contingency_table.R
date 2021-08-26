@@ -6,7 +6,6 @@ contingency_table <- function(summary_clinical_merge, markers = markers,
                               clin_vars = clin_vars, percent_threshold = percent_threshold){
   #Maybe provide an error for multiple columns
   cells <- summary_clinical_merge %>% select(any_of(paste(markers)))
-  assign("percent_threshold", percent_threshold, envir = .GlobalEnv)
 
   above <- function(x, percent_threshold){ifelse(x > percent_threshold,
                                                  paste0('Greater than ', percent_threshold, '%'),
