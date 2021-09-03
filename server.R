@@ -158,6 +158,7 @@ shinyServer(function(input, output) {
             thres = log10(tmp/(1-tmp))
         }
         
+        
         plots = summary_plots_fn(data_table, clinvar = input$picked_clinical,
                                  cellvar = cellvar, colorscheme <- input$summaryPlotColors, thres)
         
@@ -187,7 +188,6 @@ shinyServer(function(input, output) {
         validate(need(input$picked_marker !="", "Please wait while things finish loading....."))
         
         df = freq_table_by_marker(summary_data_merged(), markers = input$picked_marker, clinical = input$picked_clinical)
-        
         return(df)
     })
     
@@ -312,18 +312,16 @@ shinyServer(function(input, output) {
         validate(need(ncol(chosen_model_stats()) > 0, "Please wait while the model is fit....."))
         model_statistics = chosen_model_stats()
         coefficient_of_interest = model_statistics[2,]
-        #assign("marker", input$picked_marker, envir=.GlobalEnv)
-        #marker = substr(input$picked_marker, 9, nchar(input$picked_marker)-1)
         marker = substr(input$picked_marker, 9, nchar(input$picked_marker)-15)
         
         paste("The predictor of interest, <b>",
           as.character(input$picked_clinical),
           "</b>, odds ratio on abundance of the immune marker of interest, <b>", marker, "</b> positive cell counts, is <b>",
           round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)],
-          meaning that for <b>", input$picked_modeling_reference, "</b> and <b>", coefficient_of_interest$Terms,
-          "</b> with the same number of <b>", input$picked_total_cells, "</b>, a cell from <b>",
-          coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", marker,
-          "</b> positive. The p-value for the effect of the predictor of interest <b>", as.character(input$picked_clinical), "</b> on the abundance of <b>", 
+          meaning that for a cell from <b>",
+          coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", 
+          marker, "</b> positive than a cell from <b>", input$picked_modeling_reference,
+          "</b>. The p-value for the effect of the predictor of interest <b>", as.character(input$picked_clinical), "</b> on the abundance of <b>", 
           marker, "</b> positive cells is <b>", round(as.numeric(coefficient_of_interest[,ncol(coefficient_of_interest)]), digits = 4),
           "</b>. A small p-value (less than 0.05, for example) indicates the association is unlikely to occur by chance and indicates 
           a significant association of the predictor <b>", as.character(input$picked_clinical) ,"</b> on immune abundance for <b>",
