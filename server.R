@@ -314,19 +314,26 @@ shinyServer(function(input, output) {
         coefficient_of_interest = model_statistics[2,]
         marker = substr(input$picked_marker, 9, nchar(input$picked_marker)-15)
         
-        paste("The predictor of interest, <b>",
-          as.character(input$picked_clinical),
-          "</b>, odds ratio on abundance of the immune marker of interest, <b>", marker, "</b> positive cell counts, is <b>",
-          round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)],
-          meaning that for a cell from <b>",
-          coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", 
-          marker, "</b> positive than a cell from <b>", input$picked_modeling_reference,
-          "</b>. The p-value for the effect of the predictor of interest <b>", as.character(input$picked_clinical), "</b> on the abundance of <b>", 
-          marker, "</b> positive cells is <b>", round(as.numeric(coefficient_of_interest[,ncol(coefficient_of_interest)]), digits = 4),
-          "</b>. A small p-value (less than 0.05, for example) indicates the association is unlikely to occur by chance and indicates 
-          a significant association of the predictor <b>", as.character(input$picked_clinical) ,"</b> on immune abundance for <b>",
-          marker, "</b>.",
-          sep="")
+        if(any(table(summary_data_merged()[[input$clinical_merge]])>1)){
+            repeated_measure = paste("Merge variable <b>",input$clinical_merge,"</b> has repeated measures.<br>", sep="")
+        }else{
+            repeated_measure = paste("Merge variable <b>",input$clinical_merge,"</b> does not have repeated measures.<br>", sep="")
+        }
+        
+        paste(repeated_measure,
+              "The predictor of interest, <b>",
+              as.character(input$picked_clinical),
+              "</b>, odds ratio on abundance of the immune marker of interest, <b>", marker, "</b> positive cell counts, is <b>",
+              round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)],
+              meaning that for a cell from <b>",
+              coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", 
+              marker, "</b> positive than a cell from <b>", input$picked_modeling_reference,
+              "</b>. The p-value for the effect of the predictor of interest <b>", as.character(input$picked_clinical), "</b> on the abundance of <b>", 
+              marker, "</b> positive cells is <b>", round(as.numeric(coefficient_of_interest[,ncol(coefficient_of_interest)]), digits = 4),
+              "</b>. A small p-value (less than 0.05, for example) indicates the association is unlikely to occur by chance and indicates 
+              a significant association of the predictor <b>", as.character(input$picked_clinical) ,"</b> on immune abundance for <b>",
+              marker, "</b>.",
+              sep="")
     })
     
     output$modelingDescription <- renderText({
@@ -390,7 +397,7 @@ shinyServer(function(input, output) {
     })
     
     heatmap_plot = reactive({
-         validate(need(input$heatmap_selection !="", "Please wait while things finish loading....."),
+         validate(need(length(input$heatmap_selection) > 1, "Please select 2 or more markers....."),
                   need(ncol(summary_data_merged()) > 1, "wait for magic"))
         
         if(input$heatmap_transform == "none"){
@@ -424,14 +431,21 @@ shinyServer(function(input, output) {
     
     pca_plot = reactive({
         validate(need(ncol(summary_data_merged()) > 0, "Please upload Summary and Clinical files....."),
-                 need(input$heatmap_selection !="", "Please select a markers to use....."),
+                 need(length(input$heatmap_selection) > 1, "Please select 2 or more markers....."),
                  need(input$picked_clinical_factor !="", "Please select a clinical variable....."))
         
         if(is.null(summary_data_merged())){
             return()
         }
         
-        return(pca_plot_function(summary_clinical_merged = summary_data_merged(), markers = input$heatmap_selection, clin_vars = input$picked_clinical_factor))
+        if(input$heatmap_transform == "none"){
+            pca_data = summary_data_merged()
+        }else if(input$heatmap_transform == "square_root"){
+            pca_data = summary_data_merged()
+            pca_data[,input$heatmap_selection] = sqrt(pca_data[,input$heatmap_selection])
+        }
+        
+        return(pca_plot_function(summary_clinical_merged = pca_data, markers = input$heatmap_selection, clin_vars = input$picked_clinical_factor))
         
         
     })
@@ -507,14 +521,15 @@ shinyServer(function(input, output) {
     })
     
     ripley_data = reactive({
-        validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."))
+        validate(need(input$ripleys_selection !="", "Please wait while calculations are running....."),
+                 need(sum(spatial_data()[[input$ripleys_selection]]) > 5, "Please select a marker with more than 5 positive cells....."))
         #print(input$ripleysEstimator %in% c("M", "K", "L"))
         withProgress(message = "Calculating", value = 0,{
-            incProgress(0.33, detail = "Ripley's K")
+            incProgress(0.33, detail = "Ripley's K.....")
             ripley = Ripley(spatial_data(), input$ripleys_selection)
-            incProgress(0.33, detail = "Nearest Neighbor")
+            incProgress(0.33, detail = "Nearest Neighbor.....")
             g = NN_G(spatial_data(), input$ripleys_selection)
-            incProgress(0.33, detail = "Completed")
+            incProgress(0.33, detail = "Completed!")
             return(list(ripley, g))
         })
     })
