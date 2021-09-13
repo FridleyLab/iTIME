@@ -22,6 +22,8 @@ library(colourvalues)
 library(VGAM)
 library(kableExtra)
 library(GLMMadaptive)
+library(knitr) 
+library(markdown)
 
 custom_blue <- {shinyDashboardThemeDIY(
   ### general
