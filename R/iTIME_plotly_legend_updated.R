@@ -2,7 +2,8 @@
 #editing plotting format
 spatial_plotly = function(data = data, markers = NULL){
   data$x <- (data$XMin + data$XMax) / 2
-  data$y <- (data$YMin + data$YMax) / 2
+  data$y <- (data$YMin + data$YMax) / 2 * -1
+  classifier = grep("classifier", colnames(data), ignore.case = T, value = T)
   if(is.null(markers)){
     data$marks = NA
   } else {
@@ -48,11 +49,11 @@ spatial_plotly = function(data = data, markers = NULL){
     add_trace(data = data[data$marks == 'Negative',], x = ~x, y = ~y, 
               type="scatter",
               mode="markers",
-              symbol = ~Classifier.Label,
+              symbol = ~get(classifier),
               symbols = c('3', 'circle-open'),
               legendgroup="Classifier Label",
               marker=list(size=3,
-                          color = 'black'),
+                          color = 'grey'),
               hovertemplate = ~text) %>%
     add_trace(data = data[data$marks != 'Negative',], x = ~x, y = ~y, 
               type="scatter",

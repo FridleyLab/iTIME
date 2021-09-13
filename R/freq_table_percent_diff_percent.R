@@ -33,9 +33,10 @@ freq_table_by_marker <-
              `> 2%` = .[[paste( markers)]]>2,
              `> 3%` = .[[paste( markers)]]>3,
              `> 4%` = .[[paste( markers)]]>4,
-             `> 5%` = .[[paste( markers)]]>5) %>% 
+             `> 5%` = .[[paste( markers)]]>5,
+             `> 10%` = .[[paste(markers)]]>10) %>% 
       group_by(.[[paste(clinical)]]) %>%
-      select(`> 1%`,`> 2%`,`> 3%`,`> 4%`,`> 5%`) %>%
+      select(`> 1%`,`> 2%`,`> 3%`,`> 4%`,`> 5%`, `> 10%`) %>%
       summarize_all( ~ sum(.))
     colnames(table)[1] = clinical
     

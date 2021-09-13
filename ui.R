@@ -103,7 +103,8 @@ ui = dashboardPage(
                                             choices = c("Boxplot" = 1,
                                                         "Violin Plot" = 2, 
                                                         "Histogram" = 3,
-                                                        "Scatter Plot" = 4),
+                                                        "Scatter Plot" = 4,
+                                                        "Stacked Bar Plot" = 5),
                                             selected = 1),
                                 selectInput("summaryPlotColors", "Select Color Scheme",
                                             choices = c("Magma" = "magma", 
@@ -113,9 +114,12 @@ ui = dashboardPage(
                                             selected = "viridis"),
                                 selectInput("uni_transformation", "Select Transformation",
                                             choices = c("None" = "none",
-                                                        "Square Root" = "sqrt_transform",
-                                                        "Log 2 Tranformation (0.0001)" = "log2_transform",
-                                                        "Logit Tranformation (0.0001)" = "logit_transform"))
+                                                        "Square Root" = "sqrt_transform"
+                                                        ,
+                                                        #"Log 2 Tranformation (0.0001)" = "log2_transform",
+                                                        "Logit Tranformation (0.0001)" = "logit_transform"
+                                                        )
+                                            )
                                 ),
                             
                             column(width = 9,
@@ -138,11 +142,14 @@ ui = dashboardPage(
                     
                     fluidRow(
                         box(width = 12, status = 'primary', title = textOutput("selectedModelName"),
-                            column(width = 3,
-                                   column(width = 9, 
+                            column(width = 4,
+                                   column(width = 12, 
                                           h2("Modeling Variables",align="center", style = "font-size:14pt"),
                                           uiOutput("choose_total_cells"),
-                                          uiOutput("modeling_reference"),
+                                          uiOutput("modeling_reference")),
+                                   column(width = 12, align = "center", h2("Beta Binomial Model Statistics",align="center", style = "font-size:14pt"),
+                                          div(style = 'overflow-x: scroll', tableOutput('model_stats'))),
+                                   column(width = 12,
                                           # selectInput("selectedModel", "Select Desired Model",
                                           #             choices = c("Poisson",
                                           #                         "Negative Binomial",
@@ -157,9 +164,7 @@ ui = dashboardPage(
                                    column(width = 12, h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), 
                                           status = "primary",
                                           plotOutput("cdfplot"),
-                                          downloadButton('download_cdfplot', 'Download Plot')),
-                                   column(width = 12, align = "center", h2("Beta Binomial Model Statistics",align="center", style = "font-size:14pt"),
-                                          div(style = 'overflow-x: scroll', tableOutput('model_stats')))
+                                          downloadButton('download_cdfplot', 'Download Plot'))
                                 ),
                             # column(width = 4, align = "center",
                             #        h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
@@ -219,7 +224,8 @@ ui = dashboardPage(
                         column(width = 4, h2("Spatial Plot Selections", style = "font-size:14pt"),
                                uiOutput("choosePlotlyMarkers")),
                         column(width = 8, h2("Spatial Plot", align="center",style = "font-size:14pt"),
-                               plotlyOutput("spatial_plotly", width = "85%", height = "575")
+                               plotlyOutput("spatial_plotly", width = "85%", height = "575"),
+                               #downloadButton('download_spatialPlotly', 'Download Plot')
                                )
                         ),
                     box(width = 12, status = "primary",
@@ -233,11 +239,12 @@ ui = dashboardPage(
                                             selected = "K")
                                ),
                         column(width = 8, h2("Spatial Plot", align="center", style = "font-size:14pt"),
-                               plotOutput("ripleysPlot", height = 350)
+                               plotOutput("ripleysPlot", height = 350),
+                               downloadButton('download_ripley', 'Download Plot')
                                )
                         ),
                         HTML('<footer>
-                         In cases of large holes or uneven cell distribution, the estimates of complete spatial randomness (CSR) may be inapporpriate measure.
+                         In cases of large holes or uneven cell distributions, the estimates of complete spatial randomness (CSR) may be an inaccurate measure.
                          </footer>')
                     ),
             tabItem(tabName = 'about',
@@ -252,8 +259,8 @@ ui = dashboardPage(
                             
                             p("- Brooke Fridley"),
                             p("- Alex Soupir"),
-                            p("- Jordan Creed"),
                             p("- Chris Wilson"),
+                            p("- Jordan Creed"),
                             p("- Oscar Ospina"),
                             p("- Gregory Kimmel"),
                             p("- Joseph Markowitz"),

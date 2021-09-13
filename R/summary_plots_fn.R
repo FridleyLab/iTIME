@@ -22,13 +22,23 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
                linetype = "twodash", color = 'red') + 
     theme(legend.position = 'none')
   
-  hist_p <- ggplot(datatable, aes(x=get(cellvar), color=as.factor(get(clinvar)))) + 
-    geom_histogram(position='stack', fill = 'white') + facet_wrap(get(clinvar)~., nrow = 1) +   
+  hist_p <- ggplot(datatable, aes(x=get(cellvar), fill=as.factor(get(clinvar)))) + 
+    geom_histogram(position='stack', color="white") + facet_wrap(get(clinvar)~., nrow = 1) +   
     xlab(str_to_title(gsub("_", " ", cellvar))) + ylab("Count") +
     labs(fill=str_to_title(clinvar)) + theme_classic(base_size = 20) +
-    viridis::scale_color_viridis(option = colorscheme, discrete = TRUE) + 
+    viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE) + 
     theme(legend.position = 'none') + 
     geom_vline(xintercept = as.numeric(threshold), size = 1.25, linetype = "twodash", color = 'red')
+  
+  stacked_data = freq_table_by_marker(summary_clinical_merge = datatable,
+                                      clinical = clinvar,
+                                      markers = cellvar) %>%
+    melt(id=clinvar)
+  
+  stacked_bar = stacked_data %>% ggplot(aes(fill=variable, y=value, x=as.factor(get(clinvar)))) + 
+    geom_bar(position="fill", stat="identity", color="white") + ylab(gsub("_", " ", str_to_title(cellvar))) + 
+    labs(fill='Threshold')  + theme_classic(base_size = 20) + xlab(clinvar) +
+    viridis::scale_fill_viridis(option = colorscheme, discrete = TRUE) 
   
   if(is.character(datatable[[clinvar]])){
     scatter_p <- ggplot(datatable, aes(x=get(clinvar), y=get(cellvar), color=get(clinvar))) +
@@ -44,7 +54,7 @@ summary_plots_fn <- function(datatable, clinvar, cellvar, colorscheme, threshold
       viridis::scale_color_viridis(option = colorscheme, discrete=FALSE)    
   }
   
-  summ_plots <- list(box_p, violin_p, hist_p, scatter_p)
+  summ_plots <- list(box_p, violin_p, hist_p, scatter_p, stacked_bar)
   
   return(summ_plots)
 }
