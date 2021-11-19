@@ -147,6 +147,8 @@ ui = dashboardPage(
                                           h2("Modeling Variables",align="center", style = "font-size:14pt"),
                                           uiOutput("choose_total_cells"),
                                           uiOutput("modeling_reference")),
+                                   column(width = 12,
+                                          uiOutput("choose_uni_covariates")),
                                    column(width = 12, align = "center", h2("Beta Binomial Model Statistics",align="center", style = "font-size:14pt"),
                                           div(style = 'overflow-x: scroll', tableOutput('model_stats'))),
                                    column(width = 12,

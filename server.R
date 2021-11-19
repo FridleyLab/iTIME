@@ -4,6 +4,9 @@
 # Along with clinical data, brief summary statistics are presented.
 #
 # Dev team in ui.R
+#clinical_data = fread("example_data/deidentified_clinical.csv", check.names = FALSE, data.table = FALSE)
+#summary_data = fread("example_data/deidentified_summary.csv", check.names = FALSE, data.table = FALSE)
+#summary_data_merged = merge(clinical_data, summary_data, by = "deidentified_id")
 
 shinyServer(function(input, output) {
     
@@ -133,6 +136,27 @@ shinyServer(function(input, output) {
         
     })
     
+    output$choose_uni_covariates = renderUI({
+      validate(need(ncol(clinical_data()) > 0, "Waiting on Clinical data....."))
+      summary_clinical_names = colnames(summary_data_merged())[(colnames(summary_data_merged()) %in% colnames(clinical_data()))]
+      t = sapply(summary_data_merged() %>% select(all_of(summary_clinical_names)), function(x){return(length(unique(x)))})
+      
+      good = summary_clinical_names[t>1]
+      good = good[!good %in% input$picked_clinical]
+      
+      pickerInput(
+        inputId = "uni_covariates_selected", 
+        label = "Choose Model Covariates", 
+        choices = good, 
+        options = list(
+          `actions-box` = TRUE, 
+          size = 10,
+          `selected-text-format` = "count > 3"
+        ), 
+        multiple = TRUE
+      )
+    })
+    
     univar_plots = reactive({
          validate(need(input$picked_marker !="", "Please wait while things finish loading....."),
                  need(input$picked_clinical !="", "Waiting to pick a clinical variable"),
@@ -245,10 +269,11 @@ shinyServer(function(input, output) {
         marker = input$picked_marker
         marker = substr(marker, 9, nchar(marker))
         marker = c(marker, gsub("\\ Positive\\ ", "\\ ", marker))
+        covars = input$uni_covariates_selected
         suppressWarnings({
         df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = marker,
                                     Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
-                                    choose_clinical_merge = input$clinical_merge) #assuming IDs are merging variable (patientID, subjectID, etc)
+                                    choose_clinical_merge = input$clinical_merge, covars = covars) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
         
     return(df)
@@ -282,9 +307,10 @@ shinyServer(function(input, output) {
                                  df, check.names = F)
                 df1 = df1[-2,]
             }
+            levs = summary_data_merged()[[input$picked_clinical]] %>% unique() %>% length()-1
             incProgress(0.33, detail = "Completed")
-            
-            return(df1)
+            df = df1[(nrow(df1)-levs+1):nrow(df1),]
+            return(df)
         })
     })
     

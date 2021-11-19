@@ -28,10 +28,10 @@
 
 
 models = function(summary_data_merged, markers,
-                  Total, clin_vars, reference,digits=4){
+                  Total, clin_vars, reference, covars=NULL, digits=4){
   out = list()
   levels = unique(summary_data_merged[[clin_vars]])
-  tmp = summary_data_merged %>% select(Total, markers, clin_vars) %>%
+  tmp = summary_data_merged %>% select(Total, markers, clin_vars, covars) %>%
     mutate(clin_vars = factor(.[[clin_vars]], 
                                    levels = c(reference,
                                               levels[levels != reference]
@@ -105,7 +105,8 @@ models = function(summary_data_merged, markers,
   #   AIC_zinegbinomial = round4(AIC(model_fit_zinegbinomial))
   # }
   #Fit Betabinomial model
-  model_fit_bb = try(VGAM::vglm(cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ tmp$clin_vars, 
+  fo = as.formula(paste("cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~",paste(c(covars, clin_vars), collapse =" + ")))
+  model_fit_bb = try(VGAM::vglm(fo, 
                              betabinomial(zero = 2), data = tmp), silent = TRUE)
   if(class(model_fit_bb) == "try-error"){
     model_fit_bb = NULL
@@ -137,12 +138,12 @@ models = function(summary_data_merged, markers,
 
 #Repeated measures
 models_repeated_measures = function(summary_data_merged, markers,
-                  Total, clin_vars, reference, choose_clinical_merge, digits = 4){
+                  Total, clin_vars, reference, choose_clinical_merge, covars = NULL, digits = 4){
   out = list()
   round4 = function(x){return(round(x,digits=digits))}
   levels = unique(summary_data_merged[[clin_vars]])
   tmp = summary_data_merged %>% select(choose_clinical_merge, 
-                                       Total, markers, clin_vars) %>%
+                                       Total, markers, clin_vars, covars) %>%
     mutate(clin_vars = factor(.[[clin_vars]], 
                               levels = c(reference,
                                          levels[levels != reference]
@@ -215,10 +216,10 @@ models_repeated_measures = function(summary_data_merged, markers,
   # }
   ########
   #Fit Betabinomial model
+  fo = as.formula(paste("cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~",paste(c(covars, clin_vars), collapse =" + ")))
   model_fit_bb = try(GLMMadaptive::mixed_model(
-    fixed = cbind(tmp[[markers]], tmp[[Total]] - tmp[[markers]]) ~ 
-      tmp$clin_vars, random = ~ 1|id, 
-    family = beta.binomial(), data = tmp), silent = TRUE)
+    fixed = fo, random = ~ 1|id, 
+    family = beta.binomial(), data = tmp, control = list(max_coef_value = 5000, iter_EM = 0)), silent = TRUE)
   if(class(model_fit_bb) != 'try-error'){
     aov_negbinom = NULL
     AIC_negbinom = NA
@@ -250,7 +251,7 @@ models_repeated_measures = function(summary_data_merged, markers,
 #This is the function that needs to included in the app script
 model_checked_repeated = function(summary_data_merged,markers,
                                   Total, clin_vars, reference,
-                                  choose_clinical_merge, digits=4){
+                                  choose_clinical_merge, covars=NULL, digits=4){
   round4 = function(x){return(round(x,digits=digits))}
   markers = markers[markers %in% colnames(summary_data_merged)]
   #Check whether or not any subject has multiple samples
@@ -259,10 +260,10 @@ model_checked_repeated = function(summary_data_merged,markers,
     return(
       models_repeated_measures(summary_data_merged, markers,
                                Total, clin_vars, reference, 
-                               choose_clinical_merge, digits))
+                               choose_clinical_merge, covars, digits))
   }else{
     return(
-      models(summary_data_merged, markers,Total, clin_vars, reference, digits))
+      models(summary_data_merged, markers,Total, clin_vars, reference, covars, digits))
   }
   
 }
