@@ -309,7 +309,8 @@ shinyServer(function(input, output) {
             }
             levs = summary_data_merged()[[input$picked_clinical]] %>% unique() %>% length()-1
             incProgress(0.33, detail = "Completed")
-            df = df1[(nrow(df1)-levs+1):nrow(df1),]
+            df = df1[c(1,(nrow(df1)-levs+1):nrow(df1)),]
+            #assign("df", df, envir = .GlobalEnv)
             return(df)
         })
     })
