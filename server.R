@@ -108,6 +108,7 @@ shinyServer(function(input, output) {
         }
         
         df = merge(clinical_data(), summary_data(), by.x = input$clinical_merge, by.y = input$summary_merge)
+      assign("summary_data_merged", df, envir = .GlobalEnv)
         return(df)
     })
     
@@ -126,7 +127,7 @@ shinyServer(function(input, output) {
     output$choose_clinical = renderUI({
         validate(need(ncol(clinical_data()) > 0, "Loading Clinical Data....."),
                  need(ncol(summary_data_merged()) > 0, "Waiting on merging clinical and summary data....."))
-        summary_clinical_names = colnames(summary_data_merged())[(colnames(summary_data_merged()) %in% colnames(clinical_data()))]
+        summary_clinical_names = sort(colnames(summary_data_merged())[(colnames(summary_data_merged()) %in% colnames(clinical_data()))])
         t = sapply(summary_data_merged() %>% select(all_of(summary_clinical_names)), function(x){return(length(unique(x)))})
         good = t[t > 1 & t < 10]
         
@@ -254,7 +255,8 @@ shinyServer(function(input, output) {
     output$modeling_reference = renderUI({
         validate(need(ncol(summary_data_merged()) > 0, "Please wait while Summary and Clinical Data are merged....."),
                  need(input$picked_clinical !="", "Please select a clinical variable for comparison....."))
-        model_references = unique(summary_data_merged()[input$picked_clinical])
+        model_references = unique(summary_data_merged() %>% pull(!!input$picked_clinical)) %>% sort()
+        assign("model_references", model_references, envir = .GlobalEnv)
         selectInput("picked_modeling_reference", "Choose Clinical Reference",
                     choices = model_references,
                     selected = model_references[1])
@@ -270,8 +272,19 @@ shinyServer(function(input, output) {
         marker = substr(marker, 9, nchar(marker))
         marker = c(marker, gsub("\\ Positive\\ ", "\\ ", marker))
         covars = input$uni_covariates_selected
+        #assign("picked_modeling_reference", input$picked_modeling_reference, envir = .GlobalEnv)
+        dat = summary_data_merged() %>% mutate_at(.vars = input$picked_clinical,
+                                                  .funs = function(x){
+                                                    if(input$clinicalClass == "numeric"){
+                                                      return(as.numeric(x))
+                                                    } else {
+                                                      x = as.factor(x)
+                                                      x = relevel(x, ref = input$picked_modeling_reference)
+                                                      return(x)
+                                                    }
+                                                  })
         suppressWarnings({
-        df = model_checked_repeated(summary_data_merged = summary_data_merged(), markers = marker,
+        df = model_checked_repeated(summary_data_merged = dat, markers = marker,
                                     Total = input$picked_total_cells, clin_vars = input$picked_clinical, reference = input$picked_modeling_reference,
                                     choose_clinical_merge = input$clinical_merge, covars = covars) #assuming IDs are merging variable (patientID, subjectID, etc)
         })
@@ -293,25 +306,34 @@ shinyServer(function(input, output) {
         withProgress(message = "Modeling", value = 0,{
             incProgress(0.33, detail = "Fitting Beta-Binomial")
             models1 = model_list()
+            #assign("models1", models1, envir = .GlobalEnv)
             incProgress(0.33, detail = "Extracting Statistics")
             df = models1$models[["Beta Binomial"]]
             if(class(df)=="character"){
+              print("simple lm")
                 df1 = data.frame(df)
             } else if(class(df)=="MixMod"){
-                df1 = summary(df)$coef_table
-                df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df1)),
-                                 df1, check.names = F)
+              print("mixmod")
+              df1 = summary(df)$coef_table
+              #assign("df1", df1, envir = .GlobalEnv)
+              df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df1)),
+                               df1, check.names = F)
             }else{
                 df = df %>% summary() %>% coefficients()#input$selectedModel
                 df1 = data.frame(Terms = gsub("tmp\\$clin_vars", "", row.names(df)),
                                  df, check.names = F)
-                df1 = df1[-2,]
+                #df1 = df1[-2,]
             }
             levs = summary_data_merged()[[input$picked_clinical]] %>% unique() %>% length()-1
             incProgress(0.33, detail = "Completed")
-            df = df1[c(1,(nrow(df1)-levs+1):nrow(df1)),]
-            #assign("df", df, envir = .GlobalEnv)
-            return(df)
+            if(input$clinicalClass == "numeric"){
+              return(df1)
+            } else {
+              df = df1[c(1,(nrow(df1)-levs+1):nrow(df1)),]
+              #assign("df", df, envir = .GlobalEnv)
+              return(df)
+            }
+            
         })
     })
     
@@ -347,15 +369,31 @@ shinyServer(function(input, output) {
             repeated_measure = paste("Merge variable <b>",input$clinical_merge,"</b> does not have repeated measures.<br>", sep="")
         }
         
-        paste(repeated_measure,
-              "The predictor of interest, <b>",
-              as.character(input$picked_clinical),
-              "</b>, odds ratio on abundance of the immune marker of interest, <b>", marker, "</b> positive cell counts, is <b>",
-              round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)],
-              meaning that for a cell from <b>",
-              coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", 
-              marker, "</b> positive than a cell from <b>", input$picked_modeling_reference,
-              "</b>. The p-value for the effect of the predictor of interest <b>", as.character(input$picked_clinical), "</b> on the abundance of <b>", 
+        if(input$clinicalClass == "factor"){
+          interpret = paste0("The predictor of interest, <b>",
+                             as.character(input$picked_clinical),
+                             "</b>, odds ratio on abundance of the immune marker of interest, <b>", marker, "</b> positive cell counts, is <b>",
+                             round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)],
+                             meaning that a cell from <b>",
+                             coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", 
+                             marker, "</b> positive than a cell from <b>", paste0(as.character(input$picked_clinical),input$picked_modeling_reference),
+                             "</b>. ")
+        } else {
+          # interpret = paste0("The predictor of interest, <b>",
+          #                    as.character(input$picked_clinical),
+          #                    "</b>, odds ratio on abundance of the immune marker of interest, <b>", marker, "</b> positive cell counts, is <b>",
+          #                    round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "</b> [exp(<b>", paste(coefficient_of_interest$Terms)," Estimate</b>)],
+          #                    meaning that for a cell from <b>",
+          #                    coefficient_of_interest$Terms, "</b> is <b>", round(exp(as.numeric(coefficient_of_interest$Estimate)), digits = 4), "x</b> as likely to be <b>", 
+          #                    marker, "</b> positive for every increase of <b> 1 </b> in <b>", as.character(input$picked_clinical),
+          #                    "</b>. ")
+          interpret = paste0("For every increase in the predictor of interest, <b>",
+                             as.character(input$picked_clinical),
+                             "</b>, by one unit, <b>", coefficient_of_interest$Terms, "</b> has a change of <b>", 
+                             round(as.numeric(coefficient_of_interest$Estimate), digits = 4), "</b>. ")
+        }
+        paste(repeated_measure, interpret,
+              "The p-value for the effect of the predictor of interest <b>", as.character(input$picked_clinical), "</b> on the abundance of <b>", 
               marker, "</b> positive cells is <b>", round(as.numeric(coefficient_of_interest[,ncol(coefficient_of_interest)]), digits = 4),
               "</b>. A small p-value (less than 0.05, for example) indicates the association is unlikely to occur by chance and indicates 
               a significant association of the predictor <b>", as.character(input$picked_clinical) ,"</b> on immune abundance for <b>",

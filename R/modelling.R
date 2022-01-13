@@ -144,11 +144,12 @@ models_repeated_measures = function(summary_data_merged, markers,
   levels = unique(summary_data_merged[[clin_vars]])
   tmp = summary_data_merged %>% select(choose_clinical_merge, 
                                        Total, markers, clin_vars, covars) %>%
-    mutate(clin_vars = factor(.[[clin_vars]], 
-                              levels = c(reference,
-                                         levels[levels != reference]
-                              )),
-           id = factor(.[[choose_clinical_merge]]))
+    mutate(
+      # !!clin_vars := factor(.[[clin_vars]], 
+      #                         levels = c(reference,
+      #                                    levels[levels != reference]
+      #                         )),
+      id = factor(.[[choose_clinical_merge]]))
     
   
   # #Fit Poisson Model
