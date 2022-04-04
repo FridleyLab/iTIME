@@ -410,7 +410,7 @@ shinyServer(function(input, output) {
         content = function(file) {
             tempReport <- file.path(tempdir(), "volanoes_report.Rmd")
             file.copy("report_templates/univariate_report.Rmd", tempReport, overwrite = TRUE)
-            params <- list(include_functions = input$printFunctions,
+            params <- list(include_functions = F, #input$printFunctions
                            selected_marker = input$picked_marker,
                            contingency_threshold = input$choose_cont_thresh,
                            picked_clinical = input$picked_clinical,

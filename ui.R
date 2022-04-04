@@ -184,11 +184,14 @@ ui = dashboardPage(
                                 outputId = "univariate_report",
                                 label = "Download Univariate Report"
                             ),
-                            checkboxInput(
-                                "printFunctions", 
-                                "Print Functions in Report?",
-                                value=F
-                            )
+                            # checkboxInput(
+                            #     "printFunctions", 
+                            #     "Print Functions in Report?",
+                            #     value=F
+                            # ),
+                            HTML('<footer>
+                            For access to the code used to produce plots and analyses, please visit <a href = "https://github.com/FridleyLab/iTIME">Fridley Lab GitHub</a>.
+                            </footer>')
                         )
                         
                     )
