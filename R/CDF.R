@@ -15,29 +15,30 @@ CDF_plots = function(summary_data_merged = summary_data_merged, markers = marker
   cdfs = summary_data_merged %>%  select(grep('Total', colnames(.)), markers) %>% 
     pivot_longer(cols = 2:ncol(.), names_to = 'Marker', values_to = 'Count') %>%
     mutate(ecdf = ecdf(Count)(Count)) %>%
-    mutate(Poisson =  ppois(q = Count, 
-                            lambda = sample_stats$Avg_Count),
-           Binomial = pbinom(q = Count, 
-                             size = round(sample_stats$Avg_Total),
-                             prob = sample_stats$Avg_p,
-           ),
-           `ZI Poisson` =  pzipois(q = Count, 
-                                   lambda = sample_stats$Avg_Count,
-                                   pstr0 = sample_stats$prob0
-           ),
-           `ZI Binomial` = pzibinom(q = Count, 
+    mutate(
+      # Poisson =  ppois(q = Count, 
+      #                  lambda = sample_stats$Avg_Count),
+      # Binomial = pbinom(q = Count, 
+      #                   size = round(sample_stats$Avg_Total),
+      #                   prob = sample_stats$Avg_p,
+      #                   ),
+      # `ZI Poisson` =  pzipois(q = Count, 
+      #                         lambda = sample_stats$Avg_Count,
+      #                         pstr0 = sample_stats$prob0
+      #                         ),
+      # `ZI Binomial` = pzibinom(q = Count, 
+      #                          size = round(sample_stats$Avg_Total),
+      #                          prob = sample_stats$Avg_p,
+      #                          pstr0 = sample_stats$prob0
+      #                          ),
+      # `Negative Binomial` =  pnbinom(q = Count, 
+      #                                size = round(sample_stats$Avg_Count),
+      #                                prob = 1 - sample_stats$prob0
+      #                                ),
+      `Beta Binomial` =  pbetabinom(q = Count, 
                                     size = round(sample_stats$Avg_Total),
                                     prob = sample_stats$Avg_p,
-                                    pstr0 = sample_stats$prob0
-           ),
-           `Negative Binomial` =  pnbinom(q = Count, 
-                                          size = round(sample_stats$Avg_Count),
-                                          prob = 1 - sample_stats$prob0
-           ),
-           `Beta Binomial` =  pbetabinom(q = Count, 
-                                         size = round(sample_stats$Avg_Total),
-                                         prob = sample_stats$Avg_p,
-                                         rho = sample_stats$prob0)
+                                    rho = sample_stats$prob0)
            
     ) %>% 
     pivot_longer(col = 5:ncol(.), values_to = 'CDF', names_to = 'Distribution')
@@ -49,7 +50,7 @@ CDF_plots = function(summary_data_merged = summary_data_merged, markers = marker
   binomial_plot = cdfs %>% 
     ggplot(aes(x = Count, y = ecdf, color = 'Empirical')) + 
     geom_line(aes(color = 'Empirical'), color = 'black') + 
-    geom_line(aes(x = Count, y = CDF, color = Distribution, linetype = family)) + theme_bw() + 
+    geom_line(aes(x = Count, y = CDF, color = Distribution)) + theme_bw() + #, linetype = family
     theme(
       #axis.text.x = element_blank(),
        #   axis.ticks = element_blank(),
@@ -60,7 +61,7 @@ CDF_plots = function(summary_data_merged = summary_data_merged, markers = marker
           strip.text = element_text(size=16),
           legend.text = element_text(size = 16),
           legend.title = element_text(size = 16)) + 
-    labs(color = 'Distribution') + scale_linetype_manual(values = c("solid", "longdash"))
+    labs(color = 'Distribution') #+ scale_linetype_manual(values = c("solid", "longdash"))
 
   return(binomial_plot)
 }

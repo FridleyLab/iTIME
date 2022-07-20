@@ -253,7 +253,7 @@ ui = dashboardPage(
                                )
                         ),
                         HTML('<footer>
-                         In cases of large holes or uneven cell distributions, the estimates of complete spatial randomness (CSR) may be an inaccurate measure.
+                         In cases of large holes or uneven cell distributions, the theoretical estimate of complete spatial randomness (CSR) may be an inaccurate measure.
                          </footer>')
                     ),
             tabItem(tabName = 'about',
