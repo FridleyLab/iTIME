@@ -73,7 +73,7 @@ Ripley_plot = function(ripley_data = NULL, estimator){
     ylabel = "Ripley's K"
     perm2 = perm %>% pivot_longer(2:ncol(.), names_to = "type", values_to = "value")
     
-    new_dat = full_join(ripleys_list[[1]], ripleys_list[[3]]) %>% 
+    new_dat = full_join(ripley_data[[1]], ripley_data[[3]]) %>% 
       gather("type", "value", -r)
     
   } else if(estimator=="L"){
