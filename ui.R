@@ -242,8 +242,8 @@ ui = dashboardPage(
                                uiOutput("choose_ripley")
                                ,selectInput("ripleysEstimator", "Select an Estimator",
                                             choices = c("Ripley's K" = "K",
-                                                        "Besag's L" = "L",
-                                                        "Marcon's M" = "M",
+                                                       # "Besag's L" = "L",
+                                                        #"Marcon's M" = "M",
                                                         "Nearest Neighbor G" = "G"),
                                             selected = "K")
                                ),
