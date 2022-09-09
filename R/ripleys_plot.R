@@ -73,6 +73,9 @@ Ripley_plot = function(ripley_data = NULL, estimator){
     ylabel = "Ripley's K"
     perm2 = perm %>% pivot_longer(2:ncol(.), names_to = "type", values_to = "value")
     
+    new_dat = full_join(ripleys_list[[1]], ripleys_list[[3]]) %>% 
+      gather("type", "value", -r)
+    
   } else if(estimator=="L"){
     #est <- as.data.frame(Lest(po_pp)) %>% select(-border)
     #set.seed(333)
@@ -84,6 +87,26 @@ Ripley_plot = function(ripley_data = NULL, estimator){
     ylabel = expression(paste(H^"*","(r) = L(r) - r"))
     perm2 = perm %>% pivot_longer(2:ncol(.), names_to = "type", values_to = "value")
     perm2$value = sqrt(perm2$value / pi) - perm2$r
+    # p = full_join(ripleys_list[[1]], ripleys_list[[3]]) %>%
+    #   rowwise() %>%
+    #   mutate_at(vars(-r), list(centered = ~ .-perm_trans)) %>% 
+    #   select(-(theo:perm_iso)) %>% 
+    #   gather("type", "value", -r) %>% 
+    #   ggplot() + geom_line(aes(x = r, y = value, color = type)) +
+    #   scale_color_manual(name = "Estimate", ############### NEW
+    #                      labels = c("Theoretical CSR", "Permuted Isotropic CSR",
+    #                                 "Permuted Translational CSR", "Observed Isotropic","Observed Translational"),
+    #                      breaks = c("theo_centered", "perm_trans_centered", 
+    #                                 "perm_iso_centered", "iso_centered", "trans_centered"),
+    #                      values = c("theo_centered" = 'black', "perm_trans_centered" = "green",
+    #                                 "perm_iso_centered" = "orange", "iso_centered" = 'red', 
+    #                                 "trans_centered" = 'blue')) + 
+    #   geom_ribbon(data = ripleys_list[[2]] %>%
+    #                 full_join(ripleys_list[[3]]) %>%
+    #                 mutate_at(vars(-r), list(centered = ~ .-perm_trans)) %>% 
+    #                 select(-(obs:hi)),
+    #               aes(x= r, ymin=lo_centered, ymax=hi_centered), inherit.aes=FALSE, alpha=0.4, color=NA) + 
+    #   ylab(ylabel)
     
   } else {
     #est <- as.data.frame(Kest(po_pp)) %>% select(-border)

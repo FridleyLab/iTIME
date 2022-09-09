@@ -152,7 +152,13 @@ ui = dashboardPage(
                                                       selected = "factor"),
                                           uiOutput("modeling_reference")),
                                    column(width = 12,
-                                          uiOutput("choose_uni_covariates")),
+                                          uiOutput("choose_uni_covariates"))
+                                   ),
+                            column(width = 8,
+                                   # column(width = 12, h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), 
+                                   #        status = "primary",
+                                   #        plotOutput("cdfplot"),
+                                   #        downloadButton('download_cdfplot', 'Download Plot')),
                                    column(width = 12, align = "center", h2("Beta Binomial Model Statistics",align="center", style = "font-size:14pt"),
                                           div(style = 'overflow-x: scroll', tableOutput('model_stats'))),
                                    column(width = 12,
@@ -165,12 +171,6 @@ ui = dashboardPage(
                                           #                         "Zero Inflated Poisson"),
                                           #             selected = "Beta Binomial")
                                           htmlOutput("modelingDescription"))
-                                   ),
-                            column(width = 8,
-                                   column(width = 12, h2("Cumulative Distribution Function (CDF)", align="center", style = "font-size:14pt"), 
-                                          status = "primary",
-                                          plotOutput("cdfplot"),
-                                          downloadButton('download_cdfplot', 'Download Plot'))
                                 ),
                             # column(width = 4, align = "center",
                             #        h2("Akaike Information Criterion (AIC)",align="center", style = "font-size:14pt"),
@@ -242,8 +242,8 @@ ui = dashboardPage(
                                uiOutput("choose_ripley")
                                ,selectInput("ripleysEstimator", "Select an Estimator",
                                             choices = c("Ripley's K" = "K",
-                                                        "Besag's L" = "L",
-                                                        "Marcon's M" = "M",
+                                                        #"Besag's L" = "L",
+                                                        #"Marcon's M" = "M",
                                                         "Nearest Neighbor G" = "G"),
                                             selected = "K")
                                ),
